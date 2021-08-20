@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2021 Zenauth Ltd.
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+
+<configuration debug="false">
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%-15.15thread] %-5level %36.36logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDERR"/>
+    </appender>
+
+    <logger name="org.apache" level="ERROR" additivity="false">
+        <appender-ref ref="ASYNC"/>
+    </logger>
+
+    <root level="${LOG_LEVEL:-INFO}">
+        <appender-ref ref="ASYNC"/>
+    </root>
+</configuration>

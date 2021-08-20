@@ -1,7 +1,13 @@
+/*
+ * Copyright (c) 2021 Zenauth Ltd.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import com.google.protobuf.gradle.*
 
 plugins {
     java
+    idea
     id("com.google.protobuf") version "0.8.17"
 }
 
@@ -11,17 +17,6 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     maven("https://plugins.gradle.org/m2/")
-
-    /*
-    maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/cerbos/client-protos")
-        credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-            password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
-        }
-    }
-     */
 }
 
 protobuf {
@@ -38,7 +33,6 @@ protobuf {
     generateProtoTasks {
         ofSourceSet("main").forEach {
             it.plugins {
-                // Apply the "grpc" plugin whose spec is defined above, without options.
                 id("grpc")
             }
         }
@@ -47,6 +41,7 @@ protobuf {
 
 dependencies {
     implementation("com.google.protobuf:protobuf-java:3.17.3")
+    implementation("com.google.protobuf:protobuf-java-util:3.17.3")
     implementation("io.grpc:grpc-protobuf:1.40.0")
     implementation("io.grpc:grpc-stub:1.40.0")
     implementation("io.grpc:grpc-netty-shaded:1.40.0")
