@@ -3,7 +3,7 @@ name: Test
 on:
   pull_request:
     branches:
-      - trunk
+      - main
 jobs:
   test:
     runs-on: ubuntu-latest

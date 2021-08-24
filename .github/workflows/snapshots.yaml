@@ -3,7 +3,7 @@ name: Publish snapshot
 on:
   push:
     branches:
-      - trunk
+      - main
 jobs:
   publishSnapshot:
     runs-on: ubuntu-latest
