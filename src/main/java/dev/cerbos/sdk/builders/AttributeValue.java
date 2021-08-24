@@ -20,29 +20,29 @@ public final class AttributeValue {
     this.value = value;
   }
 
-  public static AttributeValue of(String value) {
+  public static AttributeValue stringValue(String value) {
     return new AttributeValue(Values.of(value));
   }
 
-  public static AttributeValue of(double value) {
+  public static AttributeValue doubleValue(double value) {
     return new AttributeValue(Values.of(value));
   }
 
-  public static AttributeValue of(boolean value) {
+  public static AttributeValue boolValue(boolean value) {
     return new AttributeValue(Values.of(value));
   }
 
-  public static AttributeValue of(List<AttributeValue> values) {
+  public static AttributeValue listValue(List<AttributeValue> values) {
     List<Value> valueList =
         values.stream().map(v -> v.value).collect(Collectors.toUnmodifiableList());
     return new AttributeValue(Values.of(valueList));
   }
 
-  public static AttributeValue of(AttributeValue... values) {
-    return of(List.of(values));
+  public static AttributeValue listValue(AttributeValue... values) {
+    return listValue(List.of(values));
   }
 
-  public static AttributeValue of(Map<String, AttributeValue> values) {
+  public static AttributeValue mapValue(Map<String, AttributeValue> values) {
     Struct.Builder builder = Struct.newBuilder();
     for (Map.Entry<String, AttributeValue> entry : values.entrySet()) {
       builder.putFields(entry.getKey(), entry.getValue().value);
@@ -51,7 +51,7 @@ public final class AttributeValue {
     return new AttributeValue(Values.of(builder.build()));
   }
 
-  Value getValue() {
+  public Value toValue() {
     return value;
   }
 }

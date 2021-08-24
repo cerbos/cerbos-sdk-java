@@ -32,7 +32,7 @@ public class Principal {
   }
 
   public Principal withAttribute(String key, AttributeValue value) {
-    this.principal.putAttr(key, value.getValue());
+    this.principal.putAttr(key, value.toValue());
     return this;
   }
 

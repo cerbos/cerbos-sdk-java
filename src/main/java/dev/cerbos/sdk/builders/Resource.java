@@ -30,7 +30,7 @@ public class Resource {
   }
 
   public Resource withAttribute(String key, AttributeValue value) {
-    this.resource.putAttr(key, value.getValue());
+    this.resource.putAttr(key, value.toValue());
     return this;
   }
 
