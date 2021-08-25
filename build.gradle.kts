@@ -10,14 +10,22 @@ plugins {
     idea
     `maven-publish`
     id("com.google.protobuf") version "0.8.17"
+    id("com.palantir.git-version") version "0.12.3"
 }
 
 group = "dev.cerbos.sdk"
-version = "0.1.0-SNAPSHOT"
+
+val gitVersion: groovy.lang.Closure<String> by extra
+version = gitVersion()
 
 repositories {
     mavenCentral()
     maven("https://plugins.gradle.org/m2/")
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 protobuf {
@@ -74,6 +82,26 @@ publishing {
     publications {
         register<MavenPublication>("gpr") {
             from(components["java"])
+            pom {
+                description.set("Java SDK for Cerbos: painless access control for cloud native applications")
+                url.set("https://cerbos.dev")
+                licenses {
+                    license {
+                        name.set("Apache License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("cerbosdev")
+                        name.set("Cerbos Developers")
+                        email.set("help@cerbos.dev")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/cerbos/cerbos-sdk-java")
+                }
+            }
         }
     }
 }

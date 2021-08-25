@@ -1,11 +1,12 @@
 ---
-name: Publish snapshot
+name: Publish 
 on:
   push:
     branches:
       - main
+    tags:
 jobs:
-  publishSnapshot:
+  publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
