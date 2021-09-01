@@ -24,6 +24,7 @@ public class CerbosClientBuilder {
   private InputStream caCertificate;
   private InputStream tlsCertificate;
   private InputStream tlsKey;
+  private String playgroundInstance;
   private long timeoutMillis = 1000;
 
   public CerbosClientBuilder(String target) {
@@ -62,6 +63,11 @@ public class CerbosClientBuilder {
 
   public CerbosClientBuilder withTimeout(Duration timeout) {
     this.timeoutMillis = timeout.toMillis();
+    return this;
+  }
+
+  public CerbosClientBuilder withPlaygroundInstance(String playgroundInstance) {
+    this.playgroundInstance = playgroundInstance;
     return this;
   }
 
@@ -111,7 +117,11 @@ public class CerbosClientBuilder {
   }
 
   public CerbosBlockingClient buildBlockingClient() throws InvalidClientConfigurationException {
-    return new CerbosBlockingClient(buildChannel(), timeoutMillis);
+    PlaygroundInstanceCredentials pgCreds = null;
+    if (!isEmptyString(playgroundInstance)) {
+      pgCreds = new PlaygroundInstanceCredentials(playgroundInstance);
+    }
+    return new CerbosBlockingClient(buildChannel(), timeoutMillis, pgCreds);
   }
 
   private static boolean isEmptyString(String str) {
