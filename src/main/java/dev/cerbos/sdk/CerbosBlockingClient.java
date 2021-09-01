@@ -25,8 +25,14 @@ public class CerbosBlockingClient {
   private final CerbosServiceGrpc.CerbosServiceBlockingStub cerbosStub;
   private final long timeoutMillis;
 
-  CerbosBlockingClient(Channel channel, long timeoutMillis) {
-    this.cerbosStub = CerbosServiceGrpc.newBlockingStub(channel);
+  CerbosBlockingClient(
+      Channel channel, long timeoutMillis, PlaygroundInstanceCredentials playgroundCredentials) {
+    CerbosServiceGrpc.CerbosServiceBlockingStub c = CerbosServiceGrpc.newBlockingStub(channel);
+    if (playgroundCredentials != null) {
+      this.cerbosStub = c.withCallCredentials(playgroundCredentials);
+    } else {
+      this.cerbosStub = c;
+    }
     this.timeoutMillis = timeoutMillis;
   }
 
