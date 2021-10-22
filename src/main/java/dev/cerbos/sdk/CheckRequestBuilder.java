@@ -6,11 +6,11 @@
 package dev.cerbos.sdk;
 
 import com.google.protobuf.Value;
+import dev.cerbos.api.v1.engine.Engine;
 import dev.cerbos.api.v1.request.Request;
 import dev.cerbos.api.v1.response.Response;
 import dev.cerbos.api.v1.svc.CerbosServiceGrpc;
 import dev.cerbos.sdk.builders.AttributeValue;
-import dev.cerbos.sdk.builders.Principal;
 import dev.cerbos.sdk.builders.Resource;
 import io.grpc.StatusRuntimeException;
 
@@ -21,12 +21,16 @@ import java.util.stream.Collectors;
 
 public class CheckRequestBuilder {
   private final Supplier<CerbosServiceGrpc.CerbosServiceBlockingStub> clientStub;
-  private final Principal principal;
+  private final Engine.Principal principal;
+  private final Request.AuxData auxData;
 
   CheckRequestBuilder(
-      Supplier<CerbosServiceGrpc.CerbosServiceBlockingStub> clientStub, Principal principal) {
+      Supplier<CerbosServiceGrpc.CerbosServiceBlockingStub> clientStub,
+      Request.AuxData auxData,
+      Engine.Principal principal) {
     this.clientStub = clientStub;
     this.principal = principal;
+    this.auxData = auxData;
   }
 
   /**
@@ -76,7 +80,8 @@ public class CheckRequestBuilder {
       this.requestBuilder =
           Request.CheckResourceSetRequest.newBuilder()
               .setRequestId(RequestId.generate())
-              .setPrincipal(principal.toPrincipal());
+              .setPrincipal(principal)
+              .setAuxData(auxData);
       this.resourceSetBuilder = Request.ResourceSet.newBuilder().setKind(kind);
     }
 
@@ -84,7 +89,8 @@ public class CheckRequestBuilder {
       this.requestBuilder =
           Request.CheckResourceSetRequest.newBuilder()
               .setRequestId(RequestId.generate())
-              .setPrincipal(principal.toPrincipal());
+              .setPrincipal(principal)
+              .setAuxData(auxData);
       this.resourceSetBuilder =
           Request.ResourceSet.newBuilder().setKind(kind).setPolicyVersion(policyVersion);
     }
@@ -147,7 +153,8 @@ public class CheckRequestBuilder {
       this.requestBuilder =
           Request.CheckResourceBatchRequest.newBuilder()
               .setRequestId(RequestId.generate())
-              .setPrincipal(principal.toPrincipal())
+              .setPrincipal(principal)
+              .setAuxData(auxData)
               .addResources(
                   Request.CheckResourceBatchRequest.BatchEntry.newBuilder()
                       .setResource(resource.toResource())

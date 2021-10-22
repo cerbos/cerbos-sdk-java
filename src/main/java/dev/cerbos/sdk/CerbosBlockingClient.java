@@ -8,6 +8,7 @@ package dev.cerbos.sdk;
 import dev.cerbos.api.v1.request.Request;
 import dev.cerbos.api.v1.response.Response;
 import dev.cerbos.api.v1.svc.CerbosServiceGrpc;
+import dev.cerbos.sdk.builders.AuxData;
 import dev.cerbos.sdk.builders.Principal;
 import dev.cerbos.sdk.builders.Resource;
 import io.grpc.Channel;
@@ -15,6 +16,7 @@ import io.grpc.StatusRuntimeException;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class CerbosBlockingClient {
   private final CerbosServiceGrpc.CerbosServiceBlockingStub cerbosStub;
   private final long timeoutMillis;
+  private final Optional<AuxData> auxData;
 
   CerbosBlockingClient(
       Channel channel, long timeoutMillis, PlaygroundInstanceCredentials playgroundCredentials) {
@@ -34,10 +37,28 @@ public class CerbosBlockingClient {
       this.cerbosStub = c;
     }
     this.timeoutMillis = timeoutMillis;
+    this.auxData = Optional.empty();
+  }
+
+  CerbosBlockingClient(
+      CerbosServiceGrpc.CerbosServiceBlockingStub cerbosStub, long timeoutMillis, AuxData auxData) {
+    this.cerbosStub = cerbosStub;
+    this.timeoutMillis = timeoutMillis;
+    this.auxData = Optional.ofNullable(auxData);
   }
 
   private CerbosServiceGrpc.CerbosServiceBlockingStub withClient() {
     return cerbosStub.withDeadlineAfter(timeoutMillis, TimeUnit.MILLISECONDS);
+  }
+
+  /**
+   * Automatically attach the provided auxiliary data to requests.
+   *
+   * @param auxData {@link AuxData} instance
+   * @return new CerbosBlockingClient configured to attach the auxiliary data to requests.
+   */
+  public CerbosBlockingClient with(AuxData auxData) {
+    return new CerbosBlockingClient(cerbosStub, timeoutMillis, auxData);
   }
 
   /**
@@ -51,10 +72,13 @@ public class CerbosBlockingClient {
    * @throws CerbosException if an RPC error occurs
    */
   public CheckResult check(Principal principal, Resource resource, String... actions) {
+    Request.AuxData ad =
+        this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance);
     Request.CheckResourceBatchRequest request =
         Request.CheckResourceBatchRequest.newBuilder()
             .setRequestId(RequestId.generate())
             .setPrincipal(principal.toPrincipal())
+            .setAuxData(ad)
             .addResources(
                 Request.CheckResourceBatchRequest.BatchEntry.newBuilder()
                     .setResource(resource.toResource())
@@ -80,6 +104,9 @@ public class CerbosBlockingClient {
    * @return Instance of {@link CheckRequestBuilder}
    */
   public CheckRequestBuilder withPrincipal(Principal principal) {
-    return new CheckRequestBuilder(this::withClient, principal);
+    return new CheckRequestBuilder(
+        this::withClient,
+        this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance),
+        principal.toPrincipal());
   }
 }

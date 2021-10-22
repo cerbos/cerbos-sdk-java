@@ -5,9 +5,9 @@ deps:
     owner: cerbos
     repository: cerbos-api
     branch: main
-    commit: a0920d5192b6461ab262f7377d8e0356
-    digest: b1-nsL8lSPIsR3GZyz9D-X9CfuJW7PXzcDRZkjqNGhKhMs=
-    create_time: 2021-08-18T11:00:57.925577Z
+    commit: abdeb0f4cbab495f8267006f94879301
+    digest: b1-vhr3tMr2neJEjVhuydeL-60HAPYFtKqa7c84hj0szUI=
+    create_time: 2021-10-22T06:27:31.017655Z
   - remote: buf.build
     owner: envoyproxy
     repository: protoc-gen-validate
