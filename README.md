@@ -12,13 +12,13 @@ Installation
 
 - Configure https://maven.pkg.github.com/cerbos/cerbos-sdk-java as Maven repository in your repository manager or the
   build settings.
-- Add `dev.cerbos.sdk:cerbos-sdk-java:0.1.0` as a dependency.
+- Add `dev.cerbos.sdk:cerbos-sdk-java:0.3.0` as a dependency.
 
 **Example: Gradle (Kotlin DSL)**
 
 ```kotlin
 dependencies {
-    implementation("dev.cerbos.sdk:cerbos-sdk-java:0.1.0")
+    implementation("dev.cerbos.sdk:cerbos-sdk-java:0.3.0")
 }
 
 repositories {
@@ -41,53 +41,53 @@ CerbosBlockingClient client=new CerbosClientBuilder("localhost:3593").withPlaint
 
 ```java
 CheckResult result=client.check(
-    Principal.newInstance("john","employee")
+        Principal.newInstance("john","employee")
         .withPolicyVersion("20210210")
         .withAttribute("department",stringValue("marketing"))
         .withAttribute("geography",stringValue("GB")),
-    Resource.newInstance("leave_request","xx125")
+        Resource.newInstance("leave_request","xx125")
         .withPolicyVersion("20210210")
         .withAttribute("department",stringValue("marketing"))
         .withAttribute("geography",stringValue("GB"))
         .withAttribute("owner",stringValue("john")),
-    "view:public", "approve");
+        "view:public","approve");
 
-if(result.isAllowed("approve")) { // returns true if `approve` action is allowed
-...
-}
+        if(result.isAllowed("approve")){ // returns true if `approve` action is allowed
+        ...
+        }
 ```
 
 ### Check a batch
 
 ```java
 CheckResourceSetResult result=client.withPrincipal(
-    Principal.newInstance("john","employee")
+        Principal.newInstance("john","employee")
         .withPolicyVersion("20210210")
         .withAttribute("department",stringValue("marketing"))
         .withAttribute("geography",stringValue("GB"))
-    )
-    .withResourceKind("leave_request","20210210")
-    .withActions("view:public","approve")
-    .withResource("XX125",Map.of(
+        )
+        .withResourceKind("leave_request","20210210")
+        .withActions("view:public","approve")
+        .withResource("XX125",Map.of(
         "department",stringValue("marketing"),
         "geography",stringValue("GB"),
         "owner",stringValue("john"))
-    )
-    .withResource("XX225",Map.of(
+        )
+        .withResource("XX225",Map.of(
         "department",stringValue("marketing"),
         "geography",stringValue("GB"),
         "owner",stringValue("martha"))
-    )
-    .withResource("XX325",Map.of(
+        )
+        .withResource("XX325",Map.of(
         "department",stringValue("marketing"),
         "geography",stringValue("US"),
         "owner",stringValue("peggy"))
-    )
-    .check();
+        )
+        .check();
 
-if(result.isAllowed("XX125","view:public")) { // returns true if view:public is allowed on resource XX125
-...
-}
+        if(result.isAllowed("XX125","view:public")){ // returns true if view:public is allowed on resource XX125
+        ...
+        }
 ```
 
 ### Test with [Testcontainers](https://www.testcontainers.org)
@@ -95,14 +95,14 @@ if(result.isAllowed("XX125","view:public")) { // returns true if view:public is 
 ```java
 @Container
 private static final CerbosContainer cerbosContainer=new CerbosContainer("0.5.0")
-    .withClasspathResourceMapping("policies","/policies",BindMode.READ_ONLY)
-    .withLogConsumer(new Slf4jLogConsumer(LOG));
+        .withClasspathResourceMapping("policies","/policies",BindMode.READ_ONLY)
+        .withLogConsumer(new Slf4jLogConsumer(LOG));
 
 @BeforeAll
 private void initClient()throws CerbosClientBuilder.InvalidClientConfigurationException{
-    String target=cerbosContainer.getTarget();
-    this.client=new CerbosClientBuilder(target).withPlaintext().buildBlockingClient();
-}
+        String target=cerbosContainer.getTarget();
+        this.client=new CerbosClientBuilder(target).withPlaintext().buildBlockingClient();
+        }
 ```
 
 
