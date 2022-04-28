@@ -60,34 +60,49 @@ CheckResult result=client.check(
 ### Check a batch
 
 ```java
-CheckResourceSetResult result=client.withPrincipal(
+CheckResourcesResult result=client
+        .batch(
         Principal.newInstance("john","employee")
         .withPolicyVersion("20210210")
         .withAttribute("department",stringValue("marketing"))
-        .withAttribute("geography",stringValue("GB"))
-        )
-        .withResourceKind("leave_request","20210210")
-        .withActions("view:public","approve")
-        .withResource("XX125",Map.of(
-        "department",stringValue("marketing"),
-        "geography",stringValue("GB"),
-        "owner",stringValue("john"))
-        )
-        .withResource("XX225",Map.of(
-        "department",stringValue("marketing"),
-        "geography",stringValue("GB"),
-        "owner",stringValue("martha"))
-        )
-        .withResource("XX325",Map.of(
-        "department",stringValue("marketing"),
-        "geography",stringValue("US"),
-        "owner",stringValue("peggy"))
-        )
+        .withAttribute("geography",stringValue("GB")))
+        .addResources(
+        ResourceAction.newInstance("leave_request","XX125")
+        .withPolicyVersion("20210210")
+        .withAttributes(
+        Map.of(
+        "department",
+        stringValue("marketing"),
+        "geography",
+        stringValue("GB"),
+        "owner",
+        stringValue("john")))
+        .withActions("view:public","approve","defer"),
+        ResourceAction.newInstance("leave_request","XX225")
+        .withPolicyVersion("20210210")
+        .withAttributes(
+        Map.of(
+        "department",
+        stringValue("marketing"),
+        "geography",
+        stringValue("GB"),
+        "owner",
+        stringValue("martha")))
+        .withActions("view:public","approve"),
+        ResourceAction.newInstance("leave_request","XX325")
+        .withPolicyVersion("20210210")
+        .withAttributes(
+        Map.of(
+        "department",
+        stringValue("marketing"),
+        "geography",
+        stringValue("US"),
+        "owner",
+        stringValue("peggy")))
+        .withActions("view:public","approve"))
         .check();
 
-        if(result.isAllowed("XX125","view:public")){ // returns true if view:public is allowed on resource XX125
-        ...
-        }
+        result.find("XX125").map(r->r.isAllowed("view:public")).orElse(false);
 ```
 
 ### Test with [Testcontainers](https://www.testcontainers.org)
