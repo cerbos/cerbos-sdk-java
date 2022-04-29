@@ -181,7 +181,7 @@ public class CheckRequestBuilder {
     /**
      * Perform the check using the accumulated list of resources and actions.
      *
-     * @return {@link CheckResourceSetResult}
+     * @return {@link CheckResourceBatchResult}
      * @throws CerbosException if a network exception is caught.
      */
     public CheckResourceBatchResult check() {

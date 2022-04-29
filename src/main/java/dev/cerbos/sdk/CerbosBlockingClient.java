@@ -74,20 +74,20 @@ public class CerbosBlockingClient {
   public CheckResult check(Principal principal, Resource resource, String... actions) {
     Request.AuxData ad =
         this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance);
-    Request.CheckResourceBatchRequest request =
-        Request.CheckResourceBatchRequest.newBuilder()
+    Request.CheckResourcesRequest request =
+        Request.CheckResourcesRequest.newBuilder()
             .setRequestId(RequestId.generate())
             .setPrincipal(principal.toPrincipal())
             .setAuxData(ad)
             .addResources(
-                Request.CheckResourceBatchRequest.BatchEntry.newBuilder()
+                Request.CheckResourcesRequest.ResourceEntry.newBuilder()
                     .setResource(resource.toResource())
                     .addAllActions(Arrays.asList(actions))
                     .build())
             .build();
 
     try {
-      Response.CheckResourceBatchResponse response = withClient().checkResourceBatch(request);
+      Response.CheckResourcesResponse response = withClient().checkResources(request);
       if (response.getResultsCount() == 1) {
         return new CheckResult(response.getResults(0).getActionsMap());
       }
@@ -101,7 +101,33 @@ public class CerbosBlockingClient {
    * Build a new batch request using the given principal.
    *
    * @param principal Principal performing the actions on resources.
+   * @return Instance of {@link CheckResourcesRequestBuilder}
+   */
+  public CheckResourcesRequestBuilder batch(Principal principal) {
+    return new CheckResourcesRequestBuilder(
+        this::withClient,
+        this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance),
+        principal.toPrincipal());
+  }
+
+  /**
+   * Build a new batch request using the given principal and auxData.
+   *
+   * @param principal Principal performing the actions on resources.
+   * @param auxData {@link AuxData} instance
+   * @return Instance of {@link CheckResourcesRequestBuilder}
+   */
+  public CheckResourcesRequestBuilder batch(Principal principal, AuxData auxData) {
+    return new CheckResourcesRequestBuilder(
+        this::withClient, auxData.toAuxData(), principal.toPrincipal());
+  }
+
+  /**
+   * Build a new batch request using the given principal.
+   *
+   * @param principal Principal performing the actions on resources.
    * @return Instance of {@link CheckRequestBuilder}
+   * @deprecated Use {@link #batch(Principal)} instead
    */
   public CheckRequestBuilder withPrincipal(Principal principal) {
     return new CheckRequestBuilder(

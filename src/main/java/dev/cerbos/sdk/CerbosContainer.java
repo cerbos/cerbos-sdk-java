@@ -12,8 +12,13 @@ import org.testcontainers.utility.DockerImageName;
 public class CerbosContainer extends GenericContainer<CerbosContainer> {
   private static final DockerImageName DEFAULT_IMAGE_NAME =
       DockerImageName.parse("ghcr.io/cerbos/cerbos");
+  private static final String DEFAULT_VERSION = "latest";
   private static final int HTTP_PORT = 3592;
   private static final int GRPC_PORT = 3593;
+
+  public CerbosContainer() {
+    this(DEFAULT_VERSION);
+  }
 
   public CerbosContainer(String version) {
     this(DEFAULT_IMAGE_NAME.withTag(version));
