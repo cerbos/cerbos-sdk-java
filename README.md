@@ -12,13 +12,13 @@ Installation
 
 - Configure https://maven.pkg.github.com/cerbos/cerbos-sdk-java as Maven repository in your repository manager or the
   build settings.
-- Add `dev.cerbos.sdk:cerbos-sdk-java:0.3.0` as a dependency.
+- Add `dev.cerbos.sdk:cerbos-sdk-java:v0.4.0` as a dependency.
 
 **Example: Gradle (Kotlin DSL)**
 
 ```kotlin
 dependencies {
-    implementation("dev.cerbos.sdk:cerbos-sdk-java:0.3.0")
+    implementation("dev.cerbos.sdk:cerbos-sdk-java:v0.4.0")
 }
 
 repositories {
