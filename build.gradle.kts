@@ -9,14 +9,24 @@ plugins {
     java
     idea
     `maven-publish`
+    signing
     id("com.google.protobuf") version "0.8.17"
-    id("com.palantir.git-version") version "0.12.3"
+    id("com.palantir.git-version") version "0.15.0"
 }
 
-group = "dev.cerbos.sdk"
-
 val gitVersion: groovy.lang.Closure<String> by extra
-version = gitVersion()
+
+val projectVersion: String by lazy {
+    val versionDetails: groovy.lang.Closure<com.palantir.gradle.gitversion.VersionDetails> by extra
+    with(versionDetails()) {
+        if (commitDistance > 0) {
+            val tokens = lastTag.split('.')
+            "${tokens[0]}.${tokens[1]}.${tokens[2].toInt() + 1}-SNAPSHOT"
+        } else lastTag
+    }
+}
+group = "dev.cerbos"
+version = projectVersion
 
 repositories {
     mavenCentral()
@@ -68,19 +78,24 @@ tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
+
 publishing {
     repositories {
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/cerbos/cerbos-sdk-java")
+            val releasesURL = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            val snapshotsURL = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            name = "OSSRH"
+            url = uri(
+                if (version.toString().endsWith("SNAPSHOT")) snapshotsURL else releasesURL
+            )
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+                username = project.findProperty("ossrh.user") as String? ?: System.getenv("OSSRH_USER")
+                password = project.findProperty("ossrh.token") as String? ?: System.getenv("OSSRH_PASSWORD")
             }
         }
     }
     publications {
-        register<MavenPublication>("gpr") {
+        register<MavenPublication>("ossrh") {
             from(components["java"])
             pom {
                 description.set("Java SDK for Cerbos: painless access control for cloud native applications")
@@ -95,7 +110,7 @@ publishing {
                     developer {
                         id.set("cerbosdev")
                         name.set("Cerbos Developers")
-                        email.set("help@cerbos.dev")
+                        email.set("sdk+java@cerbos.dev")
                     }
                 }
                 scm {
@@ -104,4 +119,11 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    val signingKey = System.getenv("OSSRH_SIGNING_KEY")
+    val signingPassword = System.getenv("OSSRH_SIGNING_PASSWORD")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign(publishing.publications["ossrh"])
 }
