@@ -12,6 +12,7 @@ plugins {
     signing
     id("com.google.protobuf") version "0.8.17"
     id("com.palantir.git-version") version "0.15.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -98,6 +99,7 @@ publishing {
         register<MavenPublication>("ossrh") {
             from(components["java"])
             pom {
+                name.set("Cerbos Java SDK")
                 description.set("Java SDK for Cerbos: painless access control for cloud native applications")
                 url.set("https://cerbos.dev")
                 licenses {
@@ -110,13 +112,24 @@ publishing {
                     developer {
                         id.set("cerbosdev")
                         name.set("Cerbos Developers")
-                        email.set("sdk+java@cerbos.dev")
+                        email.set("sdk@cerbos.dev")
                     }
                 }
                 scm {
                     url.set("https://github.com/cerbos/cerbos-sdk-java")
                 }
             }
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username.set(project.findProperty("ossrh.user") as String? ?: System.getenv("OSSRH_USER"))
+            password.set(project.findProperty("ossrh.password") as String? ?: System.getenv("OSSRH_PASSWORD"))
         }
     }
 }
