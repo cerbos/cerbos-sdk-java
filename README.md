@@ -10,7 +10,7 @@ Find out more about Cerbos at https://cerbos.dev and read the documentation at h
 Installation
 -------------
 
-Artifacts are available from Maven Central. Add `dev.cerbos:cerbos-sdk-java:v0.4.0` as a dependency.
+Artifacts are available from Maven Central. Add `dev.cerbos:cerbos-sdk-java:v0.4.1` as a dependency.
 
 **Example: Gradle (Kotlin DSL)**
 
