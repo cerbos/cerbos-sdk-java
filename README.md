@@ -1,3 +1,5 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/dev.cerbos/cerbos-sdk-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/dev.cerbos/cerbos-sdk-java)
+
 Cerbos Java SDK
 ===============
 
@@ -10,13 +12,13 @@ Find out more about Cerbos at https://cerbos.dev and read the documentation at h
 Installation
 -------------
 
-Artifacts are available from Maven Central. Add `dev.cerbos:cerbos-sdk-java:v0.4.2` as a dependency.
+Artifacts are available from Maven Central. [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dev.cerbos/cerbos-sdk-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/dev.cerbos/cerbos-sdk-java)
 
 **Example: Gradle (Kotlin DSL)**
 
 ```kotlin
 dependencies {
-    implementation("dev.cerbos:cerbos-sdk-java:v0.4.2")
+    implementation("dev.cerbos:cerbos-sdk-java:latest")
 }
 
 repositories {
