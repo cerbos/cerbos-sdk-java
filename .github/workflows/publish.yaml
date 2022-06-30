@@ -1,6 +1,7 @@
 ---
 name: Publish
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -18,7 +19,8 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           java-version: '11'
-          distribution: 'adopt'
+          distribution: 'temurin'
+          cache: 'gradle'
 
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
