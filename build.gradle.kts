@@ -122,8 +122,9 @@ publishing {
 }
 
 signing {
+    val signingKeyId = System.getenv("OSSRH_SIGNING_KEY_ID")
     val signingKey = System.getenv("OSSRH_SIGNING_KEY")
     val signingPassword = System.getenv("OSSRH_SIGNING_PASSWORD")
-    useInMemoryPgpKeys(signingKey, signingPassword)
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     sign(publishing.publications["ossrh"])
 }
