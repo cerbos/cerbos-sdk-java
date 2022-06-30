@@ -90,7 +90,7 @@ publishing {
             )
             credentials {
                 username = project.findProperty("ossrh.user") as String? ?: System.getenv("OSSRH_USER")
-                password = project.findProperty("ossrh.token") as String? ?: System.getenv("OSSRH_PASSWORD")
+                password = project.findProperty("ossrh.password") as String? ?: System.getenv("OSSRH_PASSWORD")
             }
         }
     }
@@ -122,8 +122,10 @@ publishing {
 }
 
 signing {
-    val signingKey = System.getenv("OSSRH_SIGNING_KEY")
-    val signingPassword = System.getenv("OSSRH_SIGNING_PASSWORD")
-    useInMemoryPgpKeys(signingKey, signingPassword)
+    val signingKeyId = project.findProperty("ossrh.signing.key_id") as String? ?: System.getenv("OSSRH_SIGNING_KEY_ID")
+    val signingKey = project.findProperty("ossrh.signing.key") as String? ?: System.getenv("OSSRH_SIGNING_KEY")
+    val signingPassword =
+        project.findProperty("ossrh.signing.password") as String? ?: System.getenv("OSSRH_SIGNING_PASSWORD")
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     sign(publishing.publications["ossrh"])
 }

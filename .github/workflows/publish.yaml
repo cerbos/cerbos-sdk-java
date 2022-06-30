@@ -26,9 +26,10 @@ jobs:
         uses: gradle/wrapper-validation-action@v1
 
       - name: Publish package
-        run: ./gradlew publish
-        env:
-          OSSRH_USER: ${{ secrets.OSSRH_USER }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          OSSRH_SIGNING_KEY: ${{ secrets.OSSRH_SIGNING_KEY }}
-          OSSRH_SIGNING_PASSWORD: ${{ secrets.OSSRSH_SIGNING_PASSWORD }}
+        run: |-
+          ./gradlew publish \
+          -Possrh.user='${{ secrets.OSSRH_USER}}' \
+          -Possrh.password='${{ secrets.OSSRH_PASSWORD }}' \
+          -Possrh.signing.key_id='${{ secrets.OSSRH_SIGNING_KEY_ID }}' \
+          -Possrh.signing.password='${{ secrets.OSSRH_SIGNING_PASSWORD }}' \
+          -Possrh.signing.key='${{ secrets.OSSRH_SIGNING_KEY }}' --stacktrace
