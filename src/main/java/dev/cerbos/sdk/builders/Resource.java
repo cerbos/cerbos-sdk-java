@@ -39,7 +39,22 @@ public class Resource {
     return this;
   }
 
+  public Resource withScope(String scope) {
+    this.resource.setScope(scope);
+    return this;
+  }
+
   public Engine.Resource toResource() {
     return resource.build();
+  }
+
+  public Engine.PlanResourcesInput.Resource toPlanResource() {
+    Engine.Resource r = toResource();
+    return Engine.PlanResourcesInput.Resource.newBuilder()
+            .setKind(r.getKind())
+            .setPolicyVersion(r.getPolicyVersion())
+            .setScope(r.getScope())
+            .putAllAttr(r.getAttrMap())
+            .build();
   }
 }

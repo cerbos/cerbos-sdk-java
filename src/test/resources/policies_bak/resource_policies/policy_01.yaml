@@ -9,11 +9,6 @@ resourcePolicy:
   importDerivedRoles:
     - alpha
     - beta
-  schemas:
-    principalSchema:
-      ref: cerbos:///principal.json
-    resourceSchema:
-      ref: cerbos:///resources/leave_request.json
   resource: leave_request
   rules:
     - actions: ['*']
@@ -25,18 +20,6 @@ resourcePolicy:
     - actions: ["create"]
       derivedRoles:
         - employee_that_owns_the_record
-      effect: EFFECT_ALLOW
-
-    - actions: ["view"]
-      condition:
-        match:
-          expr: request.resource.attr.public == true
-      roles: ["*"]
-      effect: EFFECT_ALLOW
-
-    - actions: ["view"]
-      derivedRoles:
-        - reader
       effect: EFFECT_ALLOW
 
     - actions: ["view:*"]

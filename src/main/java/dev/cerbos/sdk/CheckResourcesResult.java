@@ -19,7 +19,7 @@ public class CheckResourcesResult {
   }
 
   public Stream<CheckResult> results() {
-    return this.resp.getResultsList().stream().map(re -> new CheckResult(re.getActionsMap()));
+    return this.resp.getResultsList().stream().map(CheckResult::new);
   }
 
   public Optional<CheckResult> find(String resourceID) {
@@ -41,8 +41,12 @@ public class CheckResourcesResult {
 
               return true;
             })
-        .map(re -> new CheckResult(re.getActionsMap()))
+        .map(CheckResult::new)
         .findFirst();
+  }
+
+  public boolean hasValidationErrors() {
+    return resp.getResultsList().stream().anyMatch(re -> re.getValidationErrorsCount() > 0);
   }
 
   public Response.CheckResourcesResponse getRaw() {

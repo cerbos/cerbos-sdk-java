@@ -41,6 +41,11 @@ public class Principal {
     return this;
   }
 
+  public Principal withScope(String scope) {
+    this.principal.setScope(scope);
+    return this;
+  }
+
   public Engine.Principal toPrincipal() {
     return this.principal.build();
   }

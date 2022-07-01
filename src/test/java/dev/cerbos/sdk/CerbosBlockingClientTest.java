@@ -5,6 +5,7 @@
 
 package dev.cerbos.sdk;
 
+import dev.cerbos.api.v1.engine.Engine;
 import dev.cerbos.sdk.builders.AuxData;
 import dev.cerbos.sdk.builders.Principal;
 import dev.cerbos.sdk.builders.Resource;
@@ -55,12 +56,15 @@ public class CerbosBlockingClientTest {
         this.client.check(
             Principal.newInstance("john", "employee")
                 .withPolicyVersion("20210210")
+                .withAttribute("team", stringValue("design"))
                 .withAttribute("department", stringValue("marketing"))
                 .withAttribute("geography", stringValue("GB")),
             Resource.newInstance("leave_request", "xx125")
                 .withPolicyVersion("20210210")
+                .withAttribute("id", stringValue("xx125"))
                 .withAttribute("department", stringValue("marketing"))
                 .withAttribute("geography", stringValue("GB"))
+                .withAttribute("team", stringValue("design"))
                 .withAttribute("owner", stringValue("john")),
             "view:public",
             "approve");
@@ -77,143 +81,19 @@ public class CerbosBlockingClientTest {
             .check(
                 Principal.newInstance("john", "employee")
                     .withPolicyVersion("20210210")
+                    .withAttribute("team", stringValue("design"))
                     .withAttribute("department", stringValue("marketing"))
                     .withAttribute("geography", stringValue("GB")),
                 Resource.newInstance("leave_request", "xx125")
                     .withPolicyVersion("20210210")
+                    .withAttribute("id", stringValue("xx125"))
+                    .withAttribute("team", stringValue("design"))
                     .withAttribute("department", stringValue("marketing"))
                     .withAttribute("geography", stringValue("GB"))
                     .withAttribute("owner", stringValue("john")),
                 "defer");
 
     Assertions.assertTrue(have.isAllowed("defer"));
-  }
-
-  @Test
-  public void checkResourceSet() {
-    CheckResourceSetResult have =
-        this.client
-            .with(AuxData.withJWT(JWT))
-            .withPrincipal(
-                Principal.newInstance("john", "employee")
-                    .withPolicyVersion("20210210")
-                    .withAttribute("department", stringValue("marketing"))
-                    .withAttribute("geography", stringValue("GB")))
-            .withResourceKind("leave_request", "20210210")
-            .withActions("view:public", "approve", "defer")
-            .withResource(
-                "XX125",
-                Map.of(
-                    "department",
-                    stringValue("marketing"),
-                    "geography",
-                    stringValue("GB"),
-                    "owner",
-                    stringValue("john")))
-            .withResource(
-                "XX225",
-                Map.of(
-                    "department",
-                    stringValue("marketing"),
-                    "geography",
-                    stringValue("GB"),
-                    "owner",
-                    stringValue("martha")))
-            .withResource(
-                "XX325",
-                Map.of(
-                    "department",
-                    stringValue("marketing"),
-                    "geography",
-                    stringValue("US"),
-                    "owner",
-                    stringValue("peggy")))
-            .check();
-
-    Assertions.assertTrue(have.isAllowed("XX125", "view:public"));
-    Assertions.assertTrue(have.isAllowed("XX125", "defer"));
-    Assertions.assertFalse(have.isAllowed("XX125", "approve"));
-    Assertions.assertFalse(have.isAllowed("XX225", "approve"));
-    Assertions.assertFalse(have.isAllowed("XX325", "approve"));
-
-    Optional<CheckResult> res1 = have.get("XX125");
-    Assertions.assertTrue(res1.isPresent());
-    Assertions.assertTrue(res1.get().isAllowed("view:public"));
-
-    Optional<CheckResult> res2 = have.get("YY666");
-    Assertions.assertTrue(res2.isEmpty());
-
-    Map<String, CheckResult> allResources = have.getAll();
-    Assertions.assertEquals(3, allResources.size());
-  }
-
-  @Test
-  public void checkResourceBatch() {
-    CheckResourceBatchResult have =
-        this.client
-            .with(AuxData.withJWT(JWT))
-            .withPrincipal(
-                Principal.newInstance("john", "employee")
-                    .withPolicyVersion("20210210")
-                    .withAttribute("department", stringValue("marketing"))
-                    .withAttribute("geography", stringValue("GB")))
-            .withResourceAndActions(
-                Resource.newInstance("leave_request", "XX125")
-                    .withPolicyVersion("20210210")
-                    .withAttributes(
-                        Map.of(
-                            "department",
-                            stringValue("marketing"),
-                            "geography",
-                            stringValue("GB"),
-                            "owner",
-                            stringValue("john"))),
-                "view:public",
-                "approve",
-                "defer")
-            .withResourceAndActions(
-                Resource.newInstance("leave_request", "XX225")
-                    .withPolicyVersion("20210210")
-                    .withAttributes(
-                        Map.of(
-                            "department",
-                            stringValue("marketing"),
-                            "geography",
-                            stringValue("GB"),
-                            "owner",
-                            stringValue("martha"))),
-                "view:public",
-                "approve")
-            .withResourceAndActions(
-                Resource.newInstance("leave_request", "XX325")
-                    .withPolicyVersion("20210210")
-                    .withAttributes(
-                        Map.of(
-                            "department",
-                            stringValue("marketing"),
-                            "geography",
-                            stringValue("US"),
-                            "owner",
-                            stringValue("peggy"))),
-                "view:public",
-                "approve")
-            .check();
-
-    Assertions.assertTrue(have.isAllowed("XX125", "view:public"));
-    Assertions.assertTrue(have.isAllowed("XX125", "defer"));
-    Assertions.assertFalse(have.isAllowed("XX125", "approve"));
-    Assertions.assertFalse(have.isAllowed("XX225", "approve"));
-    Assertions.assertFalse(have.isAllowed("XX325", "approve"));
-
-    Optional<CheckResult> res1 = have.get("XX125");
-    Assertions.assertTrue(res1.isPresent());
-    Assertions.assertTrue(res1.get().isAllowed("view:public"));
-
-    Optional<CheckResult> res2 = have.get("YY666");
-    Assertions.assertTrue(res2.isEmpty());
-
-    Map<String, CheckResult> allResources = have.getAll();
-    Assertions.assertEquals(3, allResources.size());
   }
 
   @Test
@@ -225,16 +105,21 @@ public class CerbosBlockingClientTest {
                 Principal.newInstance("john", "employee")
                     .withPolicyVersion("20210210")
                     .withAttribute("department", stringValue("marketing"))
+                    .withAttribute("team", stringValue("design"))
                     .withAttribute("geography", stringValue("GB")))
             .addResources(
                 ResourceAction.newInstance("leave_request", "XX125")
                     .withPolicyVersion("20210210")
                     .withAttributes(
                         Map.of(
+                            "id",
+                            stringValue("XX125"),
                             "department",
                             stringValue("marketing"),
                             "geography",
                             stringValue("GB"),
+                            "team",
+                            stringValue("design"),
                             "owner",
                             stringValue("john")))
                     .withActions("view:public", "approve", "defer"),
@@ -242,10 +127,14 @@ public class CerbosBlockingClientTest {
                     .withPolicyVersion("20210210")
                     .withAttributes(
                         Map.of(
+                            "id",
+                            stringValue("XX225"),
                             "department",
                             stringValue("marketing"),
                             "geography",
                             stringValue("GB"),
+                            "team",
+                            stringValue("design"),
                             "owner",
                             stringValue("martha")))
                     .withActions("view:public", "approve"),
@@ -253,10 +142,14 @@ public class CerbosBlockingClientTest {
                     .withPolicyVersion("20210210")
                     .withAttributes(
                         Map.of(
+                            "id",
+                            stringValue("XX325"),
                             "department",
                             stringValue("marketing"),
                             "geography",
                             stringValue("US"),
+                            "team",
+                            stringValue("design"),
                             "owner",
                             stringValue("peggy")))
                     .withActions("view:public", "approve"))
@@ -285,5 +178,65 @@ public class CerbosBlockingClientTest {
 
     Optional<CheckResult> res4Opt = have.find("YY666");
     Assertions.assertTrue(res4Opt.isEmpty());
+  }
+
+  @Test
+  public void planResources() {
+    PlanResourcesResult have =
+        this.client.plan(
+            Principal.newInstance("maggie", "manager")
+                .withPolicyVersion("20210210")
+                .withAttribute("department", stringValue("marketing"))
+                .withAttribute("geography", stringValue("GB"))
+                .withAttribute("managed_geographies", stringValue("GB"))
+                .withAttribute("team", stringValue("design")),
+            Resource.newInstance("leave_request").withPolicyVersion("20210210"),
+            "approve");
+
+    Assertions.assertEquals("approve", have.getAction());
+    Assertions.assertEquals("20210210", have.getPolicyVersion());
+    Assertions.assertEquals("leave_request", have.getResourceKind());
+    Assertions.assertFalse(have.hasValidationErrors());
+    Assertions.assertFalse(have.isAlwaysAllowed());
+    Assertions.assertFalse(have.isAlwaysDenied());
+    Assertions.assertTrue(have.isConditional());
+    Assertions.assertTrue(have.getCondition().isPresent());
+
+    Engine.PlanResourcesFilter.Expression.Operand cond = have.getCondition().get();
+
+    Engine.PlanResourcesFilter.Expression expr = cond.getExpression();
+    Assertions.assertNotNull(expr);
+    Assertions.assertEquals("and", expr.getOperator());
+
+    Engine.PlanResourcesFilter.Expression argExpr1 = expr.getOperands(0).getExpression();
+    Assertions.assertNotNull(argExpr1);
+    Assertions.assertEquals("eq", argExpr1.getOperator());
+  }
+
+  @Test
+  public void planResourcesValidation() {
+    PlanResourcesResult have =
+        this.client.plan(
+            Principal.newInstance("maggie", "manager")
+                .withPolicyVersion("20210210")
+                .withAttribute("department", stringValue("accounting"))
+                .withAttribute("geography", stringValue("GB"))
+                .withAttribute("managed_geographies", stringValue("GB"))
+                .withAttribute("team", stringValue("design")),
+            Resource.newInstance("leave_request")
+                .withPolicyVersion("20210210")
+                .withAttribute("department", stringValue("accounting")),
+            "approve");
+
+    Assertions.assertEquals("approve", have.getAction());
+    Assertions.assertEquals("20210210", have.getPolicyVersion());
+    Assertions.assertEquals("leave_request", have.getResourceKind());
+
+    Assertions.assertTrue(have.hasValidationErrors());
+    Assertions.assertEquals(2, have.getValidationErrors().size());
+
+    Assertions.assertTrue(have.isAlwaysDenied());
+    Assertions.assertFalse(have.isAlwaysAllowed());
+    Assertions.assertFalse(have.isConditional());
   }
 }

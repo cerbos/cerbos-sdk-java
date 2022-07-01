@@ -15,7 +15,6 @@ import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -89,9 +88,9 @@ public class CerbosBlockingClient {
     try {
       Response.CheckResourcesResponse response = withClient().checkResources(request);
       if (response.getResultsCount() == 1) {
-        return new CheckResult(response.getResults(0).getActionsMap());
+        return new CheckResult(response.getResults(0));
       }
-      return new CheckResult(Collections.emptyMap());
+      return new CheckResult(null);
     } catch (StatusRuntimeException sre) {
       throw new CerbosException(sre.getStatus(), sre.getCause());
     }
@@ -123,16 +122,31 @@ public class CerbosBlockingClient {
   }
 
   /**
-   * Build a new batch request using the given principal.
+   * Obtain a query plan for performing the given action on the given resource kind.
    *
-   * @param principal Principal performing the actions on resources.
-   * @return Instance of {@link CheckRequestBuilder}
-   * @deprecated Use {@link #batch(Principal)} instead
+   * @param principal Principal performing the action on the resource kind.
+   * @param resource Resource kind.
+   * @param action Action to generate the plan for.
+   * @return Instance of {@link PlanResourcesResult}
+   * @throws CerbosException if the RPC fails.
    */
-  public CheckRequestBuilder withPrincipal(Principal principal) {
-    return new CheckRequestBuilder(
-        this::withClient,
-        this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance),
-        principal.toPrincipal());
+  public PlanResourcesResult plan(Principal principal, Resource resource, String action) {
+    Request.AuxData ad =
+        this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance);
+
+    Request.PlanResourcesRequest request =
+        Request.PlanResourcesRequest.newBuilder()
+            .setRequestId(RequestId.generate())
+            .setPrincipal(principal.toPrincipal())
+            .setResource(resource.toPlanResource())
+            .setAuxData(ad)
+            .setAction(action)
+            .build();
+    try {
+      Response.PlanResourcesResponse response = withClient().planResources(request);
+      return new PlanResourcesResult(response);
+    } catch (StatusRuntimeException sre) {
+      throw new CerbosException(sre.getStatus(), sre.getCause());
+    }
   }
 }
