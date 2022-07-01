@@ -12,13 +12,14 @@ Find out more about Cerbos at https://cerbos.dev and read the documentation at h
 Installation
 -------------
 
-Artifacts are available from Maven Central. [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dev.cerbos/cerbos-sdk-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/dev.cerbos/cerbos-sdk-java)
+Artifacts are available from Maven
+Central. [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dev.cerbos/cerbos-sdk-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/dev.cerbos/cerbos-sdk-java)
 
 **Example: Gradle (Kotlin DSL)**
 
 ```kotlin
 dependencies {
-    implementation("dev.cerbos:cerbos-sdk-java:latest")
+    implementation("dev.cerbos:cerbos-sdk-java")
 }
 
 repositories {
@@ -39,84 +40,100 @@ CerbosBlockingClient client=new CerbosClientBuilder("localhost:3593").withPlaint
 
 ```java
 CheckResult result=client.check(
-        Principal.newInstance("john","employee")
+    Principal.newInstance("john","employee")
         .withPolicyVersion("20210210")
         .withAttribute("department",stringValue("marketing"))
         .withAttribute("geography",stringValue("GB")),
-        Resource.newInstance("leave_request","xx125")
+    Resource.newInstance("leave_request","xx125")
         .withPolicyVersion("20210210")
         .withAttribute("department",stringValue("marketing"))
         .withAttribute("geography",stringValue("GB"))
         .withAttribute("owner",stringValue("john")),
-        "view:public","approve");
+    "view:public","approve");
 
-        if(result.isAllowed("approve")){ // returns true if `approve` action is allowed
-        ...
-        }
+if(result.isAllowed("approve")){ // returns true if `approve` action is allowed
+    ...
+}
 ```
 
 ### Check a batch
 
 ```java
-CheckResourcesResult result=client
-        .batch(
-        Principal.newInstance("john","employee")
+CheckResourcesResult result=client.batch(
+    Principal.newInstance("john","employee")
         .withPolicyVersion("20210210")
         .withAttribute("department",stringValue("marketing"))
-        .withAttribute("geography",stringValue("GB")))
-        .addResources(
+        .withAttribute("geography",stringValue("GB"))
+    )
+    .addResources(
         ResourceAction.newInstance("leave_request","XX125")
-        .withPolicyVersion("20210210")
-        .withAttributes(
-        Map.of(
-        "department",
-        stringValue("marketing"),
-        "geography",
-        stringValue("GB"),
-        "owner",
-        stringValue("john")))
-        .withActions("view:public","approve","defer"),
+            .withPolicyVersion("20210210")
+            .withAttributes(
+                Map.of(
+                    "department", stringValue("marketing"),
+                    "geography", stringValue("GB"),
+                    "owner", stringValue("john")
+                )
+            )
+            .withActions("view:public","approve","defer"),
         ResourceAction.newInstance("leave_request","XX225")
-        .withPolicyVersion("20210210")
-        .withAttributes(
-        Map.of(
-        "department",
-        stringValue("marketing"),
-        "geography",
-        stringValue("GB"),
-        "owner",
-        stringValue("martha")))
-        .withActions("view:public","approve"),
+            .withPolicyVersion("20210210")
+            .withAttributes(
+                Map.of(
+                    "department", stringValue("marketing"),
+                    "geography", stringValue("GB"),
+                    "owner", stringValue("martha")
+                )
+            )
+            .withActions("view:public","approve"),
         ResourceAction.newInstance("leave_request","XX325")
-        .withPolicyVersion("20210210")
-        .withAttributes(
-        Map.of(
-        "department",
-        stringValue("marketing"),
-        "geography",
-        stringValue("US"),
-        "owner",
-        stringValue("peggy")))
-        .withActions("view:public","approve"))
-        .check();
+            .withPolicyVersion("20210210")
+            .withAttributes(
+                Map.of(
+                    "department", stringValue("marketing"),
+                    "geography", stringValue("US"),
+                    "owner", stringValue("peggy")
+                )
+            )
+            .withActions("view:public","approve")
+    )
+    .check();
 
-        result.find("XX125").map(r->r.isAllowed("view:public")).orElse(false);
+result.find("XX125").map(r->r.isAllowed("view:public")).orElse(false);
+```
+
+### Create a query plan
+
+```java
+PlanResourcesResult result = client.plan(
+    Principal.newInstance("maggie","manager")
+        .withAttribute("department",stringValue("marketing"))
+        .withAttribute("geography",stringValue("GB"))
+        .withAttribute("team",stringValue("design")),
+    Resource.newInstance("leave_request").withPolicyVersion("20210210"),
+    "approve"
+);
+
+if(result.isAlwaysAllowed()) {
+    return true;
+} else if(result.isAlwaysDenied()) {
+    return false;
+} else {
+    return executeQuery(result.getCondition());
+}
 ```
 
 ### Test with [Testcontainers](https://www.testcontainers.org)
 
 ```java
 @Container
-private static final CerbosContainer cerbosContainer=new CerbosContainer("0.5.0")
-        .withClasspathResourceMapping("policies","/policies",BindMode.READ_ONLY)
-        .withLogConsumer(new Slf4jLogConsumer(LOG));
+private static final CerbosContainer cerbosContainer=new CerbosContainer()
+    .withClasspathResourceMapping("policies","/policies",BindMode.READ_ONLY)
+    .withLogConsumer(new Slf4jLogConsumer(LOG));
 
 @BeforeAll
-private void initClient()throws CerbosClientBuilder.InvalidClientConfigurationException{
-        String target=cerbosContainer.getTarget();
-        this.client=new CerbosClientBuilder(target).withPlaintext().buildBlockingClient();
-        }
+private void initClient() throws CerbosClientBuilder.InvalidClientConfigurationException{
+    String target=cerbosContainer.getTarget();
+    this.client=new CerbosClientBuilder(target).withPlaintext().buildBlockingClient();
+}
 ```
-
-
-

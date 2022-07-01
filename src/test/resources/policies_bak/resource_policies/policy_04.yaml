@@ -23,11 +23,3 @@ resourcePolicy:
       effect: EFFECT_ALLOW
       derivedRoles:
         - abuse_moderator
-
-    - actions: ['view-as-vip']
-      effect: EFFECT_ALLOW
-      roles:
-        - user
-      condition:
-        match:
-          expr: request.principal.attr.vip == true
