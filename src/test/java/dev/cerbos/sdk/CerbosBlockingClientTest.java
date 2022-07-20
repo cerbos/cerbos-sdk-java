@@ -169,7 +169,7 @@ public class CerbosBlockingClientTest {
     Assertions.assertFalse(res2.isAllowed("defer"));
     Assertions.assertFalse(res2.isAllowed("approve"));
 
-    Optional<CheckResult> res3Opt = have.find("XX225");
+    Optional<CheckResult> res3Opt = have.find("XX325");
     Assertions.assertTrue(res3Opt.isPresent());
     CheckResult res3 = res3Opt.get();
     Assertions.assertTrue(res3.isAllowed("view:public"));
