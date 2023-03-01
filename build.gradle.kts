@@ -10,9 +10,9 @@ plugins {
     idea
     `maven-publish`
     signing
-    id("com.google.protobuf") version "0.8.17"
+    id("com.google.protobuf") version "0.9.2"
     id("com.palantir.git-version") version "0.15.0"
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.2.0"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -41,12 +41,12 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.21.2"
+        artifact = "com.google.protobuf:protoc:3.22.0"
     }
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.47.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.53.0"
         }
     }
 
@@ -60,19 +60,19 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:3.21.2")
-    implementation("com.google.protobuf:protobuf-java-util:3.21.2")
-    implementation("io.grpc:grpc-protobuf:1.47.0")
-    implementation("io.grpc:grpc-stub:1.47.0")
-    implementation("io.grpc:grpc-netty-shaded:1.47.0")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.53.Final")
-    implementation("org.testcontainers:testcontainers:1.17.2")
+    implementation("com.google.protobuf:protobuf-java:3.22.0")
+    implementation("com.google.protobuf:protobuf-java-util:3.22.0")
+    implementation("io.grpc:grpc-protobuf:1.53.0")
+    implementation("io.grpc:grpc-stub:1.53.0")
+    implementation("io.grpc:grpc-netty-shaded:1.53.0")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.59.Final")
+    implementation("org.testcontainers:testcontainers:1.17.6")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testImplementation("org.testcontainers:junit-jupiter:1.17.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testImplementation("org.testcontainers:junit-jupiter:1.17.6")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation("ch.qos.logback:logback-core:1.2.11")
-    testImplementation("ch.qos.logback:logback-classic:1.2.11")
+    testImplementation("ch.qos.logback:logback-core:1.4.5")
+    testImplementation("ch.qos.logback:logback-classic:1.4.5")
 }
 
 tasks.getByName<Test>("test") {
