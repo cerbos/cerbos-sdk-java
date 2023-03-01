@@ -45,7 +45,7 @@ public class CerbosBlockingClientTest {
           .withLogConsumer(new Slf4jLogConsumer(LOG));
 
   @BeforeAll
-  private void initClient() throws CerbosClientBuilder.InvalidClientConfigurationException {
+  public void initClient() throws CerbosClientBuilder.InvalidClientConfigurationException {
     String target = cerbosContainer.getTarget();
     this.client = new CerbosClientBuilder(target).withPlaintext().buildBlockingClient();
   }
