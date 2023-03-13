@@ -12,7 +12,7 @@ plugins {
     signing
     id("com.google.protobuf") version "0.9.2"
     id("com.palantir.git-version") version "1.0.0"
-    id("io.github.gradle-nexus.publish-plugin") version "1.2.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -41,7 +41,7 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.22.0"
+        artifact = "com.google.protobuf:protoc:3.22.2"
     }
 
     plugins {
@@ -60,8 +60,8 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:3.22.0")
-    implementation("com.google.protobuf:protobuf-java-util:3.22.0")
+    implementation("com.google.protobuf:protobuf-java:3.22.2")
+    implementation("com.google.protobuf:protobuf-java-util:3.22.2")
     implementation("io.grpc:grpc-protobuf:1.53.0")
     implementation("io.grpc:grpc-stub:1.53.0")
     implementation("io.grpc:grpc-netty-shaded:1.53.0")
