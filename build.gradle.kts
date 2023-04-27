@@ -10,7 +10,7 @@ plugins {
     idea
     `maven-publish`
     signing
-    id("com.google.protobuf") version "0.9.2"
+    id("com.google.protobuf") version "0.9.3"
     id("com.palantir.git-version") version "3.0.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
@@ -65,14 +65,14 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.54.1")
     implementation("io.grpc:grpc-stub:1.54.1")
     implementation("io.grpc:grpc-netty-shaded:1.54.1")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.59.Final")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.60.Final")
     implementation("org.testcontainers:testcontainers:1.18.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.testcontainers:junit-jupiter:1.18.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation("ch.qos.logback:logback-core:1.4.6")
-    testImplementation("ch.qos.logback:logback-classic:1.4.6")
+    testImplementation("ch.qos.logback:logback-core:1.4.7")
+    testImplementation("ch.qos.logback:logback-classic:1.4.7")
 }
 
 tasks.getByName<Test>("test") {
