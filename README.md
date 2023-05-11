@@ -1,7 +1,7 @@
-![Maven Central](https://img.shields.io/maven-central/v/dev.cerbos/cerbos-sdk-java?style=for-the-badge&versionPrefix=v)
-
 Cerbos Java SDK
 ===============
+
+![Maven Central](https://img.shields.io/maven-central/v/dev.cerbos/cerbos-sdk-java?style=for-the-badge&versionPrefix=0.)
 
 Java client library for the [Cerbos](https://github.com/cerbos/cerbos) open source access control solution. This library
 includes RPC clients for accessing the Cerbos PDP and test utilities for testing your code locally
@@ -12,7 +12,7 @@ Find out more about Cerbos at https://cerbos.dev and read the documentation at h
 Installation
 -------------
 
-Artifacts are available from Maven Central. ![Maven Central](https://img.shields.io/maven-central/v/dev.cerbos/cerbos-sdk-java?style=for-the-badge&versionPrefix=v)
+Artifacts are available from Maven Central.
 
 **Example: Gradle (Kotlin DSL)**
 
