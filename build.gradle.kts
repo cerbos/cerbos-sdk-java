@@ -20,10 +20,11 @@ val gitVersion: groovy.lang.Closure<String> by extra
 val projectVersion: String by lazy {
     val versionDetails: groovy.lang.Closure<com.palantir.gradle.gitversion.VersionDetails> by extra
     with(versionDetails()) {
+        val version = lastTag.removePrefix("v")
         if (commitDistance > 0) {
-            val tokens = lastTag.split('.')
+            val tokens = version.split('.')
             "${tokens[0]}.${tokens[1]}.${tokens[2].toInt() + 1}-SNAPSHOT"
-        } else lastTag
+        } else version
     }
 }
 group = "dev.cerbos"
