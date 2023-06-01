@@ -111,7 +111,7 @@ public final class CheckResult {
          * @return List of String
          */
         public List<String> getEffectiveDerivedRoles() {
-            return this.meta.getEffectiveDerivedRolesList().stream().toList();
+            return this.meta.getEffectiveDerivedRolesList().stream().collect(Collectors.toUnmodifiableList());
         }
 
         /**
