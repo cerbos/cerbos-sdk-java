@@ -29,6 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static dev.cerbos.sdk.builders.AttributeValue.stringValue;
 
@@ -167,7 +168,7 @@ public class CerbosBlockingClientTest {
         Assertions.assertTrue(res1.isAllowed("defer"));
         Assertions.assertFalse(res1.isAllowed("approve"));
 
-        Assertions.assertIterableEquals(List.of("any_employee", "employee_that_owns_the_record"), res1.getMeta().getEffectiveDerivedRoles().stream().sorted().toList());
+        Assertions.assertIterableEquals(List.of("any_employee", "employee_that_owns_the_record"), res1.getMeta().getEffectiveDerivedRoles().stream().sorted().collect(Collectors.toUnmodifiableList()));
         Optional<Response.CheckResourcesResponse.ResultEntry.Meta.EffectMeta> res1DeferMetaOpt = res1.getMeta().getInfoForAction("defer");
         Assertions.assertTrue(res1DeferMetaOpt.isPresent());
         Response.CheckResourcesResponse.ResultEntry.Meta.EffectMeta res1DeferMeta = res1DeferMetaOpt.get();
@@ -200,7 +201,7 @@ public class CerbosBlockingClientTest {
         Assertions.assertFalse(res2.isAllowed("defer"));
         Assertions.assertFalse(res2.isAllowed("approve"));
 
-        Assertions.assertIterableEquals(List.of("any_employee"), res2.getMeta().getEffectiveDerivedRoles().stream().sorted().toList());
+        Assertions.assertIterableEquals(List.of("any_employee"), res2.getMeta().getEffectiveDerivedRoles().stream().sorted().collect(Collectors.toUnmodifiableList()));
         Optional<Response.CheckResourcesResponse.ResultEntry.Meta.EffectMeta> res2DeferMetaOpt = res2.getMeta().getInfoForAction("defer");
         Assertions.assertFalse(res2DeferMetaOpt.isPresent());
 
