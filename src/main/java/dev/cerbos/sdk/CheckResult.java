@@ -84,7 +84,7 @@ public final class CheckResult {
     /**
      * Return the metadata if it was included in the response.
      *
-     * @return {@link dev.cerbos.sdk.CheckResourcesResult.Meta}
+     * @return {@link Meta}
      */
     public Meta getMeta() {
         return new Meta(this.entry.getMeta());
@@ -155,7 +155,7 @@ public final class CheckResult {
         /**
          * Returns the outputs as a map keyed by rule name.
          *
-         * @return {@link Map<String,Value>}
+         * @return Map of output rule names and {@link Value}
          */
         public Map<String, Value> asMap() {
             return this.outputs.stream().collect(Collectors.toUnmodifiableMap(Engine.OutputEntry::getSrc, Engine.OutputEntry::getVal));
