@@ -49,12 +49,19 @@ protobuf {
         id("grpc") {
             artifact = "io.grpc:protoc-gen-grpc-java:1.55.1"
         }
+
+        id("javapgv") {
+            artifact = "build.buf.protoc-gen-validate:protoc-gen-validate:1.0.1"
+        }
     }
 
     generateProtoTasks {
         ofSourceSet("main").forEach {
             it.plugins {
                 id("grpc")
+                id("javapgv") {
+                    option("lang=java")
+                }
             }
         }
     }
@@ -68,12 +75,16 @@ dependencies {
     implementation("io.grpc:grpc-netty-shaded:1.55.1")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.61.Final")
     implementation("org.testcontainers:testcontainers:1.18.3")
+    implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.0.1")
+    implementation("commons-io:commons-io:2.13.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.testcontainers:junit-jupiter:1.18.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("ch.qos.logback:logback-core:1.4.7")
     testImplementation("ch.qos.logback:logback-classic:1.4.7")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2")
 }
 
 tasks.getByName<Test>("test") {

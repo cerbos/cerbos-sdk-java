@@ -124,6 +124,21 @@ public class CerbosClientBuilder {
     return new CerbosBlockingClient(buildChannel(), timeoutMillis, pgCreds);
   }
 
+  public CerbosBlockingAdminClient buildBlockingAdminClient() throws InvalidClientConfigurationException {
+    String username = System.getenv("CERBOS_USERNAME");
+    String password = System.getenv("CERBOS_PASSWORD");
+    return buildBlockingAdminClient(username, password);
+  }
+
+  public CerbosBlockingAdminClient buildBlockingAdminClient(String username, String password) throws InvalidClientConfigurationException {
+    if (username == null ||password == null) {
+      throw new InvalidClientConfigurationException("username and password must not be null");
+    }
+
+    AdminApiCredentials adminCreds = new AdminApiCredentials(username, password);
+    return new CerbosBlockingAdminClient(buildChannel(), timeoutMillis, adminCreds);
+  }
+
   private static boolean isEmptyString(String str) {
     return str == null || str.strip().isEmpty();
   }
