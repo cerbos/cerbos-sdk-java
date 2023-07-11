@@ -138,3 +138,14 @@ private void initClient() throws CerbosClientBuilder.InvalidClientConfigurationE
     this.client=new CerbosClientBuilder(target).withPlaintext().buildBlockingClient();
 }
 ```
+
+### Accessing the Admin API
+
+```java
+// Username and password can be specified using CERBOS_USER and CERBOS_PASSWORD environment variables as well
+CerbosBlockingAdminClient  adminClient = new CerbosClientBuilder(target).withPlaintext().buildBlockingAdminClient("username", "password");
+
+adminClient.addOrUpdatePolicy().with(new FileReader(fileObjectContainingPolicyJSON)).addOrUpdate();
+```
+
+See `CerbosBlockingAdminClientTest` test class for more examples of Admin API usage including how to convert YAML policies to the JSON format required by the  API.
