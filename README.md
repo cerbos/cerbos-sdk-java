@@ -18,7 +18,7 @@ Artifacts are available from Maven Central.
 
 ```kotlin
 dependencies {
-    implementation("dev.cerbos:cerbos-sdk-java")
+    implementation("dev.cerbos:cerbos-sdk-java:0.+")
 }
 
 repositories {
