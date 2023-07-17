@@ -10,7 +10,7 @@ plugins {
     idea
     `maven-publish`
     signing
-    id("com.google.protobuf") version "0.9.3"
+    id("com.google.protobuf") version "0.9.4"
     id("com.palantir.git-version") version "3.0.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
