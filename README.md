@@ -19,6 +19,7 @@ Artifacts are available from Maven Central.
 ```kotlin
 dependencies {
     implementation("dev.cerbos:cerbos-sdk-java:0.+")
+    implementation("io.grpc:grpc-core:1.+")
 }
 
 repositories {
@@ -149,3 +150,22 @@ adminClient.addOrUpdatePolicy().with(new FileReader(fileObjectContainingPolicyJS
 ```
 
 See `CerbosBlockingAdminClientTest` test class for more examples of Admin API usage including how to convert YAML policies to the JSON format required by the  API.
+
+## Common issues
+
+`java.lang.IllegalArgumentException: cannot find a NameResolver for ...`:
+   The gRPC library relies on Java SPI to register name resolvers and client-side load balancing strategies for clients. The defaults are defined in the `io.grpc:grpc-core` library. Some packaging methods could overwrite or strip out the `META-INF/services` directory, which would cause the above exception on Cerbos client initialisation. If that's the case, eithertry to recreate the [default service bindings](https://github.com/grpc/grpc-java/tree/master/core/src/main/resources/META-INF/services) in your own jar OR explicitly register the services as follows:
+
+   ```java
+   import io.grpc.LoadBalancerRegistry;
+   import io.grpc.NameResolverRegistry;
+
+   public class Cerbos {
+     public static void main(String[] args) throws CerbosClientBuilder.InvalidClientConfigurationException {
+       LoadBalancerRegistry.getDefaultRegistry().register(new io.grpc.internal.PickFirstLoadBalancerProvider());
+       NameResolverRegistry.getDefaultRegistry().register(new io.grpc.internal.DnsNameResolverProvider());
+       CerbosBlockingClient client = new CerbosClientBuilder("dns:///cerbos.my-ns.svc.cluster.local:3593").withInsecure().buildBlockingClient();
+       ...
+     }
+   }
+   ```
