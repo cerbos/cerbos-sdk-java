@@ -42,7 +42,7 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.23.4"
+        artifact = "com.google.protobuf:protoc:3.24.0"
     }
 
     plugins {
@@ -68,8 +68,8 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:3.23.4")
-    implementation("com.google.protobuf:protobuf-java-util:3.23.4")
+    implementation("com.google.protobuf:protobuf-java:3.24.0")
+    implementation("com.google.protobuf:protobuf-java-util:3.24.0")
     implementation("io.grpc:grpc-protobuf:1.57.1")
     implementation("io.grpc:grpc-stub:1.57.1")
     implementation("io.grpc:grpc-netty-shaded:1.57.1")
@@ -81,8 +81,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
     testImplementation("org.testcontainers:junit-jupiter:1.18.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation("ch.qos.logback:logback-core:1.4.9")
-    testImplementation("ch.qos.logback:logback-classic:1.4.9")
+    testImplementation("ch.qos.logback:logback-core:1.4.11")
+    testImplementation("ch.qos.logback:logback-classic:1.4.11")
     testImplementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2")
 }
