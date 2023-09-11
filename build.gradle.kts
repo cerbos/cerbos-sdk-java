@@ -42,7 +42,7 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.24.2"
+        artifact = "com.google.protobuf:protoc:3.24.3"
     }
 
     plugins {
@@ -68,8 +68,8 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:3.24.2")
-    implementation("com.google.protobuf:protobuf-java-util:3.24.2")
+    implementation("com.google.protobuf:protobuf-java:3.24.3")
+    implementation("com.google.protobuf:protobuf-java-util:3.24.3")
     implementation("io.grpc:grpc-protobuf:1.58.0")
     implementation("io.grpc:grpc-stub:1.58.0")
     implementation("io.grpc:grpc-netty-shaded:1.58.0")
