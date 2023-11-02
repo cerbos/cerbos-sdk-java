@@ -42,7 +42,7 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.24.4"
+        artifact = "com.google.protobuf:protoc:3.25.0"
     }
 
     plugins {
@@ -68,15 +68,15 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:3.24.4")
-    implementation("com.google.protobuf:protobuf-java-util:3.24.4")
+    implementation("com.google.protobuf:protobuf-java:3.25.0")
+    implementation("com.google.protobuf:protobuf-java-util:3.25.0")
     implementation("io.grpc:grpc-protobuf:1.59.0")
     implementation("io.grpc:grpc-stub:1.59.0")
     implementation("io.grpc:grpc-netty-shaded:1.59.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.62.Final")
     implementation("org.testcontainers:testcontainers:1.19.1")
     implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.0.2")
-    implementation("commons-io:commons-io:2.14.0")
+    implementation("commons-io:commons-io:2.15.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
     testImplementation("org.testcontainers:junit-jupiter:1.19.1")
