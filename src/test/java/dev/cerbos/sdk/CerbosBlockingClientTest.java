@@ -14,6 +14,8 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.Map;
+
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CerbosBlockingClientTest extends CerbosClientTests {
@@ -29,6 +31,6 @@ class CerbosBlockingClientTest extends CerbosClientTests {
     @BeforeAll
     public void initClient() throws CerbosClientBuilder.InvalidClientConfigurationException {
         String target = cerbosContainer.getTarget();
-        this.client = new CerbosClientBuilder(target).withPlaintext().buildBlockingClient();
+        this.client = new CerbosClientBuilder(target).withPlaintext().buildBlockingClient().withHeaders(Map.of("wibble", "wobble"));
     }
 }
