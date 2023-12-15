@@ -12,9 +12,12 @@ import dev.cerbos.sdk.builders.AuxData;
 import dev.cerbos.sdk.builders.Principal;
 import dev.cerbos.sdk.builders.Resource;
 import io.grpc.Channel;
+import io.grpc.Metadata;
 import io.grpc.StatusRuntimeException;
+import io.grpc.stub.MetadataUtils;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +29,8 @@ public class CerbosBlockingClient {
   private final CerbosServiceGrpc.CerbosServiceBlockingStub cerbosStub;
   private final long timeoutMillis;
   private final Optional<AuxData> auxData;
+  private final Optional<Metadata> headerMetadata;
+
 
   CerbosBlockingClient(
       Channel channel, long timeoutMillis, PlaygroundInstanceCredentials playgroundCredentials) {
@@ -37,17 +42,20 @@ public class CerbosBlockingClient {
     }
     this.timeoutMillis = timeoutMillis;
     this.auxData = Optional.empty();
+    this.headerMetadata = Optional.empty();
   }
 
   CerbosBlockingClient(
-      CerbosServiceGrpc.CerbosServiceBlockingStub cerbosStub, long timeoutMillis, AuxData auxData) {
+      CerbosServiceGrpc.CerbosServiceBlockingStub cerbosStub, long timeoutMillis, Optional<AuxData> auxData, Optional<Metadata> headerMetadata) {
     this.cerbosStub = cerbosStub;
     this.timeoutMillis = timeoutMillis;
-    this.auxData = Optional.ofNullable(auxData);
+    this.auxData = auxData;
+    this.headerMetadata = headerMetadata;
   }
 
   private CerbosServiceGrpc.CerbosServiceBlockingStub withClient() {
-    return cerbosStub.withDeadlineAfter(timeoutMillis, TimeUnit.MILLISECONDS);
+    CerbosServiceGrpc.CerbosServiceBlockingStub stub = this.headerMetadata.map(md -> cerbosStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(md))).orElse(cerbosStub);
+    return stub.withDeadlineAfter(timeoutMillis, TimeUnit.MILLISECONDS);
   }
 
   /**
@@ -57,7 +65,27 @@ public class CerbosBlockingClient {
    * @return new CerbosBlockingClient configured to attach the auxiliary data to requests.
    */
   public CerbosBlockingClient with(AuxData auxData) {
-    return new CerbosBlockingClient(cerbosStub, timeoutMillis, auxData);
+    return new CerbosBlockingClient(cerbosStub, timeoutMillis, Optional.ofNullable(auxData), headerMetadata);
+  }
+
+  /**
+   * Attach the given header metadata to the Cerbos request
+   * @param md {@link Metadata}
+   * @return new CerbosBlockingClient configured to attach given headers to the requests.
+   */
+  public CerbosBlockingClient withHeaders(Metadata md) {
+    return new CerbosBlockingClient(cerbosStub, timeoutMillis, auxData, Optional.ofNullable(md));
+  }
+
+  /**
+   * Attach the given headers to the Cerbos request.
+   * @param headers Map of key-value pairs
+   * @return new CerbosBlockingClient configured to attach the given headers to the requests.
+   */
+  public CerbosBlockingClient withHeaders(Map<String, String> headers) {
+    Metadata md = new Metadata();
+    headers.forEach((k, v) -> md.put(Metadata.Key.of(k, Metadata.ASCII_STRING_MARSHALLER), v));
+    return withHeaders(md);
   }
 
   /**

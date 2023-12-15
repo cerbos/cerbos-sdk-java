@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Testcontainers
@@ -39,7 +40,7 @@ class CerbosBlockingAdminClientTest extends CerbosClientTests {
     @BeforeAll
     public void initClient() throws CerbosClientBuilder.InvalidClientConfigurationException, URISyntaxException {
         String target = cerbosContainer.getTarget();
-        this.adminClient = new CerbosClientBuilder(target).withPlaintext().buildBlockingAdminClient("cerbos", "cerbosAdmin");
+        this.adminClient = new CerbosClientBuilder(target).withPlaintext().buildBlockingAdminClient("cerbos", "cerbosAdmin").withHeaders(Map.of("wibble", "wobble"));
         this.client = new CerbosClientBuilder(target).withPlaintext().buildBlockingClient();
         loadSchemas();
         loadPolicies();

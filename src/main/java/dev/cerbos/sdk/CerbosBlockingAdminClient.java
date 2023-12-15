@@ -6,9 +6,12 @@ import dev.cerbos.api.v1.response.Response;
 import dev.cerbos.api.v1.schema.SchemaOuterClass;
 import dev.cerbos.api.v1.svc.CerbosAdminServiceGrpc;
 import io.grpc.Channel;
+import io.grpc.Metadata;
 import io.grpc.StatusRuntimeException;
+import io.grpc.stub.MetadataUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -16,15 +19,44 @@ import java.util.stream.Collectors;
 public class CerbosBlockingAdminClient {
     private final CerbosAdminServiceGrpc.CerbosAdminServiceBlockingStub stub;
     private final long timeoutMillis;
+    private final Optional<Metadata> headerMetadata;
 
     CerbosBlockingAdminClient(Channel channel, long timeoutMillis, AdminApiCredentials adminCredentials) {
         CerbosAdminServiceGrpc.CerbosAdminServiceBlockingStub c = CerbosAdminServiceGrpc.newBlockingStub(channel);
         this.stub = c.withCallCredentials(adminCredentials);
         this.timeoutMillis = timeoutMillis;
+        this.headerMetadata = Optional.empty();
+    }
+
+    CerbosBlockingAdminClient(CerbosAdminServiceGrpc.CerbosAdminServiceBlockingStub stub, long timeoutMillis, Optional<Metadata> headerMetadata) {
+        this.stub = stub;
+        this.timeoutMillis = timeoutMillis;
+        this.headerMetadata = headerMetadata;
     }
 
     private CerbosAdminServiceGrpc.CerbosAdminServiceBlockingStub withClient() {
-        return stub.withDeadlineAfter(timeoutMillis, TimeUnit.MILLISECONDS);
+        CerbosAdminServiceGrpc.CerbosAdminServiceBlockingStub s = headerMetadata.map(md -> stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(md))).orElse(stub);
+        return s.withDeadlineAfter(timeoutMillis, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Add header metadata to Cerbos requests
+     * @param md {@link Metadata}
+     * @return CerbosBlockingAdminClient configured to attach headers to each request.
+     */
+    public CerbosBlockingAdminClient withHeaders(Metadata md) {
+        return new CerbosBlockingAdminClient(stub, timeoutMillis, Optional.ofNullable(md));
+    }
+
+    /**
+     * Attach the given headers to the Cerbos request.
+     * @param headers Map of key-value pairs
+     * @return new CerbosBlockingAdminClient configured to attach the given headers to the requests.
+     */
+    public CerbosBlockingAdminClient withHeaders(Map<String, String> headers) {
+        Metadata md = new Metadata();
+        headers.forEach((k, v) -> md.put(Metadata.Key.of(k, Metadata.ASCII_STRING_MARSHALLER), v));
+        return withHeaders(md);
     }
 
     /**
