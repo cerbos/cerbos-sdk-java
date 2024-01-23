@@ -51,7 +51,7 @@ protobuf {
         }
 
         id("javapgv") {
-            artifact = "build.buf.protoc-gen-validate:protoc-gen-validate:1.0.3"
+            artifact = "build.buf.protoc-gen-validate:protoc-gen-validate:1.0.4"
         }
     }
 
@@ -75,7 +75,7 @@ dependencies {
     implementation("io.grpc:grpc-netty-shaded:1.61.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.62.Final")
     implementation("org.testcontainers:testcontainers:1.19.3")
-    implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.0.3")
+    implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.0.4")
     implementation("commons-io:commons-io:2.15.1")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
