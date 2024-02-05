@@ -47,7 +47,7 @@ protobuf {
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.61.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.61.1"
         }
 
         id("javapgv") {
@@ -70,15 +70,15 @@ protobuf {
 dependencies {
     implementation("com.google.protobuf:protobuf-java:3.25.2")
     implementation("com.google.protobuf:protobuf-java-util:3.25.2")
-    implementation("io.grpc:grpc-protobuf:1.61.0")
-    implementation("io.grpc:grpc-stub:1.61.0")
-    implementation("io.grpc:grpc-netty-shaded:1.61.0")
+    implementation("io.grpc:grpc-protobuf:1.61.1")
+    implementation("io.grpc:grpc-stub:1.61.1")
+    implementation("io.grpc:grpc-netty-shaded:1.61.1")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.62.Final")
     implementation("org.testcontainers:testcontainers:1.19.4")
     implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.0.4")
     implementation("commons-io:commons-io:2.15.1")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testImplementation("org.testcontainers:junit-jupiter:1.19.4")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("ch.qos.logback:logback-core:1.4.14")
