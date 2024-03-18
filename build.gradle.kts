@@ -68,7 +68,7 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:3.25.3")
+    implementation("com.google.protobuf:protobuf-java:4.26.0")
     implementation("com.google.protobuf:protobuf-java-util:3.25.3")
     implementation("io.grpc:grpc-protobuf:1.62.2")
     implementation("io.grpc:grpc-stub:1.62.2")
