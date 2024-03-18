@@ -42,16 +42,12 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.25.3"
+        artifact = "com.google.protobuf:protoc:4.26.0"
     }
 
     plugins {
         id("grpc") {
             artifact = "io.grpc:protoc-gen-grpc-java:1.62.2"
-        }
-
-        id("javapgv") {
-            artifact = "build.buf.protoc-gen-validate:protoc-gen-validate:1.0.4"
         }
     }
 
@@ -59,16 +55,13 @@ protobuf {
         ofSourceSet("main").forEach {
             it.plugins {
                 id("grpc")
-                id("javapgv") {
-                    option("lang=java")
-                }
             }
         }
     }
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:3.25.3")
+    implementation("com.google.protobuf:protobuf-java:4.26.0")
     implementation("com.google.protobuf:protobuf-java-util:3.25.3")
     implementation("io.grpc:grpc-protobuf:1.62.2")
     implementation("io.grpc:grpc-stub:1.62.2")
