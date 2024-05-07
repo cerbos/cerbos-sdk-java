@@ -76,8 +76,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("ch.qos.logback:logback-core:1.5.6")
     testImplementation("ch.qos.logback:logback-classic:1.5.6")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.17.0")
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.0")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.17.1")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.1")
 }
 
 tasks.getByName<Test>("test") {
