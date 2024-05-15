@@ -39,6 +39,11 @@ public class ResourceAction {
     return this;
   }
 
+  public ResourceAction withScope(String scope) {
+    this.resource.setScope(scope);
+    return this;
+  }
+
   public ResourceAction withAttributes(Map<String, AttributeValue> attributes) {
     attributes.forEach(this::withAttribute);
     return this;
