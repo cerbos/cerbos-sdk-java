@@ -20,6 +20,7 @@ import java.util.Map;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CerbosBlockingClientTest extends CerbosClientTests {
     private static final Logger LOG = LoggerFactory.getLogger(CerbosBlockingClientTest.class);
+
     @Container
     private static final CerbosContainer cerbosContainer =
             new CerbosContainer("dev")
@@ -27,6 +28,7 @@ class CerbosBlockingClientTest extends CerbosClientTests {
                     .withClasspathResourceMapping("config", "/config", BindMode.READ_ONLY)
                     .withCommand("server", "--config=/config/config.yaml")
                     .withLogConsumer(new Slf4jLogConsumer(LOG));
+
 
     @BeforeAll
     public void initClient() throws CerbosClientBuilder.InvalidClientConfigurationException {

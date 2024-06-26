@@ -5,14 +5,9 @@
 
 package dev.cerbos.sdk;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
+import io.grpc.*;
 import io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
-import javax.net.ssl.SSLException;
 import java.io.InputStream;
 import java.time.Duration;
 
@@ -78,16 +73,16 @@ public class CerbosClientBuilder {
 
     ManagedChannelBuilder<?> channelBuilder = null;
     if (plaintext) {
-      channelBuilder = ManagedChannelBuilder.forTarget(target).usePlaintext();
+      channelBuilder = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create());
     } else {
-      SslContextBuilder sslContextBuilder = GrpcSslContexts.forClient();
+      TlsChannelCredentials.Builder tlsCredentials = TlsChannelCredentials.newBuilder();
       if (insecure) {
-        sslContextBuilder.trustManager(InsecureTrustManagerFactory.INSTANCE);
+        tlsCredentials.trustManager(InsecureTrustManagerFactory.INSTANCE.getTrustManagers());
       }
 
       if (caCertificate != null) {
         try {
-          sslContextBuilder.trustManager(caCertificate);
+          tlsCredentials.trustManager(caCertificate);
         } catch (Exception e) {
           throw new InvalidClientConfigurationException("Failed to set CA trust root", e);
         }
@@ -95,18 +90,13 @@ public class CerbosClientBuilder {
 
       if (tlsCertificate != null && tlsKey != null) {
         try {
-          sslContextBuilder.keyManager(tlsCertificate, tlsKey);
+          tlsCredentials.keyManager(tlsCertificate, tlsKey);
         } catch (Exception e) {
           throw new InvalidClientConfigurationException("Failed to set TLS credentials", e);
         }
       }
 
-      try {
-        channelBuilder =
-            NettyChannelBuilder.forTarget(target).sslContext(sslContextBuilder.build());
-      } catch (SSLException e) {
-        throw new InvalidClientConfigurationException("Failed to build SSL context", e);
-      }
+        channelBuilder = Grpc.newChannelBuilder(target, tlsCredentials.build());
     }
 
     if (!isEmptyString(authority)) {
