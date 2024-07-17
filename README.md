@@ -30,7 +30,8 @@ repositories {
 Examples
 --------
 
-NOTE: Connecting to Unix domain sockets is not supported by this SDK because the underlying `grpc-java` library does not support them.
+> [!NOTE]
+> Connecting to Unix domain sockets using this SDK is only supported on Linux, which is a limitation inherited from the underlying [`grpc-java`](https://github.com/grpc/grpc-java) library.
 
 ### Creating a client without TLS
 
