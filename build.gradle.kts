@@ -13,6 +13,7 @@ plugins {
     id("com.google.protobuf") version "0.9.4"
     id("com.palantir.git-version") version "3.1.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    id("com.gradleup.shadow") version "8.3.0"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -84,6 +85,15 @@ tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
+tasks.shadowJar {
+    relocate("com.google.protobuf", "dev.cerbos.shaded.com.google.protobuf")
+    relocate("io.grpc", "dev.cerbos.shaded.io.grpc")
+    minimize()
+}
+
+tasks.build {
+    dependsOn(tasks.shadowJar)
+}
 
 publishing {
     repositories {
