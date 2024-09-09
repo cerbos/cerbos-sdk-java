@@ -75,8 +75,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
     testImplementation("org.testcontainers:junit-jupiter:1.20.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation("ch.qos.logback:logback-core:1.5.7")
-    testImplementation("ch.qos.logback:logback-classic:1.5.7")
+    testImplementation("ch.qos.logback:logback-core:1.5.8")
+    testImplementation("ch.qos.logback:logback-classic:1.5.8")
     testImplementation("com.fasterxml.jackson.core:jackson-core:2.17.2")
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
 }
