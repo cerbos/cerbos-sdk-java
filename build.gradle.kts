@@ -13,7 +13,7 @@ plugins {
     id("com.google.protobuf") version "0.9.4"
     id("com.palantir.git-version") version "3.1.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id("com.gradleup.shadow") version "8.3.1"
+    id("com.gradleup.shadow") version "8.3.2"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -43,12 +43,12 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.28.1"
+        artifact = "com.google.protobuf:protoc:4.28.2"
     }
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.66.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.68.0"
         }
     }
 
@@ -62,15 +62,15 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.28.1")
-    implementation("com.google.protobuf:protobuf-java-util:4.28.1")
-    implementation("io.grpc:grpc-protobuf:1.66.0")
-    implementation("io.grpc:grpc-stub:1.66.0")
-    implementation("io.grpc:grpc-netty-shaded:1.66.0")
+    implementation("com.google.protobuf:protobuf-java:4.28.2")
+    implementation("com.google.protobuf:protobuf-java-util:4.28.2")
+    implementation("io.grpc:grpc-protobuf:1.68.0")
+    implementation("io.grpc:grpc-stub:1.68.0")
+    implementation("io.grpc:grpc-netty-shaded:1.68.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.66.Final")
     implementation("org.testcontainers:testcontainers:1.20.1")
     implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.1.0")
-    implementation("commons-io:commons-io:2.16.1")
+    implementation("commons-io:commons-io:2.17.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
     testImplementation("org.testcontainers:junit-jupiter:1.20.1")
