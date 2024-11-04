@@ -13,7 +13,7 @@ plugins {
     id("com.google.protobuf") version "0.9.4"
     id("com.palantir.git-version") version "3.1.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id("com.gradleup.shadow") version "8.3.3"
+    id("com.gradleup.shadow") version "8.3.5"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -48,7 +48,7 @@ protobuf {
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.68.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.68.1"
         }
     }
 
@@ -64,10 +64,10 @@ protobuf {
 dependencies {
     implementation("com.google.protobuf:protobuf-java:4.28.3")
     implementation("com.google.protobuf:protobuf-java-util:4.28.3")
-    implementation("io.grpc:grpc-protobuf:1.68.0")
-    implementation("io.grpc:grpc-stub:1.68.0")
-    implementation("io.grpc:grpc-netty-shaded:1.68.0")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.66.Final")
+    implementation("io.grpc:grpc-protobuf:1.68.1")
+    implementation("io.grpc:grpc-stub:1.68.1")
+    implementation("io.grpc:grpc-netty-shaded:1.68.1")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.69.Final")
     implementation("org.testcontainers:testcontainers:1.20.3")
     implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.1.0")
     implementation("commons-io:commons-io:2.17.0")
@@ -77,8 +77,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("ch.qos.logback:logback-core:1.5.12")
     testImplementation("ch.qos.logback:logback-classic:1.5.12")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.18.0")
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.0")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.18.1")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.1")
 }
 
 tasks.getByName<Test>("test") {
