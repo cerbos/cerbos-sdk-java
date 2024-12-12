@@ -116,9 +116,9 @@ public class CerbosBlockingClient {
     try {
       Response.CheckResourcesResponse response = withClient().checkResources(request);
       if (response.getResultsCount() == 1) {
-        return new CheckResult(response.getResults(0));
+        return new CheckResult(response.getRequestId(), response.getCerbosCallId(), response.getResults(0));
       }
-      return new CheckResult(null);
+      return new CheckResult(response.getRequestId(), response.getCerbosCallId(), null);
     } catch (StatusRuntimeException sre) {
       throw new CerbosException(sre.getStatus(), sre.getCause());
     }
