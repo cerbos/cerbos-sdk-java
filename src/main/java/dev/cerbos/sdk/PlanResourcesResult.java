@@ -13,49 +13,57 @@ import java.util.List;
 import java.util.Optional;
 
 public class PlanResourcesResult {
-  private final Response.PlanResourcesResponse resp;
+    private final Response.PlanResourcesResponse resp;
 
-  PlanResourcesResult(Response.PlanResourcesResponse resp) {
-    this.resp = resp;
-  }
+    PlanResourcesResult(Response.PlanResourcesResponse resp) {
+        this.resp = resp;
+    }
 
-  public String getAction() {
-    return this.resp.getAction();
-  }
+    public String getAction() {
+        return this.resp.getAction();
+    }
 
-  public String getResourceKind() {
-    return this.resp.getResourceKind();
-  }
+    public String getResourceKind() {
+        return this.resp.getResourceKind();
+    }
 
-  public String getPolicyVersion() {
-    return this.resp.getPolicyVersion();
-  }
+    public String getPolicyVersion() {
+        return this.resp.getPolicyVersion();
+    }
 
-  public boolean isAlwaysAllowed() {
-    return this.resp.getFilter().getKind() == Engine.PlanResourcesFilter.Kind.KIND_ALWAYS_ALLOWED;
-  }
+    public boolean isAlwaysAllowed() {
+        return this.resp.getFilter().getKind() == Engine.PlanResourcesFilter.Kind.KIND_ALWAYS_ALLOWED;
+    }
 
-  public boolean isAlwaysDenied() {
-    return this.resp.getFilter().getKind() == Engine.PlanResourcesFilter.Kind.KIND_ALWAYS_DENIED;
-  }
+    public boolean isAlwaysDenied() {
+        return this.resp.getFilter().getKind() == Engine.PlanResourcesFilter.Kind.KIND_ALWAYS_DENIED;
+    }
 
-  public boolean isConditional() {
-    return this.resp.getFilter().getKind() == Engine.PlanResourcesFilter.Kind.KIND_CONDITIONAL;
-  }
+    public boolean isConditional() {
+        return this.resp.getFilter().getKind() == Engine.PlanResourcesFilter.Kind.KIND_CONDITIONAL;
+    }
 
-  public Optional<Engine.PlanResourcesFilter.Expression.Operand> getCondition() {
-    return Optional.of(this.resp.getFilter().getCondition());
-  }
+    public Optional<Engine.PlanResourcesFilter.Expression.Operand> getCondition() {
+        return Optional.of(this.resp.getFilter().getCondition());
+    }
 
-  public boolean hasValidationErrors() {
-    return this.resp.getValidationErrorsCount() > 0;
-  }
+    public boolean hasValidationErrors() {
+        return this.resp.getValidationErrorsCount() > 0;
+    }
 
-  public List<SchemaOuterClass.ValidationError> getValidationErrors() {
-    return this.resp.getValidationErrorsList();
-  }
+    public List<SchemaOuterClass.ValidationError> getValidationErrors() {
+        return this.resp.getValidationErrorsList();
+    }
 
-  public Response.PlanResourcesResponse getRaw() {
-    return this.resp;
-  }
+    public Response.PlanResourcesResponse getRaw() {
+        return this.resp;
+    }
+
+    public String getRequestId() {
+        return this.resp.getRequestId();
+    }
+
+    public String getCerbosCallId() {
+        return this.resp.getCerbosCallId();
+    }
 }

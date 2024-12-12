@@ -18,10 +18,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class CheckResult {
+    private final String cerbosCallId;
+    private final String requestId;
     private final Response.CheckResourcesResponse.ResultEntry entry;
 
-    CheckResult(Response.CheckResourcesResponse.ResultEntry entry) {
+    CheckResult(String requestId, String cerbosCallId, Response.CheckResourcesResponse.ResultEntry entry) {
+        this.requestId = requestId;
+        this.cerbosCallId = cerbosCallId;
         this.entry = entry;
+    }
+
+    public String getRequestId() {
+        return this.requestId;
+    }
+
+    public String getCerbosCallId() {
+        return this.cerbosCallId;
     }
 
     /**
