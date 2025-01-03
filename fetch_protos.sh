@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2021 Zenauth Ltd.
+# Copyright 2021-2025 Zenauth Ltd.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -11,9 +11,8 @@ TMP_PROTO_DIR="$(mktemp -d -t cerbos-XXXXX)"
 
 trap 'rm -rf "$TMP_PROTO_DIR"' EXIT
 
-buf mod update
-buf export "$CERBOS_MODULE" -o "$TMP_PROTO_DIR"
+buf dep update
+buf export "$CERBOS_MODULE" --output="$TMP_PROTO_DIR"
 
 rm -rf src/main/proto
 mv "$TMP_PROTO_DIR" src/main/proto
-
