@@ -1,4 +1,4 @@
-// Copyright 2021-2024 Zenauth Ltd.
+// Copyright 2021-2025 Zenauth Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
 syntax = "proto3";
@@ -30,7 +30,7 @@ message Schema {
     (google.api.field_behavior) = REQUIRED,
     (buf.validate.field).required = true,
     (buf.validate.field).string = {
-      min_len: 1,
+      min_len: 1
       max_len: 255
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {

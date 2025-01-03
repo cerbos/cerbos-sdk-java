@@ -1,4 +1,4 @@
-// Copyright 2021-2024 Zenauth Ltd.
+// Copyright 2021-2025 Zenauth Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
 syntax = "proto3";
@@ -39,11 +39,11 @@ message DecisionLogEntry {
   google.protobuf.Timestamp timestamp = 2;
   Peer peer = 3;
   // Deprecated. Use method.check_resources.inputs instead.
-  repeated cerbos.engine.v1.CheckInput inputs = 4;
+  repeated cerbos.engine.v1.CheckInput inputs = 4 [deprecated = true];
   // Deprecated. Use method.check_resources.outputs instead.
-  repeated cerbos.engine.v1.CheckOutput outputs = 5;
+  repeated cerbos.engine.v1.CheckOutput outputs = 5 [deprecated = true];
   // Deprecated. Use method.check_resources.error instead.
-  string error = 6;
+  string error = 6 [deprecated = true];
   oneof method {
     CheckResources check_resources = 7;
     PlanResources plan_resources = 8;
