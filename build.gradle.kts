@@ -43,12 +43,12 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.29.2"
+        artifact = "com.google.protobuf:protoc:4.29.3"
     }
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.69.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.69.1"
         }
     }
 
@@ -62,11 +62,11 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.29.2")
-    implementation("com.google.protobuf:protobuf-java-util:4.29.2")
-    implementation("io.grpc:grpc-protobuf:1.69.0")
-    implementation("io.grpc:grpc-stub:1.69.0")
-    implementation("io.grpc:grpc-netty-shaded:1.69.0")
+    implementation("com.google.protobuf:protobuf-java:4.29.3")
+    implementation("com.google.protobuf:protobuf-java-util:4.29.3")
+    implementation("io.grpc:grpc-protobuf:1.69.1")
+    implementation("io.grpc:grpc-stub:1.69.1")
+    implementation("io.grpc:grpc-netty-shaded:1.69.1")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.69.Final")
     implementation("org.testcontainers:testcontainers:1.20.4")
     implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.1.0")
