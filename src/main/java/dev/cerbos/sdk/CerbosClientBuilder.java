@@ -10,6 +10,9 @@ import io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactor
 
 import java.io.InputStream;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class CerbosClientBuilder {
   private final String target;
@@ -21,6 +24,7 @@ public class CerbosClientBuilder {
   private InputStream tlsKey;
   private String playgroundInstance;
   private long timeoutMillis = 1000;
+  private List<ClientInterceptor> clientInterceptors;
 
   public CerbosClientBuilder(String target) {
     this.target = target;
@@ -66,6 +70,11 @@ public class CerbosClientBuilder {
     return this;
   }
 
+  public CerbosClientBuilder withClientInterceptors(List<ClientInterceptor> clientInterceptors) {
+    this.clientInterceptors = clientInterceptors;
+    return this;
+  }
+
   private ManagedChannel buildChannel() throws InvalidClientConfigurationException {
     if (isEmptyString(target)) {
       throw new InvalidClientConfigurationException("Invalid target [" + target + "]");
@@ -101,6 +110,11 @@ public class CerbosClientBuilder {
 
     if (!isEmptyString(authority)) {
       channelBuilder.overrideAuthority(authority);
+    }
+
+    if (!Optional.ofNullable(clientInterceptors)
+            .orElse(Collections.emptyList()).isEmpty()) {
+      channelBuilder.intercept(clientInterceptors);
     }
 
     return channelBuilder.build();
