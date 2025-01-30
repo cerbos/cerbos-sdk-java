@@ -10,9 +10,7 @@ import io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactor
 
 import java.io.InputStream;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class CerbosClientBuilder {
   private final String target;
@@ -112,8 +110,7 @@ public class CerbosClientBuilder {
       channelBuilder.overrideAuthority(authority);
     }
 
-    if (!Optional.ofNullable(clientInterceptors)
-            .orElse(Collections.emptyList()).isEmpty()) {
+    if (clientInterceptors != null) {
       channelBuilder.intercept(clientInterceptors);
     }
 
