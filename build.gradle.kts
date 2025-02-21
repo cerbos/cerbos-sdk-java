@@ -13,7 +13,7 @@ plugins {
     id("com.google.protobuf") version "0.9.4"
     id("com.palantir.git-version") version "3.1.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id("com.gradleup.shadow") version "8.3.5"
+    id("com.gradleup.shadow") version "8.3.6"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -67,13 +67,13 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.70.0")
     implementation("io.grpc:grpc-stub:1.70.0")
     implementation("io.grpc:grpc-netty-shaded:1.70.0")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.69.Final")
-    implementation("org.testcontainers:testcontainers:1.20.4")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.70.Final")
+    implementation("org.testcontainers:testcontainers:1.20.5")
     implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.2.1")
     implementation("commons-io:commons-io:2.18.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
-    testImplementation("org.testcontainers:junit-jupiter:1.20.4")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.5")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("ch.qos.logback:logback-core:1.5.16")
     testImplementation("ch.qos.logback:logback-classic:1.5.16")
