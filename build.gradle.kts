@@ -72,7 +72,7 @@ dependencies {
     implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.2.1")
     implementation("commons-io:commons-io:2.18.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.0")
     testImplementation("org.testcontainers:junit-jupiter:1.20.5")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("ch.qos.logback:logback-core:1.5.16")
