@@ -76,10 +76,10 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.20.5")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("ch.qos.logback:logback-core:1.5.16")
-    testImplementation("ch.qos.logback:logback-classic:1.5.16")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.18.2")
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.2")
+    testImplementation("ch.qos.logback:logback-core:1.5.17")
+    testImplementation("ch.qos.logback:logback-classic:1.5.17")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.18.3")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.3")
 }
 
 tasks.getByName<Test>("test") {
