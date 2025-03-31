@@ -11,7 +11,7 @@ plugins {
     `maven-publish`
     signing
     id("com.google.protobuf") version "0.9.4"
-    id("com.palantir.git-version") version "3.1.0"
+    id("com.palantir.git-version") version "3.2.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("com.gradleup.shadow") version "8.3.6"
 }
@@ -43,7 +43,7 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.30.1"
+        artifact = "com.google.protobuf:protoc:4.30.2"
     }
 
     plugins {
@@ -62,8 +62,8 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.30.1")
-    implementation("com.google.protobuf:protobuf-java-util:4.30.1")
+    implementation("com.google.protobuf:protobuf-java:4.30.2")
+    implementation("com.google.protobuf:protobuf-java-util:4.30.2")
     implementation("io.grpc:grpc-protobuf:1.71.0")
     implementation("io.grpc:grpc-stub:1.71.0")
     implementation("io.grpc:grpc-netty-shaded:1.71.0")
