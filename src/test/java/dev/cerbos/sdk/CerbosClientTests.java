@@ -222,6 +222,43 @@ abstract class CerbosClientTests {
     }
 
     @Test
+    public void planResourcesMultipleActions() {
+        PlanResourcesResult have =
+                this.client.plan(
+                        Principal.newInstance("maggie", "manager")
+                                .withPolicyVersion("20210210")
+                                .withAttribute("department", stringValue("marketing"))
+                                .withAttribute("geography", stringValue("GB"))
+                                .withAttribute("managed_geographies", stringValue("GB"))
+                                .withAttribute("team", stringValue("design")),
+                        Resource.newInstance("leave_request").withPolicyVersion("20210210"),
+                        List.of("approve", "view:private"));
+
+        Assertions.assertIterableEquals(List.of("approve", "view:private"), have.getActions()); ;
+        Assertions.assertEquals("20210210", have.getPolicyVersion());
+        Assertions.assertEquals("leave_request", have.getResourceKind());
+        Assertions.assertFalse(have.hasValidationErrors());
+        Assertions.assertFalse(have.isAlwaysAllowed());
+        Assertions.assertFalse(have.isAlwaysDenied());
+        Assertions.assertTrue(have.isConditional());
+        Assertions.assertTrue(have.getCondition().isPresent());
+
+        Engine.PlanResourcesFilter.Expression.Operand cond = have.getCondition().get();
+
+        Engine.PlanResourcesFilter.Expression expr = cond.getExpression();
+        Assertions.assertNotNull(expr);
+        Assertions.assertEquals("and", expr.getOperator());
+
+        Engine.PlanResourcesFilter.Expression argExpr1 = expr.getOperands(0).getExpression();
+        Assertions.assertNotNull(argExpr1);
+        Assertions.assertEquals("and", argExpr1.getOperator());
+
+        Engine.PlanResourcesFilter.Expression argExpr2 = expr.getOperands(1).getExpression();
+        Assertions.assertNotNull(argExpr2);
+        Assertions.assertEquals("eq", argExpr2.getOperator());
+    }
+
+    @Test
     public void planResourcesValidation() {
         PlanResourcesResult have =
                 this.client.plan(

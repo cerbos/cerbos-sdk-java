@@ -17,6 +17,7 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.stub.MetadataUtils;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -170,6 +171,35 @@ public class CerbosBlockingClient {
             .setAuxData(ad)
             .setAction(action)
             .build();
+    try {
+      Response.PlanResourcesResponse response = withClient().planResources(request);
+      return new PlanResourcesResult(response);
+    } catch (StatusRuntimeException sre) {
+      throw new CerbosException(sre.getStatus(), sre.getCause());
+    }
+  }
+  /**
+   * Obtain a query plan for performing the given actions on the given resource kind.
+   * Requires Cerbos 0.43.0 and above.
+   *
+   * @param principal Principal performing the action on the resource kind.
+   * @param resource Resource kind.
+   * @param actions Actions to generate the plan for.
+   * @return Instance of {@link PlanResourcesResult}
+   * @throws CerbosException if the RPC fails.
+   */
+  public PlanResourcesResult plan(Principal principal, Resource resource, Iterable<String> actions) {
+    Request.AuxData ad =
+            this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance);
+
+    Request.PlanResourcesRequest request =
+            Request.PlanResourcesRequest.newBuilder()
+                    .setRequestId(RequestId.generate())
+                    .setPrincipal(principal.toPrincipal())
+                    .setResource(resource.toPlanResource())
+                    .setAuxData(ad)
+                    .addAllActions(actions)
+                    .build();
     try {
       Response.PlanResourcesResponse response = withClient().planResources(request);
       return new PlanResourcesResult(response);
