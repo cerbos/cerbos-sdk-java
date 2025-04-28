@@ -180,7 +180,7 @@ public class CerbosBlockingClient {
   }
   /**
    * Obtain a query plan for performing the given actions on the given resource kind.
-   * Requires Cerbos 0.43.0 and above.
+   * Requires Cerbos 0.44.0 and above.
    *
    * @param principal Principal performing the action on the resource kind.
    * @param resource Resource kind.
