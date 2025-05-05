@@ -67,7 +67,7 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.72.0")
     implementation("io.grpc:grpc-stub:1.72.0")
     implementation("io.grpc:grpc-netty-shaded:1.72.0")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.70.Final")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.71.Final")
     implementation("org.testcontainers:testcontainers:1.21.0")
     implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.2.1")
     implementation("commons-io:commons-io:2.19.0")
