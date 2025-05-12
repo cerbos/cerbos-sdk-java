@@ -9,10 +9,9 @@ plugins {
     java
     idea
     `maven-publish`
-    signing
     id("com.google.protobuf") version "0.9.5"
     id("com.palantir.git-version") version "3.2.0"
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    id("org.jreleaser") version "1.18.0"
     id("com.gradleup.shadow") version "8.3.6"
 }
 
@@ -99,16 +98,7 @@ tasks.build {
 publishing {
     repositories {
         maven {
-            val releasesURL = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            val snapshotsURL = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            name = "OSSRH"
-            url = uri(
-                if (version.toString().endsWith("SNAPSHOT")) snapshotsURL else releasesURL
-            )
-            credentials {
-                username = project.findProperty("ossrh.user") as String? ?: System.getenv("OSSRH_USER")
-                password = project.findProperty("ossrh.password") as String? ?: System.getenv("OSSRH_PASSWORD")
-            }
+            url = layout.buildDirectory.dir("staging-deploy").get().asFile.toURI()
         }
     }
     publications {
@@ -139,22 +129,48 @@ publishing {
     }
 }
 
-nexusPublishing {
-    repositories {
-        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            username.set(project.findProperty("ossrh.user") as String? ?: System.getenv("OSSRH_USER"))
-            password.set(project.findProperty("ossrh.password") as String? ?: System.getenv("OSSRH_PASSWORD"))
+configure<org.jreleaser.gradle.plugin.JReleaserExtension> {
+    gitRootSearch = true
+    project {
+        description.set("Java SDK for Cerbos: painless access control for cloud native applications")
+        authors.set(listOf("Cerbos Developers"))
+        license.set("Apache-2.0")
+        links {
+            homepage.set("https://github.com/cerbos/cerbos-sdk-java")
+            bugTracker.set("https://github.com/cerbos/cerbos-sdk-java/issues")
+        }
+        inceptionYear.set("2022")
+        snapshot {
+            fullChangelog.set(true)
+        }
+    }
+
+    signing {
+        active.set(org.jreleaser.model.Active.ALWAYS)
+        armored.set(true)
+    }
+
+    deploy {
+        maven {
+            mavenCentral {
+                create("sonatype") {
+                    active.set(org.jreleaser.model.Active.RELEASE)
+                    url.set("https://central.sonatype.com/api/v1/publisher")
+                    stagingRepository("target/staging-deploy")
+                }
+            }
+            nexus2 {
+                create("snapshot-deploy") {
+                    active.set(org.jreleaser.model.Active.SNAPSHOT)
+                    snapshotUrl.set("https://central.sonatype.com/repository/maven-snapshots")
+                    applyMavenCentralRules.set(true)
+                    snapshotSupported.set(true)
+                    closeRepository.set(true)
+                    releaseRepository.set(true)
+                    stagingRepository("target/staging-deploy")
+                }
+            }
         }
     }
 }
 
-signing {
-    val signingKeyId = project.findProperty("ossrh.signing.key_id") as String? ?: System.getenv("OSSRH_SIGNING_KEY_ID")
-    val signingKey = project.findProperty("ossrh.signing.key") as String? ?: System.getenv("OSSRH_SIGNING_KEY")
-    val signingPassword =
-        project.findProperty("ossrh.signing.password") as String? ?: System.getenv("OSSRH_SIGNING_PASSWORD")
-    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-    sign(publishing.publications["ossrh"])
-}
