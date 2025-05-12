@@ -135,6 +135,7 @@ configure<org.jreleaser.gradle.plugin.JReleaserExtension> {
         description.set("Java SDK for Cerbos: painless access control for cloud native applications")
         authors.set(listOf("Cerbos Developers"))
         license.set("Apache-2.0")
+        version.set(projectVersion)
         links {
             homepage.set("https://github.com/cerbos/cerbos-sdk-java")
             bugTracker.set("https://github.com/cerbos/cerbos-sdk-java/issues")
@@ -156,17 +157,7 @@ configure<org.jreleaser.gradle.plugin.JReleaserExtension> {
                 create("sonatype") {
                     active.set(org.jreleaser.model.Active.RELEASE)
                     url.set("https://central.sonatype.com/api/v1/publisher")
-                    stagingRepository("target/staging-deploy")
-                }
-            }
-            nexus2 {
-                create("snapshot-deploy") {
-                    active.set(org.jreleaser.model.Active.SNAPSHOT)
-                    snapshotUrl.set("https://central.sonatype.com/repository/maven-snapshots")
-                    applyMavenCentralRules.set(true)
                     snapshotSupported.set(true)
-                    closeRepository.set(true)
-                    releaseRepository.set(true)
                     stagingRepository("target/staging-deploy")
                 }
             }
