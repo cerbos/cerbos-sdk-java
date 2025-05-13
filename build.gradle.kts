@@ -155,10 +155,21 @@ configure<org.jreleaser.gradle.plugin.JReleaserExtension> {
         maven {
             mavenCentral {
                 create("sonatype") {
-                    active.set(org.jreleaser.model.Active.ALWAYS)
+                    active.set(org.jreleaser.model.Active.RELEASE)
                     url.set("https://central.sonatype.com/api/v1/publisher")
+                    stagingRepository("build/staging-deploy")
+                }
+            }
+            nexus2 {
+                create("snapshot-deploy") {
+                    active.set(org.jreleaser.model.Active.SNAPSHOT)
+                    url.set("https://central.sonatype.com/repository/maven-snapshots")
+                    snapshotUrl.set("https://central.sonatype.com/repository/maven-snapshots")
+                    applyMavenCentralRules.set(true)
                     snapshotSupported.set(true)
-                    stagingRepository("target/staging-deploy")
+                    closeRepository.set(true)
+                    releaseRepository.set(true)
+                    stagingRepository("build/staging-deploy")
                 }
             }
         }
