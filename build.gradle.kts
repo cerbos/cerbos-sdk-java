@@ -155,7 +155,7 @@ configure<org.jreleaser.gradle.plugin.JReleaserExtension> {
         maven {
             mavenCentral {
                 create("sonatype") {
-                    active.set(org.jreleaser.model.Active.RELEASE)
+                    active.set(org.jreleaser.model.Active.ALWAYS)
                     url.set("https://central.sonatype.com/api/v1/publisher")
                     snapshotSupported.set(true)
                     stagingRepository("target/staging-deploy")
