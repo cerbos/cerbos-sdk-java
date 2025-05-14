@@ -151,6 +151,12 @@ configure<org.jreleaser.gradle.plugin.JReleaserExtension> {
         armored.set(true)
     }
 
+    release {
+        github {
+            enabled.set(false)
+        }
+    }
+
     deploy {
         maven {
             mavenCentral {
