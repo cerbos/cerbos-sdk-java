@@ -10,7 +10,7 @@ plugins {
     idea
     `maven-publish`
     id("com.google.protobuf") version "0.9.5"
-    id("com.palantir.git-version") version "3.2.0"
+    id("com.palantir.git-version") version "3.3.0"
     id("org.jreleaser") version "1.18.0"
     id("com.gradleup.shadow") version "8.3.6"
 }
@@ -42,7 +42,7 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.30.2"
+        artifact = "com.google.protobuf:protoc:4.31.0"
     }
 
     plugins {
@@ -61,12 +61,12 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.30.2")
-    implementation("com.google.protobuf:protobuf-java-util:4.30.2")
+    implementation("com.google.protobuf:protobuf-java:4.31.0")
+    implementation("com.google.protobuf:protobuf-java-util:4.31.0")
     implementation("io.grpc:grpc-protobuf:1.72.0")
     implementation("io.grpc:grpc-stub:1.72.0")
     implementation("io.grpc:grpc-netty-shaded:1.72.0")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.71.Final")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.72.Final")
     implementation("org.testcontainers:testcontainers:1.21.0")
     implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.2.1")
     implementation("commons-io:commons-io:2.19.0")
