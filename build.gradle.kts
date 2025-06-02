@@ -42,12 +42,12 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.31.0"
+        artifact = "com.google.protobuf:protoc:4.31.1"
     }
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.72.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.73.0"
         }
     }
 
@@ -61,19 +61,19 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.31.0")
-    implementation("com.google.protobuf:protobuf-java-util:4.31.0")
-    implementation("io.grpc:grpc-protobuf:1.72.0")
-    implementation("io.grpc:grpc-stub:1.72.0")
-    implementation("io.grpc:grpc-netty-shaded:1.72.0")
+    implementation("com.google.protobuf:protobuf-java:4.31.1")
+    implementation("com.google.protobuf:protobuf-java-util:4.31.1")
+    implementation("io.grpc:grpc-protobuf:1.73.0")
+    implementation("io.grpc:grpc-stub:1.73.0")
+    implementation("io.grpc:grpc-netty-shaded:1.73.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.72.Final")
-    implementation("org.testcontainers:testcontainers:1.21.0")
+    implementation("org.testcontainers:testcontainers:1.21.1")
     implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.2.1")
     implementation("commons-io:commons-io:2.19.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.2")
-    testImplementation("org.testcontainers:junit-jupiter:1.21.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.0")
+    testImplementation("org.testcontainers:junit-jupiter:1.21.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("ch.qos.logback:logback-core:1.5.18")
     testImplementation("ch.qos.logback:logback-classic:1.5.18")
