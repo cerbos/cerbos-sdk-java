@@ -8,8 +8,8 @@ package dev.cerbos.sdk;
 import java.util.UUID;
 
 public final class RequestId {
-  public static String generate() {
-    UUID id = UUID.randomUUID();
-    return id.toString();
-  }
+    public static String generate() {
+        UUID id = UUID.randomUUID();
+        return id.toString();
+    }
 }

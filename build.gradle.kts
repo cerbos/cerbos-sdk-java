@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import com.google.protobuf.gradle.*
+import com.google.protobuf.gradle.id
 
 plugins {
     java
@@ -68,7 +68,7 @@ dependencies {
     implementation("io.grpc:grpc-netty-shaded:1.73.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.72.Final")
     implementation("org.testcontainers:testcontainers:1.21.2")
-    implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.2.1")
+    implementation("build.buf:protovalidate:0.8.0")
     implementation("commons-io:commons-io:2.19.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.2")
@@ -79,6 +79,11 @@ dependencies {
     testImplementation("ch.qos.logback:logback-classic:1.5.18")
     testImplementation("com.fasterxml.jackson.core:jackson-core:2.19.1")
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.1")
+}
+
+tasks.withType<JavaCompile> {
+    val compilerArgs = options.compilerArgs
+    compilerArgs.add("-Xlint:deprecation")
 }
 
 tasks.getByName<Test>("test") {

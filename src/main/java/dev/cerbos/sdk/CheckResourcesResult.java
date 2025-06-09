@@ -19,7 +19,7 @@ public class CheckResourcesResult {
     }
 
     public Stream<CheckResult> results() {
-        return this.resp.getResultsList().stream().map( entry -> new CheckResult(resp.getRequestId(), resp.getCerbosCallId(), entry));
+        return this.resp.getResultsList().stream().map(entry -> new CheckResult(resp.getRequestId(), resp.getCerbosCallId(), entry));
     }
 
     public Optional<CheckResult> find(String resourceID) {
