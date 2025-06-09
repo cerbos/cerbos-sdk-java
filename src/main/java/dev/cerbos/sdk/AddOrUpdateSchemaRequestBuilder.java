@@ -1,17 +1,22 @@
+/*
+ * Copyright 2021-2025 Zenauth Ltd.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package dev.cerbos.sdk;
 
 import com.google.protobuf.ByteString;
-import dev.cerbos.api.v1.policy.PolicyOuterClass;
 import dev.cerbos.api.v1.request.Request;
 import dev.cerbos.api.v1.schema.SchemaOuterClass;
 import dev.cerbos.api.v1.svc.CerbosAdminServiceGrpc;
-import io.envoyproxy.pgv.ReflectiveValidatorIndex;
-import io.envoyproxy.pgv.ValidationException;
-import io.envoyproxy.pgv.Validator;
+import dev.cerbos.sdk.validation.ValidationException;
+import dev.cerbos.sdk.validation.Validator;
 import io.grpc.StatusRuntimeException;
 import org.apache.commons.io.input.ReaderInputStream;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -19,7 +24,6 @@ import java.util.function.Supplier;
 public class AddOrUpdateSchemaRequestBuilder {
 
     private final Supplier<CerbosAdminServiceGrpc.CerbosAdminServiceBlockingStub> clientStub;
-    private static final Validator<SchemaOuterClass.Schema> VALIDATOR = new ReflectiveValidatorIndex().validatorFor(SchemaOuterClass.Schema.class);
     private final List<SchemaOuterClass.Schema> schemas = new ArrayList<>();
 
     AddOrUpdateSchemaRequestBuilder(Supplier<CerbosAdminServiceGrpc.CerbosAdminServiceBlockingStub> clientStub) {
@@ -28,27 +32,29 @@ public class AddOrUpdateSchemaRequestBuilder {
 
     /**
      * Add a schema to the batch.
-     * @param id Schema ID
+     *
+     * @param id         Schema ID
      * @param schemaJson Reader for schema JSON
      * @return this
-     * @throws IOException If the schema cannot be read
+     * @throws IOException         If the schema cannot be read
      * @throws ValidationException If the schema cannot be validated
      */
     public AddOrUpdateSchemaRequestBuilder with(String id, Reader schemaJson) throws IOException, ValidationException {
         SchemaOuterClass.Schema.Builder schemaBuilder = SchemaOuterClass.Schema.newBuilder();
-        SchemaOuterClass.Schema schema = schemaBuilder.setId(id).setDefinition(ByteString.readFrom(new ReaderInputStream(schemaJson))).build();
+        SchemaOuterClass.Schema schema = schemaBuilder.setId(id).setDefinition(ByteString.readFrom(ReaderInputStream.builder().setReader(schemaJson).get())).build();
 
-        VALIDATOR.assertValid(schema);
+        Validator.validate(schema);
         schemas.add(schema);
         return this;
     }
 
     /**
      * Add a schema to the batch.
-     * @param id Schema ID
+     *
+     * @param id         Schema ID
      * @param schemaJson String containing the schema JSON
      * @return this
-     * @throws IOException If the schema cannot be read
+     * @throws IOException         If the schema cannot be read
      * @throws ValidationException If the schema cannot be validated
      */
     public AddOrUpdateSchemaRequestBuilder with(String id, String schemaJson) throws IOException, ValidationException {
@@ -57,13 +63,14 @@ public class AddOrUpdateSchemaRequestBuilder {
 
     /**
      * Add a list of schemas to the batch.
+     *
      * @param schemaList list of {@link dev.cerbos.api.v1.schema.SchemaOuterClass.Schema}
      * @return this
      * @throws ValidationException if any of the schemas is invalid
      */
     public AddOrUpdateSchemaRequestBuilder with(Iterable<SchemaOuterClass.Schema> schemaList) throws ValidationException {
-        for (SchemaOuterClass.Schema s: schemaList) {
-            VALIDATOR.assertValid(s);
+        for (SchemaOuterClass.Schema s : schemaList) {
+            Validator.validate(s);
             schemas.add(s);
         }
 
@@ -72,6 +79,7 @@ public class AddOrUpdateSchemaRequestBuilder {
 
     /**
      * Execute the addOrUpdate call
+     *
      * @throws CerbosException is the call fails
      */
     public void addOrUpdate() {
@@ -93,7 +101,7 @@ public class AddOrUpdateSchemaRequestBuilder {
             batchSize++;
         }
 
-        if(batchSize > 0) {
+        if (batchSize > 0) {
             try {
                 clientStub.get().addOrUpdateSchema(batch.build());
             } catch (StatusRuntimeException sre) {

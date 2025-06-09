@@ -1,15 +1,19 @@
+/*
+ * Copyright 2021-2025 Zenauth Ltd.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package dev.cerbos.sdk;
+
 
 import com.google.protobuf.util.JsonFormat;
 import dev.cerbos.api.v1.policy.PolicyOuterClass;
 import dev.cerbos.api.v1.request.Request;
 import dev.cerbos.api.v1.svc.CerbosAdminServiceGrpc;
-import io.envoyproxy.pgv.ReflectiveValidatorIndex;
-import io.envoyproxy.pgv.ValidationException;
-import io.envoyproxy.pgv.Validator;
+import dev.cerbos.sdk.validation.ValidationException;
+import dev.cerbos.sdk.validation.Validator;
 import io.grpc.StatusRuntimeException;
 
-import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -19,9 +23,6 @@ import java.util.function.Supplier;
 public class AddOrUpdatePolicyRequestBuilder {
 
     private final Supplier<CerbosAdminServiceGrpc.CerbosAdminServiceBlockingStub> clientStub;
-
-    private static final Validator<PolicyOuterClass.Policy> VALIDATOR = new ReflectiveValidatorIndex().validatorFor(PolicyOuterClass.Policy.class);
-
     private final List<PolicyOuterClass.Policy> policies = new ArrayList<>();
 
     AddOrUpdatePolicyRequestBuilder(Supplier<CerbosAdminServiceGrpc.CerbosAdminServiceBlockingStub> clientStub) {
@@ -57,7 +58,7 @@ public class AddOrUpdatePolicyRequestBuilder {
 
     private void addPolicy(PolicyOuterClass.Policy.Builder builder) throws ValidationException {
         PolicyOuterClass.Policy policy = builder.build();
-        VALIDATOR.assertValid(policy);
+        Validator.validate(policy);
         policies.add(policy);
     }
 
@@ -70,7 +71,7 @@ public class AddOrUpdatePolicyRequestBuilder {
      */
     public AddOrUpdatePolicyRequestBuilder with(Iterable<PolicyOuterClass.Policy> policyList) throws ValidationException {
         for (PolicyOuterClass.Policy p : policyList) {
-            VALIDATOR.assertValid(p);
+            Validator.validate(p);
             policies.add(p);
         }
 
@@ -79,6 +80,7 @@ public class AddOrUpdatePolicyRequestBuilder {
 
     /**
      * Execute the addOrUpdate call.
+     *
      * @throws CerbosException if the call fails
      */
     public void addOrUpdate() {
@@ -100,7 +102,7 @@ public class AddOrUpdatePolicyRequestBuilder {
             batchSize++;
         }
 
-        if(batchSize > 0) {
+        if (batchSize > 0) {
             try {
                 clientStub.get().addOrUpdatePolicy(batch.build());
             } catch (StatusRuntimeException sre) {
