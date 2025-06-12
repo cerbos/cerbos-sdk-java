@@ -107,6 +107,24 @@ public class CerbosHubStoreClientTest {
     }
 
     @Nested
+    public class Errors {
+        @Test
+        public void badCredentials() {
+            CerbosHubStoreClient badClient = CerbosHubClientBuilder.fromCredentials("foobarbazqux", "client").build().storeClient();
+            Assertions.assertThrows(AuthenticationFailedException.class, () -> {
+                badClient.listFiles(Store.newListFilesRequest(storeID));
+            });
+        }
+
+        @Test
+        public void badStore() {
+            Assertions.assertThrows(StoreNotFoundException.class, () -> {
+                client.listFiles(Store.newListFilesRequest("foobarbazqux"));
+            });
+        }
+    }
+
+    @Nested
     public class ReplaceFiles {
         @Test
         public void success() {

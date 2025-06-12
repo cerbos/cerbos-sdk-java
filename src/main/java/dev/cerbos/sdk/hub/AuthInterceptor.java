@@ -34,10 +34,8 @@ public class AuthInterceptor implements ClientInterceptor {
                 String token = authClient.authenticate();
                 headers.put(authHeaderKey, token);
                 super.start(responseListener, headers);
-            } catch (TooManyRequestsException e) {
-                cancel("Too many requests", e);
-            } catch (InvalidCredentialsException e) {
-                cancel("Invalid credentials", e);
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
             }
         }
     }
