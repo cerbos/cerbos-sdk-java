@@ -11,6 +11,7 @@ import com.google.protobuf.Message;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 import dev.cerbos.sdk.validation.ValidationException;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.grpc.protobuf.StatusProto;
 
 import java.util.Optional;
@@ -28,15 +29,25 @@ public abstract class StoreException extends Exception {
     }
 
     public static StoreException from(Throwable cause) {
+        if ((cause instanceof InvalidCredentialsException)) {
+            return new AuthenticationFailedException(cause);
+        } else if (cause.getCause() instanceof InvalidCredentialsException) {
+            // Interceptor exceptions are wrapped in StatusRUntimeExceptions so we need to unwrap the cause.
+            return new AuthenticationFailedException(cause.getCause());
+        }
+
+        if (cause instanceof CallNotPermittedException) {
+            return new TooManyRequestsException(cause);
+        }
+
         if (cause instanceof ValidationException) {
             return new InvalidRequestException(cause);
         }
 
-        if (cause instanceof InvalidCredentialsException) {
-            return new AuthenticationFailedException(cause);
-        }
-
         Status status = StatusProto.fromThrowable(cause);
+        if (status == null) {
+            return new UnknownException(cause);
+        }
         switch (status.getCode()) {
             case Code.PERMISSION_DENIED_VALUE:
                 return new PermissionDeniedException(cause);
@@ -98,6 +109,7 @@ public abstract class StoreException extends Exception {
         OPERATION_DISCARDED,
         PERMISSION_DENIED,
         STORE_NOT_FOUND,
+        TOO_MANY_REQUESTS,
         UNKNOWN,
         VALIDATION_FAILURE
     }

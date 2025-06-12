@@ -5,5 +5,8 @@
 
 package dev.cerbos.sdk.hub.exceptions;
 
-public final class TooManyRequestsException extends Exception {
+public final class TooManyRequestsException extends StoreException {
+    public TooManyRequestsException(Throwable cause) {
+        super(Reason.TOO_MANY_REQUESTS, cause);
+    }
 }

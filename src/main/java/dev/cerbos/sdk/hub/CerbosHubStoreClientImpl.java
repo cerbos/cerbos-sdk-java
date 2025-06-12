@@ -27,9 +27,11 @@ public class CerbosHubStoreClientImpl implements CerbosHubStoreClient {
     @Override
     public Store.ReplaceFilesResponse replaceFiles(Store.ReplaceFilesRequest request) throws StoreException {
         try {
-            dev.cerbos.api.cloud.v1.store.Store.ReplaceFilesRequest req = request.build();
-            dev.cerbos.api.cloud.v1.store.Store.ReplaceFilesResponse resp = withStub().replaceFiles(req);
-            return new Store.ReplaceFilesResponse(resp);
+            return CircuitBreaker.INSTANCE.execute(() -> {
+                dev.cerbos.api.cloud.v1.store.Store.ReplaceFilesRequest req = request.build();
+                dev.cerbos.api.cloud.v1.store.Store.ReplaceFilesResponse resp = withStub().replaceFiles(req);
+                return new Store.ReplaceFilesResponse(resp);
+            });
         } catch (Throwable t) {
             throw StoreException.from(t);
         }
@@ -50,9 +52,11 @@ public class CerbosHubStoreClientImpl implements CerbosHubStoreClient {
     @Override
     public Store.ModifyFilesResponse modifyFiles(Store.ModifyFilesRequest request) throws StoreException {
         try {
-            dev.cerbos.api.cloud.v1.store.Store.ModifyFilesRequest req = request.build();
-            dev.cerbos.api.cloud.v1.store.Store.ModifyFilesResponse resp = withStub().withCompression("gzip").modifyFiles(req);
-            return new Store.ModifyFilesResponse(resp);
+            return CircuitBreaker.INSTANCE.execute(() -> {
+                dev.cerbos.api.cloud.v1.store.Store.ModifyFilesRequest req = request.build();
+                dev.cerbos.api.cloud.v1.store.Store.ModifyFilesResponse resp = withStub().withCompression("gzip").modifyFiles(req);
+                return new Store.ModifyFilesResponse(resp);
+            });
         } catch (Throwable t) {
             throw StoreException.from(t);
         }
@@ -73,9 +77,11 @@ public class CerbosHubStoreClientImpl implements CerbosHubStoreClient {
     @Override
     public Store.ListFilesResponse listFiles(Store.ListFilesRequest request) throws StoreException {
         try {
-            dev.cerbos.api.cloud.v1.store.Store.ListFilesRequest req = request.build();
-            dev.cerbos.api.cloud.v1.store.Store.ListFilesResponse resp = withStub().listFiles(req);
-            return new Store.ListFilesResponse(resp);
+            return CircuitBreaker.INSTANCE.execute(() -> {
+                dev.cerbos.api.cloud.v1.store.Store.ListFilesRequest req = request.build();
+                dev.cerbos.api.cloud.v1.store.Store.ListFilesResponse resp = withStub().listFiles(req);
+                return new Store.ListFilesResponse(resp);
+            });
         } catch (Throwable t) {
             throw StoreException.from(t);
         }
@@ -84,9 +90,11 @@ public class CerbosHubStoreClientImpl implements CerbosHubStoreClient {
     @Override
     public Store.GetFilesResponse getFiles(Store.GetFilesRequest request) throws StoreException {
         try {
-            dev.cerbos.api.cloud.v1.store.Store.GetFilesRequest req = request.build();
-            dev.cerbos.api.cloud.v1.store.Store.GetFilesResponse resp = withStub().getFiles(req);
-            return new Store.GetFilesResponse(resp);
+            return CircuitBreaker.INSTANCE.execute(() -> {
+                dev.cerbos.api.cloud.v1.store.Store.GetFilesRequest req = request.build();
+                dev.cerbos.api.cloud.v1.store.Store.GetFilesResponse resp = withStub().getFiles(req);
+                return new Store.GetFilesResponse(resp);
+            });
         } catch (Throwable t) {
             throw StoreException.from(t);
         }

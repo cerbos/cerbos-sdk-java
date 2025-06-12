@@ -5,16 +5,20 @@
 
 package dev.cerbos.sdk.hub;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import io.grpc.*;
 
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 public class CerbosHubClientBuilder {
     private final String target;
     private final String clientID;
     private final String clientSecret;
-    private final boolean enableRetries = false;
     private long timeoutMillis = 5000;
     private List<ClientInterceptor> clientInterceptors;
 
@@ -71,6 +75,12 @@ public class CerbosHubClientBuilder {
             channelBuilder.intercept(clientInterceptors);
         }
 
+        try {
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            Map<String, ?> serviceConfig = new Gson().fromJson(new JsonReader(new InputStreamReader(loader.getResourceAsStream("service_config.json"), StandardCharsets.UTF_8)), Map.class);
+            channelBuilder.defaultServiceConfig(serviceConfig);
+        } catch (Exception ignored) {
+        }
 
         return channelBuilder.build();
     }

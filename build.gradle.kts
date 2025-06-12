@@ -70,6 +70,8 @@ dependencies {
     implementation("org.testcontainers:testcontainers:1.21.2")
     implementation("build.buf:protovalidate:0.8.0")
     implementation("commons-io:commons-io:2.19.0")
+    implementation("com.google.code.gson:gson:2.13.1")
+    implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.3.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.2")
     testImplementation("org.testcontainers:junit-jupiter:1.21.2")
