@@ -14,50 +14,50 @@ import java.util.List;
 import java.util.Map;
 
 public class ResourceAction {
-  private final Engine.Resource.Builder resource;
-  private final List<String> actions = new ArrayList<>();
+    private final Engine.Resource.Builder resource;
+    private final List<String> actions = new ArrayList<>();
 
-  private ResourceAction(String kind, String id) {
-    this.resource = Engine.Resource.newBuilder().setKind(kind).setId(id);
-  }
+    private ResourceAction(String kind, String id) {
+        this.resource = Engine.Resource.newBuilder().setKind(kind).setId(id);
+    }
 
-  public static ResourceAction newInstance(String kind) {
-    return new ResourceAction(kind, "_NEW_");
-  }
+    public static ResourceAction newInstance(String kind) {
+        return new ResourceAction(kind, "_NEW_");
+    }
 
-  public static ResourceAction newInstance(String kind, String id) {
-    return new ResourceAction(kind, id);
-  }
+    public static ResourceAction newInstance(String kind, String id) {
+        return new ResourceAction(kind, id);
+    }
 
-  public ResourceAction withPolicyVersion(String version) {
-    this.resource.setPolicyVersion(version);
-    return this;
-  }
+    public ResourceAction withPolicyVersion(String version) {
+        this.resource.setPolicyVersion(version);
+        return this;
+    }
 
-  public ResourceAction withAttribute(String key, AttributeValue value) {
-    this.resource.putAttr(key, value.toValue());
-    return this;
-  }
+    public ResourceAction withAttribute(String key, AttributeValue value) {
+        this.resource.putAttr(key, value.toValue());
+        return this;
+    }
 
-  public ResourceAction withScope(String scope) {
-    this.resource.setScope(scope);
-    return this;
-  }
+    public ResourceAction withScope(String scope) {
+        this.resource.setScope(scope);
+        return this;
+    }
 
-  public ResourceAction withAttributes(Map<String, AttributeValue> attributes) {
-    attributes.forEach(this::withAttribute);
-    return this;
-  }
+    public ResourceAction withAttributes(Map<String, AttributeValue> attributes) {
+        attributes.forEach(this::withAttribute);
+        return this;
+    }
 
-  public ResourceAction withActions(String... actions) {
-    this.actions.addAll(Arrays.asList(actions));
-    return this;
-  }
+    public ResourceAction withActions(String... actions) {
+        this.actions.addAll(Arrays.asList(actions));
+        return this;
+    }
 
-  public Request.CheckResourcesRequest.ResourceEntry toResourceEntry() {
-    return Request.CheckResourcesRequest.ResourceEntry.newBuilder()
-        .setResource(resource.build())
-        .addAllActions(actions)
-        .build();
-  }
+    public Request.CheckResourcesRequest.ResourceEntry toResourceEntry() {
+        return Request.CheckResourcesRequest.ResourceEntry.newBuilder()
+                .setResource(resource.build())
+                .addAllActions(actions)
+                .build();
+    }
 }

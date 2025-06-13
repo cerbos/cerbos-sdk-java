@@ -13,148 +13,148 @@ import java.time.Duration;
 import java.util.List;
 
 public class CerbosClientBuilder {
-  private final String target;
-  private boolean plaintext;
-  private boolean insecure;
-  private String authority;
-  private InputStream caCertificate;
-  private InputStream tlsCertificate;
-  private InputStream tlsKey;
-  private String playgroundInstance;
-  private long timeoutMillis = 1000;
-  private List<ClientInterceptor> clientInterceptors;
+    private final String target;
+    private boolean plaintext;
+    private boolean insecure;
+    private String authority;
+    private InputStream caCertificate;
+    private InputStream tlsCertificate;
+    private InputStream tlsKey;
+    private String playgroundInstance;
+    private long timeoutMillis = 1000;
+    private List<ClientInterceptor> clientInterceptors;
 
-  public CerbosClientBuilder(String target) {
-    this.target = target;
-  }
-
-  public CerbosClientBuilder withPlaintext() {
-    this.plaintext = true;
-    return this;
-  }
-
-  public CerbosClientBuilder withInsecure() {
-    this.insecure = true;
-    return this;
-  }
-
-  public CerbosClientBuilder withAuthority(String authority) {
-    this.authority = authority;
-    return this;
-  }
-
-  public CerbosClientBuilder withCaCertificate(InputStream caCertificate) {
-    this.caCertificate = caCertificate;
-    return this;
-  }
-
-  public CerbosClientBuilder withTlsCertificate(InputStream tlsCertificate) {
-    this.tlsCertificate = tlsCertificate;
-    return this;
-  }
-
-  public CerbosClientBuilder withTlsKey(InputStream tlsKey) {
-    this.tlsKey = tlsKey;
-    return this;
-  }
-
-  public CerbosClientBuilder withTimeout(Duration timeout) {
-    this.timeoutMillis = timeout.toMillis();
-    return this;
-  }
-
-  public CerbosClientBuilder withPlaygroundInstance(String playgroundInstance) {
-    this.playgroundInstance = playgroundInstance;
-    return this;
-  }
-
-  public CerbosClientBuilder withClientInterceptors(List<ClientInterceptor> clientInterceptors) {
-    this.clientInterceptors = clientInterceptors;
-    return this;
-  }
-
-  private ManagedChannel buildChannel() throws InvalidClientConfigurationException {
-    if (isEmptyString(target)) {
-      throw new InvalidClientConfigurationException("Invalid target [" + target + "]");
+    public CerbosClientBuilder(String target) {
+        this.target = target;
     }
 
-    ManagedChannelBuilder<?> channelBuilder = null;
-    if (plaintext) {
-      channelBuilder = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create());
-    } else {
-      TlsChannelCredentials.Builder tlsCredentials = TlsChannelCredentials.newBuilder();
-      if (insecure) {
-        tlsCredentials.trustManager(InsecureTrustManagerFactory.INSTANCE.getTrustManagers());
-      }
+    private static boolean isEmptyString(String str) {
+        return str == null || str.isBlank();
+    }
 
-      if (caCertificate != null) {
-        try {
-          tlsCredentials.trustManager(caCertificate);
-        } catch (Exception e) {
-          throw new InvalidClientConfigurationException("Failed to set CA trust root", e);
+    public CerbosClientBuilder withPlaintext() {
+        this.plaintext = true;
+        return this;
+    }
+
+    public CerbosClientBuilder withInsecure() {
+        this.insecure = true;
+        return this;
+    }
+
+    public CerbosClientBuilder withAuthority(String authority) {
+        this.authority = authority;
+        return this;
+    }
+
+    public CerbosClientBuilder withCaCertificate(InputStream caCertificate) {
+        this.caCertificate = caCertificate;
+        return this;
+    }
+
+    public CerbosClientBuilder withTlsCertificate(InputStream tlsCertificate) {
+        this.tlsCertificate = tlsCertificate;
+        return this;
+    }
+
+    public CerbosClientBuilder withTlsKey(InputStream tlsKey) {
+        this.tlsKey = tlsKey;
+        return this;
+    }
+
+    public CerbosClientBuilder withTimeout(Duration timeout) {
+        this.timeoutMillis = timeout.toMillis();
+        return this;
+    }
+
+    public CerbosClientBuilder withPlaygroundInstance(String playgroundInstance) {
+        this.playgroundInstance = playgroundInstance;
+        return this;
+    }
+
+    public CerbosClientBuilder withClientInterceptors(List<ClientInterceptor> clientInterceptors) {
+        this.clientInterceptors = clientInterceptors;
+        return this;
+    }
+
+    private ManagedChannel buildChannel() throws InvalidClientConfigurationException {
+        if (isEmptyString(target)) {
+            throw new InvalidClientConfigurationException("Invalid target [" + target + "]");
         }
-      }
 
-      if (tlsCertificate != null && tlsKey != null) {
-        try {
-          tlsCredentials.keyManager(tlsCertificate, tlsKey);
-        } catch (Exception e) {
-          throw new InvalidClientConfigurationException("Failed to set TLS credentials", e);
+        ManagedChannelBuilder<?> channelBuilder = null;
+        if (plaintext) {
+            channelBuilder = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create());
+        } else {
+            TlsChannelCredentials.Builder tlsCredentials = TlsChannelCredentials.newBuilder();
+            if (insecure) {
+                tlsCredentials.trustManager(InsecureTrustManagerFactory.INSTANCE.getTrustManagers());
+            }
+
+            if (caCertificate != null) {
+                try {
+                    tlsCredentials.trustManager(caCertificate);
+                } catch (Exception e) {
+                    throw new InvalidClientConfigurationException("Failed to set CA trust root", e);
+                }
+            }
+
+            if (tlsCertificate != null && tlsKey != null) {
+                try {
+                    tlsCredentials.keyManager(tlsCertificate, tlsKey);
+                } catch (Exception e) {
+                    throw new InvalidClientConfigurationException("Failed to set TLS credentials", e);
+                }
+            }
+
+            channelBuilder = Grpc.newChannelBuilder(target, tlsCredentials.build());
         }
-      }
 
-        channelBuilder = Grpc.newChannelBuilder(target, tlsCredentials.build());
+        if (!isEmptyString(authority)) {
+            channelBuilder.overrideAuthority(authority);
+        }
+
+        if (clientInterceptors != null) {
+            channelBuilder.intercept(clientInterceptors);
+        }
+
+        return channelBuilder.build();
     }
 
-    if (!isEmptyString(authority)) {
-      channelBuilder.overrideAuthority(authority);
+    public CerbosBlockingClient buildBlockingClient() throws InvalidClientConfigurationException {
+        PlaygroundInstanceCredentials pgCreds = null;
+        if (!isEmptyString(playgroundInstance)) {
+            pgCreds = new PlaygroundInstanceCredentials(playgroundInstance);
+        }
+        return new CerbosBlockingClient(buildChannel(), timeoutMillis, pgCreds);
     }
 
-    if (clientInterceptors != null) {
-      channelBuilder.intercept(clientInterceptors);
+    public CerbosBlockingAdminClient buildBlockingAdminClient() throws InvalidClientConfigurationException {
+        String username = System.getenv("CERBOS_USERNAME");
+        String password = System.getenv("CERBOS_PASSWORD");
+        return buildBlockingAdminClient(username, password);
     }
 
-    return channelBuilder.build();
-  }
+    public CerbosBlockingAdminClient buildBlockingAdminClient(String username, String password) throws InvalidClientConfigurationException {
+        if (username == null || password == null) {
+            throw new InvalidClientConfigurationException("username and password must not be null");
+        }
 
-  public CerbosBlockingClient buildBlockingClient() throws InvalidClientConfigurationException {
-    PlaygroundInstanceCredentials pgCreds = null;
-    if (!isEmptyString(playgroundInstance)) {
-      pgCreds = new PlaygroundInstanceCredentials(playgroundInstance);
-    }
-    return new CerbosBlockingClient(buildChannel(), timeoutMillis, pgCreds);
-  }
-
-  public CerbosBlockingAdminClient buildBlockingAdminClient() throws InvalidClientConfigurationException {
-    String username = System.getenv("CERBOS_USERNAME");
-    String password = System.getenv("CERBOS_PASSWORD");
-    return buildBlockingAdminClient(username, password);
-  }
-
-  public CerbosBlockingAdminClient buildBlockingAdminClient(String username, String password) throws InvalidClientConfigurationException {
-    if (username == null ||password == null) {
-      throw new InvalidClientConfigurationException("username and password must not be null");
+        AdminApiCredentials adminCreds = new AdminApiCredentials(username, password);
+        return new CerbosBlockingAdminClient(buildChannel(), timeoutMillis, adminCreds);
     }
 
-    AdminApiCredentials adminCreds = new AdminApiCredentials(username, password);
-    return new CerbosBlockingAdminClient(buildChannel(), timeoutMillis, adminCreds);
-  }
+    public static class InvalidClientConfigurationException extends Exception {
+        public InvalidClientConfigurationException(String message) {
+            super(message);
+        }
 
-  private static boolean isEmptyString(String str) {
-    return str == null || str.strip().isEmpty();
-  }
+        public InvalidClientConfigurationException(String message, Throwable cause) {
+            super(message, cause);
+        }
 
-  public static class InvalidClientConfigurationException extends Exception {
-    public InvalidClientConfigurationException(String message) {
-      super(message);
+        public InvalidClientConfigurationException(Throwable cause) {
+            super(cause);
+        }
     }
-
-    public InvalidClientConfigurationException(String message, Throwable cause) {
-      super(message, cause);
-    }
-
-    public InvalidClientConfigurationException(Throwable cause) {
-      super(cause);
-    }
-  }
 }

@@ -1,3 +1,8 @@
+/*
+ * Copyright 2021-2025 Zenauth Ltd.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package dev.cerbos.sdk;
 
 import com.google.protobuf.ListValue;
@@ -11,7 +16,6 @@ import dev.cerbos.sdk.builders.Principal;
 import dev.cerbos.sdk.builders.Resource;
 import dev.cerbos.sdk.builders.ResourceAction;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -234,7 +238,7 @@ abstract class CerbosClientTests {
                         Resource.newInstance("leave_request").withPolicyVersion("20210210"),
                         List.of("approve", "view:private"));
 
-        Assertions.assertIterableEquals(List.of("approve", "view:private"), have.getActions()); ;
+        Assertions.assertIterableEquals(List.of("approve", "view:private"), have.getActions());
         Assertions.assertEquals("20210210", have.getPolicyVersion());
         Assertions.assertEquals("leave_request", have.getResourceKind());
         Assertions.assertFalse(have.hasValidationErrors());

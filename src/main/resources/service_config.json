@@ -1,0 +1,38 @@
+{
+  "methodConfig": [
+    {
+      "name": [
+        {}
+      ],
+      "timeout": "5s",
+      "maxRequestMessageBytes": 1048576,
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "initialBackoff": "0.2s",
+        "maxBackoff": "5s",
+        "backoffMultiplier": 2,
+        "retryableStatusCodes": [
+          "UNAVAILABLE"
+        ]
+      }
+    },
+    {
+      "name": [
+        {
+          "service": "cerbos.cloud.store.v1.CerbosStoreService",
+          "method": "ReplaceFiles"
+        },
+        {
+          "service": "cerbos.cloud.store.v1.CerbosStoreService",
+          "method": "ModifyFiles"
+        }
+      ],
+      "timeout": "10s",
+      "maxRequestMessageBytes": 20971520
+    }
+  ],
+  "retryThrottling": {
+    "maxTokens": 10,
+    "tokenRatio": 0.5
+  }
+}
