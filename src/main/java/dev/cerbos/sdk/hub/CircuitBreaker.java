@@ -5,8 +5,13 @@
 
 package dev.cerbos.sdk.hub;
 
+import com.google.protobuf.Any;
+import com.google.rpc.Code;
+import com.google.rpc.Status;
+import dev.cerbos.sdk.hub.exceptions.*;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.core.functions.CheckedSupplier;
+import io.grpc.protobuf.StatusProto;
 
 import java.time.Duration;
 
@@ -23,6 +28,17 @@ enum CircuitBreaker {
                 .minimumNumberOfCalls(10)
                 .slidingWindowSize(50)
                 .permittedNumberOfCallsInHalfOpenState(2)
+                .ignoreException((Throwable t) -> {
+                    Status status = StatusProto.fromThrowable(t);
+                    if (status == null) {
+                        return false;
+                    }
+                    return switch (status.getCode()) {
+                        case Code.ABORTED_VALUE, Code.CANCELLED_VALUE, Code.DEADLINE_EXCEEDED_VALUE,
+                             Code.FAILED_PRECONDITION_VALUE -> true;
+                        default -> false;
+                    };
+                })
                 .build();
 
         circuitBreaker = io.github.resilience4j.circuitbreaker.CircuitBreaker.of("cerbos-hub-global", conf);
