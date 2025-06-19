@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Zenauth Ltd.
+ * Copyright 2021-2025 Zenauth Ltd.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -9,10 +9,8 @@ import dev.cerbos.api.v1.engine.Engine;
 import dev.cerbos.api.v1.response.Response;
 import dev.cerbos.api.v1.schema.SchemaOuterClass;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class PlanResourcesResult {
     private final Response.PlanResourcesResponse resp;
@@ -21,12 +19,13 @@ public class PlanResourcesResult {
         this.resp = resp;
     }
 
+    @SuppressWarnings("deprecation")
     public String getAction() {
         return this.resp.getAction();
     }
 
     public Iterable<String> getActions() {
-        return this.resp.getActionsList().stream().collect(Collectors.toUnmodifiableList());
+        return this.resp.getActionsList().stream().toList();
     }
 
     public String getResourceKind() {
