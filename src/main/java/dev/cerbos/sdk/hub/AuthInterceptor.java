@@ -6,8 +6,6 @@
 package dev.cerbos.sdk.hub;
 
 
-import dev.cerbos.sdk.hub.exceptions.InvalidCredentialsException;
-import dev.cerbos.sdk.hub.exceptions.TooManyRequestsException;
 import io.grpc.*;
 
 public class AuthInterceptor implements ClientInterceptor {

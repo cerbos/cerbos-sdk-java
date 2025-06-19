@@ -34,12 +34,25 @@ public final class Store {
      *
      * @param storeID ID of the store
      * @param message Description of this change
-     * @param zipData Zipped set of files to upload
+     * @param zipData Zipped set of files to upload. Use {@link Utils#createZip(Path)} to obtain a zip stream from a local directory.
      * @return {@link ReplaceFilesRequest}
      * @throws IOException
      */
     public static ReplaceFilesRequest newReplaceFilesRequest(String storeID, String message, InputStream zipData) throws IOException {
         return new ReplaceFilesRequest(storeID, message, zipData);
+    }
+
+    /**
+     * Create a new ReplaceFiles request to overwrite the store with a new set of files.
+     *
+     * @param storeID ID of the store
+     * @param message Description of this change
+     * @param files   Set of files to upload
+     * @return {@link ReplaceFilesRequest}
+     * @throws IOException
+     */
+    public static ReplaceFilesRequest newReplaceFilesRequest(String storeID, String message, Iterable<dev.cerbos.api.cloud.v1.store.Store.File> files) throws IOException {
+        return new ReplaceFilesRequest(storeID, message, files);
     }
 
     /**
@@ -157,6 +170,15 @@ public final class Store {
                     .build();
             builder = dev.cerbos.api.cloud.v1.store.Store.ReplaceFilesRequest.newBuilder();
             builder.setStoreId(storeID).setZippedContents(zipBytes).setChangeDetails(changeDetails);
+        }
+
+        private ReplaceFilesRequest(String storeID, String message, Iterable<dev.cerbos.api.cloud.v1.store.Store.File> files) throws IOException {
+            dev.cerbos.api.cloud.v1.store.Store.ChangeDetails changeDetails = dev.cerbos.api.cloud.v1.store.Store.ChangeDetails.newBuilder()
+                    .setDescription(message)
+                    .setUploader(dev.cerbos.api.cloud.v1.store.Store.ChangeDetails.Uploader.newBuilder().setName("cerbos-sdk-java").build())
+                    .build();
+            builder = dev.cerbos.api.cloud.v1.store.Store.ReplaceFilesRequest.newBuilder();
+            builder.setStoreId(storeID).setFiles(dev.cerbos.api.cloud.v1.store.Store.ReplaceFilesRequest.Files.newBuilder().addAllFiles(files).build()).setChangeDetails(changeDetails);
         }
 
         dev.cerbos.api.cloud.v1.store.Store.ReplaceFilesRequest build() throws ValidationException {

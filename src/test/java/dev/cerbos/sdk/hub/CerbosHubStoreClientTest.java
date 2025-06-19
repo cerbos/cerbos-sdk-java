@@ -5,6 +5,7 @@
 
 package dev.cerbos.sdk.hub;
 
+import com.google.protobuf.ByteString;
 import dev.cerbos.sdk.hub.exceptions.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -158,7 +159,17 @@ public class CerbosHubStoreClientTest {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             Path dir = Path.of(loader.getResource("hub/replace_files/unusable").toURI());
             NoUsableFilesException thrown = Assertions.assertThrows(NoUsableFilesException.class, () -> {
-                client.replaceFiles(Store.newReplaceFilesRequest(storeID, "Reset store", Utils.createZip(dir)));
+                List<dev.cerbos.api.cloud.v1.store.Store.File> files = Files
+                        .walk(dir)
+                        .filter(Files::isRegularFile)
+                        .map(path -> {
+                            try {
+                                return dev.cerbos.api.cloud.v1.store.Store.File.newBuilder().setPath(dir.relativize(path).toString()).setContents(ByteString.readFrom(Files.newInputStream(path))).build();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }).toList();
+                client.replaceFiles(Store.newReplaceFilesRequest(storeID, "Reset store", files));
             });
             List<String> ignored = thrown.getIgnoredFiles().stream().sorted().toList();
             Assertions.assertIterableEquals(List.of(".hidden.yaml", "README.md"), ignored);
