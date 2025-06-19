@@ -12,8 +12,8 @@ TMP_PROTO_DIR="$(mktemp -d -t cerbos-XXXXX)"
 
 trap 'rm -rf "$TMP_PROTO_DIR"' EXIT
 
-buf export "$CERBOS_MODULE" --output="$TMP_PROTO_DIR"
 buf export "$CLOUD_API_MODULE" --output="$TMP_PROTO_DIR"
+buf export "$CERBOS_MODULE" --output="$TMP_PROTO_DIR"
 
 rm -rf src/main/proto
 mv "$TMP_PROTO_DIR" src/main/proto

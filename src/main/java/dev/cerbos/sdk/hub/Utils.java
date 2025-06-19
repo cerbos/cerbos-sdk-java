@@ -7,6 +7,7 @@ package dev.cerbos.sdk.hub;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Streams;
+import com.google.protobuf.ByteString;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -31,7 +32,7 @@ public final class Utils {
         try (ZipOutputStream zipStream = new ZipOutputStream(byteStream)) {
             File tmpFile = path.toFile();
             if (tmpFile.isDirectory()) {
-                for (File f : tmpFile.listFiles()) {
+                for (File f : tmpFile.listFiles(new ValidFileNameFilter())) {
                     addToZip(zipStream, "", f);
                 }
             } else {
@@ -53,11 +54,11 @@ public final class Utils {
             newPrefix = prefix + "/" + file.getName();
         }
 
-        if (file.isDirectory()) {
+        if (file.isDirectory() && !file.isHidden()) {
             zipStream.putNextEntry(new ZipEntry(newPrefix + "/"));
             zipStream.closeEntry();
 
-            for (File childFile : file.listFiles()) {
+            for (File childFile : file.listFiles(new ValidFileNameFilter())) {
                 addToZip(zipStream, newPrefix, childFile);
             }
         } else {
@@ -70,7 +71,7 @@ public final class Utils {
     }
 
     /**
-     * Create a batch of modify files requests to upload all the files contained in the given directory.
+     * Create a batch of modify files requests to upload all acceptable files (unhidden, YAML or JSON) contained in the given directory.
      *
      * @param storeID   ID of the store
      * @param message   Description of the change
@@ -82,7 +83,16 @@ public final class Utils {
         Iterator<Path> filesStream = Files.walk(directory)
                 .filter(path -> {
                     try {
-                        return Files.isRegularFile(path) && !Files.isHidden(path);
+                        if (Files.isRegularFile(path) && !Files.isHidden(path)) {
+
+                            if (!Files.isDirectory(path)) {
+                                return !(path.endsWith(".yaml") || path.endsWith(".yml") || path.endsWith(".json"));
+                            }
+
+                            return true;
+                        }
+
+                        return false;
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -101,5 +111,55 @@ public final class Utils {
 
             return req;
         });
+    }
+
+    /**
+     * Return an iterable of acceptable files that can be passed to the ReplaceFiles method.
+     *
+     * @param directory Directory to scan for files
+     * @return Iterator of File objects
+     * @throws IOException
+     */
+    public static Iterable<dev.cerbos.api.cloud.v1.store.Store.File> filesFromDirectory(Path directory) throws IOException {
+        return Files.walk(directory)
+                .filter(path -> {
+                    try {
+                        if (Files.isRegularFile(path) && !Files.isHidden(path)) {
+                            return path.endsWith(".yaml") || path.endsWith(".yml") || path.endsWith(".json");
+                        }
+
+                        return false;
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).map(path -> {
+                    try {
+                        return dev.cerbos.api.cloud.v1.store.Store.File
+                                .newBuilder()
+                                .setPath(directory.relativize(path).toString())
+                                .setContents(ByteString.readFrom(Files.newInputStream(path)))
+                                .build();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).filter(f -> !f.getContents().isEmpty())
+                .toList();
+    }
+
+    private static class ValidFileNameFilter implements FileFilter {
+
+        @Override
+        public boolean accept(File pathname) {
+            if (pathname.isHidden()) {
+                return false;
+            }
+
+            if (pathname.isFile()) {
+                String name = pathname.getName();
+                return (name.endsWith(".yaml") || name.endsWith(".yml") || name.endsWith(".json"));
+            }
+
+            return true;
+        }
     }
 }

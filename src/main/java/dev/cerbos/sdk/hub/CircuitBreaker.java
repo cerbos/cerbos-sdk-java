@@ -5,10 +5,8 @@
 
 package dev.cerbos.sdk.hub;
 
-import com.google.protobuf.Any;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
-import dev.cerbos.sdk.hub.exceptions.*;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.core.functions.CheckedSupplier;
 import io.grpc.protobuf.StatusProto;
@@ -22,11 +20,11 @@ enum CircuitBreaker {
 
     CircuitBreaker() {
         CircuitBreakerConfig conf = CircuitBreakerConfig.custom()
-                .failureRateThreshold(50)
-                .slowCallRateThreshold(75)
-                .slowCallDurationThreshold(Duration.ofSeconds(10))
-                .minimumNumberOfCalls(10)
-                .slidingWindowSize(50)
+                .waitDurationInOpenState(Duration.ofMinutes(1))
+                .failureRateThreshold(60)
+                .minimumNumberOfCalls(5)
+                .slidingWindowSize(10)
+                .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.TIME_BASED)
                 .permittedNumberOfCallsInHalfOpenState(2)
                 .ignoreException((Throwable t) -> {
                     Status status = StatusProto.fromThrowable(t);
