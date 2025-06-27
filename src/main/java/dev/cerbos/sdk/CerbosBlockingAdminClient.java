@@ -1,3 +1,8 @@
+/*
+ * Copyright 2021-2025 Zenauth Ltd.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package dev.cerbos.sdk;
 
 import dev.cerbos.api.v1.policy.PolicyOuterClass;
@@ -41,6 +46,7 @@ public class CerbosBlockingAdminClient {
 
     /**
      * Add header metadata to Cerbos requests
+     *
      * @param md {@link Metadata}
      * @return CerbosBlockingAdminClient configured to attach headers to each request.
      */
@@ -50,6 +56,7 @@ public class CerbosBlockingAdminClient {
 
     /**
      * Attach the given headers to the Cerbos request.
+     *
      * @param headers Map of key-value pairs
      * @return new CerbosBlockingAdminClient configured to attach the given headers to the requests.
      */

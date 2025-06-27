@@ -152,6 +152,45 @@ adminClient.addOrUpdatePolicy().with(new FileReader(fileObjectContainingPolicyJS
 
 See `CerbosBlockingAdminClientTest` test class for more examples of Admin API usage including how to convert YAML policies to the JSON format required by the  API.
 
+## Connecting to Cerbos Hub stores
+
+Log in to Cerbos Hub and generate a client credential for the store you wish to connect. Create two environment variables named `CERBOS_HUB_CLIENT_ID` and `CERBOS_HUB_CLIENT_SECRET` to hold the credentials.   
+
+```java
+CerbosHubStoreClient client = CerbosHubClientBuilder.fromEnv().build().storeClient();
+try {
+    Store.ReplaceFilesResponse resp = client.replaceFiles(Store.newReplaceFilesRequest(storeID, "Reset store", Utils.createZip("path/to/dir")));
+    System.out.println(resp.getNewStoreVersion());
+} catch (StoreException se) {
+    ...
+}
+```
+
+It's possible to obtain more information about errors by catching the specific exception class (e.g. `dev.cerbos.sdk.hub.exceptions.ValidationFailureException`) or by catching `dev.cerbos.sdk.hub.exceptions.StoreException`, calling `getReason()` to determine the reason for the exception and then casting the exception to the appropriate exception subclass.
+
+```java
+// Catching a specific exception
+try {
+    Store.ReplaceFilesResponse resp = client.replaceFiles(Store.newReplaceFilesRequest(storeID, "Reset store", Utils.createZip("path/to/dir")));
+    System.out.println(resp.getNewStoreVersion());
+        } catch (NoUsableFilesException nufe) {
+        nufe.getIgnoredFiles().stream().forEach(System.out::println);
+} catch (StoreException se) {
+        // Catch-all 
+}
+
+// Catching StoreException and casting
+try {
+    Store.ReplaceFilesResponse resp = client.replaceFiles(Store.newReplaceFilesRequest(storeID, "Reset store", Utils.createZip("path/to/dir")));
+    System.out.println(resp.getNewStoreVersion());
+        } catch (StoreException se) {
+        if (se.getReason() == StoreException.Reason.NO_USABLE_FILES) {
+NoUsableFilesException exception = (NoUsableFilesException) se;
+        exception.getIgnoredFiles().stream().forEach(System.out::println);
+    }
+}
+```
+
 ## Common issues
 
 `java.lang.IllegalArgumentException: cannot find a NameResolver for ...`:

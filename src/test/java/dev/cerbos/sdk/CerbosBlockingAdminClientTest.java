@@ -1,9 +1,15 @@
+/*
+ * Copyright 2021-2025 Zenauth Ltd.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package dev.cerbos.sdk;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import dev.cerbos.api.v1.policy.PolicyOuterClass;
 import dev.cerbos.api.v1.schema.SchemaOuterClass;
+import dev.cerbos.sdk.validation.ValidationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -107,6 +113,9 @@ class CerbosBlockingAdminClientTest extends CerbosClientTests {
             }
 
             requestBuilder.with(new FileReader(file));
+        } catch (ValidationException ve) {
+            ve.getViolations().stream().forEach(e -> System.out.printf("%s - %s\n", e.toProto().getField(), e.toProto().getMessage()));
+            throw new RuntimeException(ve);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
