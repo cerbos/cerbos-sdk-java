@@ -271,7 +271,7 @@ public class CerbosHubStoreClientTest {
     public class ListFiles {
         @Test
         public void fileFilterMatches() throws StoreException {
-            Store.ListFilesResponse resp = client.listFiles(Store.newListFilesRequest(storeID).setPathMustBeLike("export_"));
+            Store.ListFilesResponse resp = client.listFiles(Store.newListFilesRequest(storeID).setPathMustContain("export_"));
             List<String> want = List.of("export_constants/export_constants_01.yaml", "export_variables/export_variables_01.yaml");
             Assertions.assertIterableEquals(want, resp.getFilesList());
         }
