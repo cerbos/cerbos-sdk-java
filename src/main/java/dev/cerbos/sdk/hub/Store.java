@@ -261,15 +261,15 @@ public final class Store {
         }
 
         /**
-         * Sets the filter to match the given path pattern.
+         * Sets the filter to match paths that contain the given fragment.
          *
-         * @param pattern Pattern to match
+         * @param fragment Fragment to match
          * @return {@link ListFilesRequest}
          */
-        public ListFilesRequest setPathMustBeLike(String pattern) {
+        public ListFilesRequest setPathMustContain(String fragment) {
             builder.setFilter(
                     dev.cerbos.api.cloud.v1.store.Store.FileFilter.newBuilder()
-                            .setPath(dev.cerbos.api.cloud.v1.store.Store.StringMatch.newBuilder().setLike(pattern).build())
+                            .setPath(dev.cerbos.api.cloud.v1.store.Store.StringMatch.newBuilder().setContains(fragment).build())
                             .build()
             );
 
