@@ -10,7 +10,7 @@ plugins {
     idea
     `maven-publish`
     id("com.google.protobuf") version "0.9.5"
-    id("com.palantir.git-version") version "3.3.0"
+    id("com.palantir.git-version") version "4.0.0"
     id("org.jreleaser") version "1.18.0"
     id("com.gradleup.shadow") version "8.3.7"
 }
