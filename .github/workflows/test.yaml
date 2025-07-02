@@ -34,6 +34,15 @@ jobs:
           CERBOS_HUB_CLIENT_SECRET: "${{ secrets.CERBOS_HUB_CLIENT_SECRET }}"
           CERBOS_HUB_STORE_ID: "${{ secrets.CERBOS_HUB_STORE_ID }}"
 
+      - name: Store reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Reports for Java ${{ matrix.java }}"
+          path: |-
+            **/build/reports/
+            **/build/test-results/
+
   afterTestMatrix:
     runs-on: ubuntu-latest
     needs: testMatrix
