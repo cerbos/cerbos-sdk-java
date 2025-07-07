@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -91,7 +92,7 @@ public class CerbosHubStoreClientTest {
 
     @BeforeAll
     public static void initClient() {
-        client = CerbosHubClientBuilder.fromEnv().build().storeClient();
+        client = CerbosHubClientBuilder.fromEnv().withTimeout(Duration.ofSeconds(10)).build().storeClient();
         storeID = System.getenv("CERBOS_HUB_STORE_ID");
     }
 
