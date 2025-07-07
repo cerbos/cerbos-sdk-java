@@ -14,7 +14,7 @@ public interface CerbosHubStoreClient {
      *
      * @param request {@link dev.cerbos.sdk.hub.Store.ReplaceFilesRequest}
      * @return {@link dev.cerbos.sdk.hub.Store.ReplaceFilesResponse}
-     * @throws {@link StoreException}
+     * @throws StoreException on known errors. More details can be obtained by inspecting {@link StoreException#getReason()} and casting to the appropriate exception subclass.
      */
     Store.ReplaceFilesResponse replaceFiles(Store.ReplaceFilesRequest request) throws StoreException;
 
@@ -24,7 +24,7 @@ public interface CerbosHubStoreClient {
      *
      * @param request {@link dev.cerbos.sdk.hub.Store.ReplaceFilesRequest}
      * @return {@link dev.cerbos.sdk.hub.Store.ReplaceFilesResponse}
-     * @throws {@link StoreException}
+     * @throws StoreException on known errors. More details can be obtained by inspecting {@link StoreException#getReason()} and casting to the appropriate exception subclass.
      */
     Store.ReplaceFilesResponse replaceFilesLenient(Store.ReplaceFilesRequest request) throws StoreException;
 
@@ -33,7 +33,7 @@ public interface CerbosHubStoreClient {
      *
      * @param request {@link dev.cerbos.sdk.hub.Store.ModifyFilesRequest}
      * @return {@link dev.cerbos.sdk.hub.Store.ModifyFilesResponse}
-     * @throws {@link StoreException}
+     * @throws StoreException on known errors. More details can be obtained by inspecting {@link StoreException#getReason()} and casting to the appropriate exception subclass.
      */
     Store.ModifyFilesResponse modifyFiles(Store.ModifyFilesRequest request) throws StoreException;
 
@@ -43,7 +43,7 @@ public interface CerbosHubStoreClient {
      *
      * @param request {@link dev.cerbos.sdk.hub.Store.ModifyFilesRequest}
      * @return {@link dev.cerbos.sdk.hub.Store.ModifyFilesResponse}
-     * @throws {@link StoreException}
+     * @throws StoreException on known errors. More details can be obtained by inspecting {@link StoreException#getReason()} and casting to the appropriate exception subclass.
      */
     Store.ModifyFilesResponse modifyFilesLenient(Store.ModifyFilesRequest request) throws StoreException;
 
@@ -52,7 +52,7 @@ public interface CerbosHubStoreClient {
      *
      * @param request {@link dev.cerbos.sdk.hub.Store.ListFilesRequest}
      * @return {@link dev.cerbos.sdk.hub.Store.ListFilesResponse}
-     * @throws {@link StoreException}
+     * @throws StoreException on known errors. More details can be obtained by inspecting {@link StoreException#getReason()} and casting to the appropriate exception subclass.
      */
     Store.ListFilesResponse listFiles(Store.ListFilesRequest request) throws StoreException;
 
@@ -61,7 +61,7 @@ public interface CerbosHubStoreClient {
      *
      * @param request {@link dev.cerbos.sdk.hub.Store.GetFilesRequest}
      * @return {@link dev.cerbos.sdk.hub.Store.GetFilesResponse}
-     * @throws {@link StoreException}
+     * @throws StoreException on known errors. More details can be obtained by inspecting {@link StoreException#getReason()} and casting to the appropriate exception subclass.
      */
     Store.GetFilesResponse getFiles(Store.GetFilesRequest request) throws StoreException;
 }
