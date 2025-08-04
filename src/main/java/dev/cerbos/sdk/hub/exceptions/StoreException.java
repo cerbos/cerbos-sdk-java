@@ -17,8 +17,10 @@ import io.grpc.protobuf.StatusProto;
 import java.util.Optional;
 
 /**
- * Base exception encapsulating all known RPC errors thrown by the Cerbos Hub store service.
- * To obtain more details about specific errors, catch the corresponding subclass that inherits from this class.
+ * Base exception encapsulating all known RPC errors thrown by the Cerbos Hub
+ * store service.
+ * To obtain more details about specific errors, catch the corresponding
+ * subclass that inherits from this class.
  */
 public abstract class StoreException extends Exception {
     private Reason reason = Reason.UNKNOWN;
@@ -32,7 +34,8 @@ public abstract class StoreException extends Exception {
         if ((cause instanceof InvalidCredentialsException)) {
             return new AuthenticationFailedException(cause);
         } else if (cause.getCause() instanceof InvalidCredentialsException) {
-            // Interceptor exceptions are wrapped in StatusRUntimeExceptions so we need to unwrap the cause.
+            // Interceptor exceptions are wrapped in StatusRUntimeExceptions so we need to
+            // unwrap the cause.
             return new AuthenticationFailedException(cause.getCause());
         }
 
@@ -52,6 +55,9 @@ public abstract class StoreException extends Exception {
             case Code.PERMISSION_DENIED_VALUE:
                 return new PermissionDeniedException(cause);
 
+            case Code.UNAUTHENTICATED_VALUE:
+                return new AuthenticationFailedException(cause);
+
             case Code.NOT_FOUND_VALUE:
                 return new StoreNotFoundException(cause);
 
@@ -60,7 +66,8 @@ public abstract class StoreException extends Exception {
                     if (detail.is(dev.cerbos.api.cloud.v1.store.Store.ErrDetailCannotModifyGitConnectedStore.class)) {
                         return new CannotModifyGitConnectedStoreException(cause);
                     } else if (detail.is(dev.cerbos.api.cloud.v1.store.Store.ErrDetailConditionUnsatisfied.class)) {
-                        return new ConditionUnsatisfiedException(cause, unpack(detail, dev.cerbos.api.cloud.v1.store.Store.ErrDetailConditionUnsatisfied.class));
+                        return new ConditionUnsatisfiedException(cause, unpack(detail,
+                                dev.cerbos.api.cloud.v1.store.Store.ErrDetailConditionUnsatisfied.class));
                     }
                 }
                 break;
@@ -68,9 +75,11 @@ public abstract class StoreException extends Exception {
             case Code.INVALID_ARGUMENT_VALUE:
                 for (Any detail : status.getDetailsList()) {
                     if (detail.is(dev.cerbos.api.cloud.v1.store.Store.ErrDetailNoUsableFiles.class)) {
-                        return new NoUsableFilesException(cause, unpack(detail, dev.cerbos.api.cloud.v1.store.Store.ErrDetailNoUsableFiles.class));
+                        return new NoUsableFilesException(cause,
+                                unpack(detail, dev.cerbos.api.cloud.v1.store.Store.ErrDetailNoUsableFiles.class));
                     } else if (detail.is(dev.cerbos.api.cloud.v1.store.Store.ErrDetailValidationFailure.class)) {
-                        return new ValidationFailureException(cause, unpack(detail, dev.cerbos.api.cloud.v1.store.Store.ErrDetailValidationFailure.class));
+                        return new ValidationFailureException(cause,
+                                unpack(detail, dev.cerbos.api.cloud.v1.store.Store.ErrDetailValidationFailure.class));
                     }
                 }
 
@@ -79,7 +88,8 @@ public abstract class StoreException extends Exception {
             case Code.ALREADY_EXISTS_VALUE:
                 for (Any detail : status.getDetailsList()) {
                     if (detail.is(dev.cerbos.api.cloud.v1.store.Store.ErrDetailOperationDiscarded.class)) {
-                        return new OperationDiscardedException(cause, unpack(detail, dev.cerbos.api.cloud.v1.store.Store.ErrDetailOperationDiscarded.class));
+                        return new OperationDiscardedException(cause,
+                                unpack(detail, dev.cerbos.api.cloud.v1.store.Store.ErrDetailOperationDiscarded.class));
                     }
                 }
                 break;
