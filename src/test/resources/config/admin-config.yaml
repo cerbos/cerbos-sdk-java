@@ -21,7 +21,7 @@ schema:
 storage:
   driver: "sqlite3"
   sqlite3:
-    dsn: ":memory:"
+    dsn: "file::memory:?cache=shared"
 
 telemetry:
   disabled: true
