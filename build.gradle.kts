@@ -11,8 +11,8 @@ plugins {
     `maven-publish`
     id("com.google.protobuf") version "0.9.5"
     id("com.palantir.git-version") version "4.0.0"
-    id("org.jreleaser") version "1.19.0"
-    id("com.gradleup.shadow") version "9.0.2"
+    id("org.jreleaser") version "1.20.0"
+    id("com.gradleup.shadow") version "9.1.0"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -66,7 +66,7 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.75.0")
     implementation("io.grpc:grpc-stub:1.75.0")
     implementation("io.grpc:grpc-netty-shaded:1.75.0")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.72.Final")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.73.Final")
     implementation("org.testcontainers:testcontainers:1.21.3")
     implementation("build.buf:protovalidate:0.13.0")
     implementation("commons-io:commons-io:2.20.0")
@@ -79,8 +79,8 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("ch.qos.logback:logback-core:1.5.18")
     testImplementation("ch.qos.logback:logback-classic:1.5.18")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.19.2")
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.2")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.20.0")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.0")
 }
 
 tasks.withType<JavaCompile> {
