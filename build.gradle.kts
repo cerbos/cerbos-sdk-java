@@ -67,7 +67,7 @@ dependencies {
     implementation("io.grpc:grpc-stub:1.76.0")
     implementation("io.grpc:grpc-netty-shaded:1.76.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.74.Final")
-    implementation("org.testcontainers:testcontainers:1.21.3")
+    implementation("org.testcontainers:testcontainers:2.0.1")
     implementation("build.buf:protovalidate:1.0.0")
     implementation("commons-io:commons-io:2.20.0")
     implementation("com.google.code.gson:gson:2.13.2")
