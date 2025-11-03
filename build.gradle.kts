@@ -10,8 +10,8 @@ plugins {
     idea
     `maven-publish`
     id("com.google.protobuf") version "0.9.5"
-    id("com.palantir.git-version") version "4.0.0"
-    id("org.jreleaser") version "1.20.0"
+    id("com.palantir.git-version") version "4.1.0"
+    id("org.jreleaser") version "1.21.0"
     id("com.gradleup.shadow") version "9.2.2"
 }
 
@@ -68,19 +68,19 @@ dependencies {
     implementation("io.grpc:grpc-netty-shaded:1.76.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.74.Final")
     implementation("org.testcontainers:testcontainers:2.0.1")
-    implementation("build.buf:protovalidate:1.0.0")
+    implementation("build.buf:protovalidate:1.0.1")
     implementation("commons-io:commons-io:2.20.0")
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.3.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.14.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.14.1")
     testImplementation("org.testcontainers:junit-jupiter:1.21.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.14.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.14.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("ch.qos.logback:logback-core:1.5.20")
     testImplementation("ch.qos.logback:logback-classic:1.5.20")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.20.0")
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.0")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.20.1")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.1")
 }
 
 tasks.withType<JavaCompile> {
