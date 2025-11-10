@@ -69,7 +69,7 @@ dependencies {
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.74.Final")
     implementation("org.testcontainers:testcontainers:2.0.1")
     implementation("build.buf:protovalidate:1.0.1")
-    implementation("commons-io:commons-io:2.20.0")
+    implementation("commons-io:commons-io:2.21.0")
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.3.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
