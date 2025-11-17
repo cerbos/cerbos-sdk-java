@@ -10,7 +10,7 @@ plugins {
     idea
     `maven-publish`
     id("com.google.protobuf") version "0.9.5"
-    id("com.palantir.git-version") version "4.1.0"
+    id("com.palantir.git-version") version "4.2.0"
     id("org.jreleaser") version "1.21.0"
     id("com.gradleup.shadow") version "9.2.2"
 }
@@ -42,7 +42,7 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.33.0"
+        artifact = "com.google.protobuf:protoc:4.33.1"
     }
 
     plugins {
@@ -61,13 +61,13 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.33.0")
-    implementation("com.google.protobuf:protobuf-java-util:4.33.0")
+    implementation("com.google.protobuf:protobuf-java:4.33.1")
+    implementation("com.google.protobuf:protobuf-java-util:4.33.1")
     implementation("io.grpc:grpc-protobuf:1.76.0")
     implementation("io.grpc:grpc-stub:1.76.0")
     implementation("io.grpc:grpc-netty-shaded:1.76.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.74.Final")
-    implementation("org.testcontainers:testcontainers:2.0.1")
+    implementation("org.testcontainers:testcontainers:2.0.2")
     implementation("build.buf:protovalidate:1.0.1")
     implementation("commons-io:commons-io:2.21.0")
     implementation("com.google.code.gson:gson:2.13.2")
@@ -77,8 +77,8 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.21.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.14.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("ch.qos.logback:logback-core:1.5.20")
-    testImplementation("ch.qos.logback:logback-classic:1.5.20")
+    testImplementation("ch.qos.logback:logback-core:1.5.21")
+    testImplementation("ch.qos.logback:logback-classic:1.5.21")
     testImplementation("com.fasterxml.jackson.core:jackson-core:2.20.1")
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.1")
 }
