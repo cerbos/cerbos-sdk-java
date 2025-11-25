@@ -1,0 +1,18 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "configMigration": true,
+  "commitMessageLowerCase": "never",
+  "minimumReleaseAge": "5 days",
+  "internalChecksFilter": "strict",
+  "extends": [
+    "config:recommended",
+    "group:allNonMajor",
+    "helpers:pinGitHubActionDigests",
+    "schedule:weekly",
+    ":automergeDisabled",
+    ":combinePatchMinorReleases",
+    ":gitSignOff",
+    ":renovatePrefix",
+    ":separateMultipleMajorReleases"
+  ]
+}
