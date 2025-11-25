@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended",
     "group:allNonMajor",
+    "helpers:pinGitHubActionDigests",
     "schedule:weekly",
     ":automergeDisabled",
     ":combinePatchMinorReleases",
