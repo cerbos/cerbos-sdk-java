@@ -24,7 +24,9 @@ val projectVersion: String by lazy {
         if (commitDistance > 0) {
             val tokens = version.split('.')
             "${tokens[0]}.${tokens[1]}.${tokens[2].toInt() + 1}-SNAPSHOT"
-        } else version
+        } else {
+            version
+        }
     }
 }
 group = "dev.cerbos"
@@ -105,7 +107,12 @@ tasks.build {
 publishing {
     repositories {
         maven {
-            url = layout.buildDirectory.dir("staging-deploy").get().asFile.toURI()
+            url =
+                layout.buildDirectory
+                    .dir("staging-deploy")
+                    .get()
+                    .asFile
+                    .toURI()
         }
     }
     publications {
@@ -158,12 +165,6 @@ configure<org.jreleaser.gradle.plugin.JReleaserExtension> {
         armored.set(true)
     }
 
-    release {
-        github {
-            enabled.set(false)
-        }
-    }
-
     deploy {
         maven {
             mavenCentral {
@@ -188,4 +189,3 @@ configure<org.jreleaser.gradle.plugin.JReleaserExtension> {
         }
     }
 }
-
