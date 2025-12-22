@@ -9,7 +9,7 @@ plugins {
     java
     idea
     `maven-publish`
-    id("com.google.protobuf") version "0.9.5"
+    id("com.google.protobuf") version "0.9.6"
     id("com.palantir.git-version") version "4.2.0"
     id("org.jreleaser") version "1.21.0"
     id("com.gradleup.shadow") version "9.3.0"
@@ -69,18 +69,18 @@ dependencies {
     implementation("io.grpc:grpc-stub:1.77.0")
     implementation("io.grpc:grpc-netty-shaded:1.77.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.74.Final")
-    implementation("org.testcontainers:testcontainers:2.0.2")
+    implementation("org.testcontainers:testcontainers:2.0.3")
     implementation("build.buf:protovalidate:1.1.0")
     implementation("commons-io:commons-io:2.21.0")
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.3.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.14.1")
-    testImplementation("org.testcontainers:junit-jupiter:1.21.3")
+    testImplementation("org.testcontainers:junit-jupiter:1.21.4")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.14.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("ch.qos.logback:logback-core:1.5.22")
-    testImplementation("ch.qos.logback:logback-classic:1.5.22")
+    testImplementation("ch.qos.logback:logback-core:1.5.23")
+    testImplementation("ch.qos.logback:logback-classic:1.5.23")
     testImplementation("com.fasterxml.jackson.core:jackson-core:2.20.1")
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.1")
 }
