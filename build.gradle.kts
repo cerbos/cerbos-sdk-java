@@ -12,7 +12,7 @@ plugins {
     id("com.google.protobuf") version "0.9.6"
     id("com.palantir.git-version") version "4.2.0"
     id("org.jreleaser") version "1.22.0"
-    id("com.gradleup.shadow") version "9.3.0"
+    id("com.gradleup.shadow") version "9.3.1"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -44,7 +44,7 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.33.2"
+        artifact = "com.google.protobuf:protoc:4.33.3"
     }
 
     plugins {
@@ -63,8 +63,8 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.33.2")
-    implementation("com.google.protobuf:protobuf-java-util:4.33.2")
+    implementation("com.google.protobuf:protobuf-java:4.33.3")
+    implementation("com.google.protobuf:protobuf-java-util:4.33.3")
     implementation("io.grpc:grpc-protobuf:1.78.0")
     implementation("io.grpc:grpc-stub:1.78.0")
     implementation("io.grpc:grpc-netty-shaded:1.78.0")
@@ -75,12 +75,12 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.3.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.14.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.14.2")
     testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.14.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.14.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("ch.qos.logback:logback-core:1.5.23")
-    testImplementation("ch.qos.logback:logback-classic:1.5.23")
+    testImplementation("ch.qos.logback:logback-core:1.5.24")
+    testImplementation("ch.qos.logback:logback-classic:1.5.24")
     testImplementation("com.fasterxml.jackson.core:jackson-core:2.20.1")
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.1")
 }
