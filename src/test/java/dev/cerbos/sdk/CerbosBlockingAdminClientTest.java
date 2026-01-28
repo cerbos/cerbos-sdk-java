@@ -160,6 +160,25 @@ class CerbosBlockingAdminClientTest extends CerbosClientTests {
     }
 
     @Test
+    void deletePolicyWithDependents() {
+        Assertions.assertThrows(CerbosException.class, () -> {
+            this.adminClient.deletePolicy("derived_roles.alpha");
+        });
+    }
+
+    @Test
+    void deletePolicyWithoutDependents() {
+        long deleted = this.adminClient.deletePolicy("resource.foo.vdefault");
+        Assertions.assertEquals(1, deleted);
+    }
+
+    @Test
+    void purgeStoreRevisions() {
+        long deleted = this.adminClient.purgeStoreRevisions(0);
+        Assertions.assertTrue(deleted > 1);
+    }
+
+    @Test
     void listSchemas() {
         List<String> have = this.adminClient.listSchemas();
         Assertions.assertNotNull(have);

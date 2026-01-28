@@ -176,6 +176,48 @@ public class CerbosBlockingAdminClient {
     }
 
     /**
+     * Delete policies by ID. Note that this is a permanent operation and cannot be rolled back.
+     *
+     * @param ids IDs of policies to delete
+     * @return Number of deleted policies
+     * @throws CerbosException if an RPC error occurrs
+     */
+    public long deletePolicy(String... ids) {
+        Request.DeletePolicyRequest.Builder requestBuilder = Request.DeletePolicyRequest.newBuilder();
+        requestBuilder.addAllId(List.of(ids));
+
+        try {
+            Response.DeletePolicyResponse resp = withClient().deletePolicy(requestBuilder.build());
+            return resp.getDeletedPolicies();
+        } catch (StatusRuntimeException sre) {
+            throw new CerbosException(sre.getStatus(), sre.getCause());
+        }
+    }
+
+    /**
+     * Purge the version history table of policies.
+     * Note that this permanently deletes history of changes made to policies.
+     * If the keepLast parameter is greater than 0, everything but the most recent `keepLast` number of revisions will be deleted.
+     *
+     * @param keepLast How many revisions of each policy to preserve. 0 deletes everything.
+     * @return Number of deleted records
+     * @throws CerbosException if an RPC error occurrs
+     */
+    public long purgeStoreRevisions(int keepLast) {
+        Request.PurgeStoreRevisionsRequest.Builder requestBuilder = Request.PurgeStoreRevisionsRequest.newBuilder();
+        if (keepLast > 0) {
+            requestBuilder.setKeepLast(keepLast);
+        }
+
+        try {
+            Response.PurgeStoreRevisionsResponse resp = withClient().purgeStoreRevisions(requestBuilder.build());
+            return resp.getAffectedRows();
+        } catch (StatusRuntimeException sre) {
+            throw new CerbosException(sre.getStatus(), sre.getCause());
+        }
+    }
+
+    /**
      * Add or update schemas
      *
      * @return {@link AddOrUpdateSchemaRequestBuilder} builder
