@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Zenauth Ltd.
+// Copyright 2021-2026 Zenauth Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
 syntax = "proto3";
@@ -171,6 +171,10 @@ message OutputEntry {
   google.protobuf.Value val = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     description: "Dynamic output, determined by user defined rule output."
     example: "\"some_string\""
+  }];
+  string action = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    description: "Action that was being evaluated when this output was produced."
+    example: "\"view\""
   }];
 }
 

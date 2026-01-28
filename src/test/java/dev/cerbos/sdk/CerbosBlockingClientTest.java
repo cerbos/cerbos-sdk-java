@@ -5,6 +5,7 @@
 
 package dev.cerbos.sdk;
 
+import dev.cerbos.sdk.builders.AttributeValue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
@@ -33,6 +34,10 @@ class CerbosBlockingClientTest extends CerbosClientTests {
     @BeforeAll
     public void initClient() throws CerbosClientBuilder.InvalidClientConfigurationException {
         String target = cerbosContainer.getTarget();
-        this.client = new CerbosClientBuilder(target).withPlaintext().buildBlockingClient().withHeaders(Map.of("wibble", "wobble"));
+        this.client = new CerbosClientBuilder(target)
+                .withPlaintext()
+                .buildBlockingClient()
+                .withHeaders(Map.of("wibble", "wobble"))
+                .withRequestAnnotations(Map.of("foo", AttributeValue.stringValue("bar")));
     }
 }

@@ -5,6 +5,8 @@
 
 package dev.cerbos.sdk;
 
+import com.google.protobuf.Value;
+import dev.cerbos.api.v1.audit.Audit;
 import dev.cerbos.api.v1.engine.Engine;
 import dev.cerbos.api.v1.request.Request;
 import dev.cerbos.api.v1.response.Response;
@@ -14,6 +16,8 @@ import dev.cerbos.sdk.builders.ResourceAction;
 import io.grpc.StatusRuntimeException;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -24,6 +28,7 @@ public class CheckResourcesRequestBuilder {
     CheckResourcesRequestBuilder(
             Supplier<CerbosServiceGrpc.CerbosServiceBlockingStub> clientStub,
             Request.AuxData auxData,
+            Optional<Map<String, Value>> requestAnnotations,
             Engine.Principal principal) {
         this.clientStub = clientStub;
         this.requestBuilder =
@@ -31,6 +36,8 @@ public class CheckResourcesRequestBuilder {
                         .setRequestId(RequestId.generate())
                         .setPrincipal(principal)
                         .setAuxData(auxData);
+       requestAnnotations.map(a -> this.requestBuilder.setRequestContext(Audit.RequestContext.newBuilder().putAllAnnotations(a).build()));
+
     }
 
     /**
