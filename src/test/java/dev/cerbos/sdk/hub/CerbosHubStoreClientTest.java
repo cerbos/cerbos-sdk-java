@@ -98,6 +98,7 @@ public class CerbosHubStoreClientTest {
 
     @BeforeEach
     public void resetStore() throws IOException, StoreException, URISyntaxException {
+        CircuitBreaker.INSTANCE.reset();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Path dir = Path.of(loader.getResource("hub/replace_files/success").toURI());
         Store.ReplaceFilesResponse replaceResp = client.replaceFilesLenient(Store.newReplaceFilesRequest(storeID, "Reset store", Utils.createZip(dir)));

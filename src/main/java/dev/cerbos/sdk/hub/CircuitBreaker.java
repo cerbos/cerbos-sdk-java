@@ -45,4 +45,8 @@ enum CircuitBreaker {
     public <T> T execute(CheckedSupplier<T> s) throws Throwable {
         return circuitBreaker.decorateCheckedSupplier(s).get();
     }
+
+    void reset() {
+        circuitBreaker.reset();
+    }
 }
