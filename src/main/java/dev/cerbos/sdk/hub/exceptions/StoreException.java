@@ -55,6 +55,9 @@ public abstract class StoreException extends Exception {
             case Code.PERMISSION_DENIED_VALUE:
                 return new PermissionDeniedException(cause);
 
+            case Code.RESOURCE_EXHAUSTED_VALUE:
+                return new TooManyRequestsException(cause);
+
             case Code.UNAUTHENTICATED_VALUE:
                 return new AuthenticationFailedException(cause);
 
@@ -93,6 +96,7 @@ public abstract class StoreException extends Exception {
                     }
                 }
                 break;
+
         }
 
         return new UnknownException(cause);
