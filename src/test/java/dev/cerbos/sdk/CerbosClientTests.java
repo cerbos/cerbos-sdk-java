@@ -288,5 +288,4 @@ abstract class CerbosClientTests {
         Assertions.assertFalse(have.isAlwaysAllowed());
         Assertions.assertFalse(have.isConditional());
     }
-
 }

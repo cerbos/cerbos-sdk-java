@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Zenauth Ltd.
+// Copyright 2021-2026 Zenauth Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
 syntax = "proto3";
@@ -131,6 +131,7 @@ message RolePolicy {
     option (buf.validate.oneof).required = true;
     string role = 1 [(buf.validate.field).string = {pattern: "^[^!*?\\[\\]{}]+$"}];
   }
+  string version = 6 [(buf.validate.field).string = {pattern: "^[\\w]*$"}];
   repeated string parent_roles = 5 [(buf.validate.field).repeated = {
     unique: true
     items: {
