@@ -15,6 +15,7 @@ import dev.cerbos.sdk.builders.AuxData;
 import dev.cerbos.sdk.builders.Principal;
 import dev.cerbos.sdk.builders.Resource;
 import dev.cerbos.sdk.builders.ResourceAction;
+import io.grpc.Status;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -289,4 +290,30 @@ abstract class CerbosClientTests {
         Assertions.assertFalse(have.isConditional());
     }
 
+    @Test
+    public void partialCheckRequest() {
+        CerbosException have = Assertions.assertThrows(CerbosException.class, () -> {
+                    this.client.check(
+                            Principal.newInstance("john")
+                                    .withPolicyVersion("20210210"),
+                            Resource.newInstance("leave_request", "")
+                                    .withPolicyVersion("20210210"),
+                            "view:public",
+                            "approve");
+        });
+        Assertions.assertEquals(Status.INVALID_ARGUMENT.getCode().value(), have.getStatusCode());
+    }
+
+    @Test
+    public void partialPlanRequest() {
+        CerbosException have = Assertions.assertThrows(CerbosException.class, () -> {
+            this.client.plan(
+                    Principal.newInstance("john")
+                            .withPolicyVersion("20210210"),
+                    Resource.newInstance("leave_request", "")
+                            .withPolicyVersion("20210210"),
+                    "view:public");
+        });
+        Assertions.assertEquals(Status.INVALID_ARGUMENT.getCode().value(), have.getStatusCode());
+    }
 }
