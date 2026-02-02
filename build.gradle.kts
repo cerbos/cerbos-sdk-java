@@ -10,7 +10,7 @@ plugins {
     idea
     `maven-publish`
     id("com.google.protobuf") version "0.9.6"
-    id("com.palantir.git-version") version "4.2.0"
+    id("com.palantir.git-version") version "4.3.0"
     id("org.jreleaser") version "1.22.0"
     id("com.gradleup.shadow") version "9.3.1"
 }
@@ -44,7 +44,7 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.33.4"
+        artifact = "com.google.protobuf:protoc:4.33.5"
     }
 
     plugins {
@@ -63,8 +63,8 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.33.4")
-    implementation("com.google.protobuf:protobuf-java-util:4.33.4")
+    implementation("com.google.protobuf:protobuf-java:4.33.5")
+    implementation("com.google.protobuf:protobuf-java-util:4.33.5")
     implementation("io.grpc:grpc-protobuf:1.78.0")
     implementation("io.grpc:grpc-stub:1.78.0")
     implementation("io.grpc:grpc-netty-shaded:1.78.0")
@@ -79,8 +79,8 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.21.4")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("ch.qos.logback:logback-core:1.5.26")
-    testImplementation("ch.qos.logback:logback-classic:1.5.26")
+    testImplementation("ch.qos.logback:logback-core:1.5.27")
+    testImplementation("ch.qos.logback:logback-classic:1.5.27")
     testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.0")
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.0")
 }
