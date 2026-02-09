@@ -49,7 +49,7 @@ protobuf {
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.78.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.79.0"
         }
     }
 
@@ -65,10 +65,10 @@ protobuf {
 dependencies {
     implementation("com.google.protobuf:protobuf-java:4.33.5")
     implementation("com.google.protobuf:protobuf-java-util:4.33.5")
-    implementation("io.grpc:grpc-protobuf:1.78.0")
-    implementation("io.grpc:grpc-stub:1.78.0")
-    implementation("io.grpc:grpc-netty-shaded:1.78.0")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.74.Final")
+    implementation("io.grpc:grpc-protobuf:1.79.0")
+    implementation("io.grpc:grpc-stub:1.79.0")
+    implementation("io.grpc:grpc-netty-shaded:1.79.0")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.75.Final")
     implementation("org.testcontainers:testcontainers:2.0.3")
     implementation("build.buf:protovalidate:1.1.0")
     implementation("commons-io:commons-io:2.21.0")
@@ -79,8 +79,8 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.21.4")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("ch.qos.logback:logback-core:1.5.27")
-    testImplementation("ch.qos.logback:logback-classic:1.5.27")
+    testImplementation("ch.qos.logback:logback-core:1.5.28")
+    testImplementation("ch.qos.logback:logback-classic:1.5.28")
     testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.0")
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.0")
 }
