@@ -7,19 +7,22 @@ Java client library for the [Cerbos](https://github.com/cerbos/cerbos) open sour
 includes RPC clients for accessing the Cerbos PDP and test utilities for testing your code locally
 using [Testcontainers](https://www.testcontainers.org).
 
-Find out more about Cerbos at https://cerbos.dev and read the documentation at https://docs.cerbos.dev.
+Find out more about Cerbos at <https://cerbos.dev> and read the documentation at <https://docs.cerbos.dev>.
 
 Installation
 -------------
 
 Artifacts are available from Maven Central.
 
+> [!IMPORTANT]
+> It's important that the effective versions of protobuf and gRPC in your project match the versions required by the Cerbos SDK. Java's handling of transitive dependencies can sometimes result in older versions of protobuf or gRPC becoming the "effective" versions and causing compile or runtime issues. Check your dependency tree and add exclusion clauses to prevent older versions from being used. Alternatively, use a shading plugin to rewrite import paths and prevent clashes between different dependency versions.
+
 **Example: Gradle (Kotlin DSL)**
 
 ```kotlin
 dependencies {
-    implementation("dev.cerbos:cerbos-sdk-java:0.+")
-    implementation("io.grpc:grpc-core:1.+")
+    implementation("dev.cerbos:cerbos-sdk-java:0.+") //Pin to an actual release version to avoid surprise updates.
+    implementation("io.grpc:grpc-core:1.+") // Must be the same version used by the SDK. Check the `build.gradle.kts` file for the SDK release you're using.
 }
 
 repositories {
@@ -154,7 +157,7 @@ See `CerbosBlockingAdminClientTest` test class for more examples of Admin API us
 
 ## Connecting to Cerbos Hub stores
 
-Log in to Cerbos Hub and generate a client credential for the store you wish to connect. Create two environment variables named `CERBOS_HUB_CLIENT_ID` and `CERBOS_HUB_CLIENT_SECRET` to hold the credentials.   
+Log in to Cerbos Hub and generate a client credential for the store you wish to connect. Create two environment variables named `CERBOS_HUB_CLIENT_ID` and `CERBOS_HUB_CLIENT_SECRET` to hold the credentials.
 
 ```java
 CerbosHubStoreClient client = CerbosHubClientBuilder.fromEnv().build().storeClient();
@@ -176,7 +179,7 @@ try {
         } catch (NoUsableFilesException nufe) {
         nufe.getIgnoredFiles().stream().forEach(System.out::println);
 } catch (StoreException se) {
-        // Catch-all 
+        // Catch-all
 }
 
 // Catching StoreException and casting
