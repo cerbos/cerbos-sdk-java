@@ -70,7 +70,7 @@ dependencies {
     implementation("io.grpc:grpc-netty-shaded:1.79.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.75.Final")
     implementation("org.testcontainers:testcontainers:2.0.3")
-    implementation("build.buf:protovalidate:1.1.0")
+    implementation("build.buf:protovalidate:1.1.1")
     implementation("commons-io:commons-io:2.21.0")
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.3.0")
