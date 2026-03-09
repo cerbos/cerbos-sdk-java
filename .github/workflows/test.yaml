@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+permissions: {}
 jobs:
   testMatrix:
     runs-on: ubuntu-latest
@@ -16,6 +17,8 @@ jobs:
     name: "Java ${{ matrix.java }}"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
         with:
@@ -60,8 +63,10 @@ jobs:
     if: always()
     steps:
       - run: |-
-          if [[ "${{ needs.afterTestMatrix.outputs.success}}" == "true" ]]; then
+          if [[ "${NEEDS_AFTERTESTMATRIX_OUTPUTS_SUCCESS}" == "true" ]]; then
             exit 0
           else
             exit 1
           fi
+        env:
+          NEEDS_AFTERTESTMATRIX_OUTPUTS_SUCCESS: ${{ needs.afterTestMatrix.outputs.success}}
