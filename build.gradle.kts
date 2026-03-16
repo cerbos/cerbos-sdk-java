@@ -12,7 +12,7 @@ plugins {
     id("com.google.protobuf") version "0.9.6"
     id("com.palantir.git-version") version "4.3.0"
     id("org.jreleaser") version "1.23.0"
-    id("com.gradleup.shadow") version "9.3.2"
+    id("com.gradleup.shadow") version "9.4.0"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -73,7 +73,7 @@ dependencies {
     implementation("build.buf:protovalidate:1.1.1")
     implementation("commons-io:commons-io:2.21.0")
     implementation("com.google.code.gson:gson:2.13.2")
-    implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.3.0")
+    implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.4.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.3")
     testImplementation("org.testcontainers:junit-jupiter:1.21.4")
