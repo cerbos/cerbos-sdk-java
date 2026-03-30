@@ -12,7 +12,7 @@ plugins {
     id("com.google.protobuf") version "0.9.6"
     id("com.palantir.git-version") version "5.0.0"
     id("org.jreleaser") version "1.23.0"
-    id("com.gradleup.shadow") version "9.4.0"
+    id("com.gradleup.shadow") version "9.4.1"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -70,7 +70,7 @@ dependencies {
     implementation("io.grpc:grpc-netty-shaded:1.80.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.75.Final")
     implementation("org.testcontainers:testcontainers:2.0.4")
-    implementation("build.buf:protovalidate:1.1.1")
+    implementation("build.buf:protovalidate:1.1.2")
     implementation("commons-io:commons-io:2.21.0")
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.4.0")
