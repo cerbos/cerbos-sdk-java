@@ -9,7 +9,7 @@ plugins {
     java
     idea
     `maven-publish`
-    id("com.google.protobuf") version "0.9.6"
+    id("com.google.protobuf") version "0.10.0"
     id("com.palantir.git-version") version "5.0.0"
     id("org.jreleaser") version "1.23.0"
     id("com.gradleup.shadow") version "9.4.1"
@@ -68,7 +68,7 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.80.0")
     implementation("io.grpc:grpc-stub:1.80.0")
     implementation("io.grpc:grpc-netty-shaded:1.80.0")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.75.Final")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.76.Final")
     implementation("org.testcontainers:testcontainers:2.0.4")
     implementation("build.buf:protovalidate:1.1.2")
     implementation("commons-io:commons-io:2.21.0")
