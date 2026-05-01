@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - main
+defaults:
+  run:
+    shell: bash
 permissions: {}
 jobs:
   testMatrix:
@@ -16,18 +19,18 @@ jobs:
         java: ["17", "21"]
     name: "Java ${{ matrix.java }}"
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
-      - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+      - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           java-version: "${{ matrix.java }}"
           distribution: "temurin"
           cache: "gradle"
 
       - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6
+        uses: gradle/actions/wrapper-validation@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
 
       - name: Run tests
         run: ./gradlew test
@@ -39,34 +42,17 @@ jobs:
 
       - name: Store reports
         if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: "Reports for Java ${{ matrix.java }}"
           path: |-
             **/build/reports/
             **/build/test-results/
 
-  afterTestMatrix:
-    runs-on: ubuntu-latest
-    needs: testMatrix
-    if: success()
-    outputs:
-      success: ${{ steps.setoutput.outputs.success }}
-    steps:
-      - id: setoutput
-        run: |-
-          echo "::set-output name=success::true"
-
   testSuccess:
     runs-on: ubuntu-latest
-    needs: [testMatrix, afterTestMatrix]
+    needs: testMatrix
     if: always()
     steps:
-      - run: |-
-          if [[ "${NEEDS_AFTERTESTMATRIX_OUTPUTS_SUCCESS}" == "true" ]]; then
-            exit 0
-          else
-            exit 1
-          fi
-        env:
-          NEEDS_AFTERTESTMATRIX_OUTPUTS_SUCCESS: ${{ needs.afterTestMatrix.outputs.success}}
+      - name: Check test results
+        run: test "${{ needs.testMatrix.result }}" = "success"
