@@ -11,7 +11,7 @@ plugins {
     `maven-publish`
     id("com.google.protobuf") version "0.10.0"
     id("com.palantir.git-version") version "5.0.0"
-    id("org.jreleaser") version "1.23.0"
+    id("org.jreleaser") version "1.24.0"
     id("com.gradleup.shadow") version "9.4.1"
 }
 
@@ -49,7 +49,7 @@ protobuf {
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.80.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.81.0"
         }
     }
 
@@ -65,9 +65,9 @@ protobuf {
 dependencies {
     implementation("com.google.protobuf:protobuf-java:4.34.1")
     implementation("com.google.protobuf:protobuf-java-util:4.34.1")
-    implementation("io.grpc:grpc-protobuf:1.80.0")
-    implementation("io.grpc:grpc-stub:1.80.0")
-    implementation("io.grpc:grpc-netty-shaded:1.80.0")
+    implementation("io.grpc:grpc-protobuf:1.81.0")
+    implementation("io.grpc:grpc-stub:1.81.0")
+    implementation("io.grpc:grpc-netty-shaded:1.81.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.77.Final")
     implementation("org.testcontainers:testcontainers:2.0.5")
     implementation("build.buf:protovalidate:1.2.2")
@@ -81,8 +81,8 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("ch.qos.logback:logback-core:1.5.32")
     testImplementation("ch.qos.logback:logback-classic:1.5.32")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.2")
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.2")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.3")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.3")
 }
 
 tasks.withType<JavaCompile> {
