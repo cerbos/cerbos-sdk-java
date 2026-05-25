@@ -44,7 +44,7 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.34.1"
+        artifact = "com.google.protobuf:protoc:4.35.0"
     }
 
     plugins {
@@ -63,8 +63,8 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.34.1")
-    implementation("com.google.protobuf:protobuf-java-util:4.34.1")
+    implementation("com.google.protobuf:protobuf-java:4.35.0")
+    implementation("com.google.protobuf:protobuf-java-util:4.35.0")
     implementation("io.grpc:grpc-protobuf:1.81.0")
     implementation("io.grpc:grpc-stub:1.81.0")
     implementation("io.grpc:grpc-netty-shaded:1.81.0")
@@ -75,9 +75,9 @@ dependencies {
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.4.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.0")
     testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.3")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("ch.qos.logback:logback-core:1.5.32")
     testImplementation("ch.qos.logback:logback-classic:1.5.32")
