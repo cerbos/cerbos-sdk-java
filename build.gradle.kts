@@ -12,7 +12,7 @@ plugins {
     id("com.google.protobuf") version "0.10.0"
     id("com.palantir.git-version") version "5.0.0"
     id("org.jreleaser") version "1.24.0"
-    id("com.gradleup.shadow") version "9.4.1"
+    id("com.gradleup.shadow") version "9.4.2"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -68,7 +68,7 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.81.0")
     implementation("io.grpc:grpc-stub:1.81.0")
     implementation("io.grpc:grpc-netty-shaded:1.81.0")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.77.Final")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.78.Final")
     implementation("org.testcontainers:testcontainers:2.0.5")
     implementation("build.buf:protovalidate:1.2.2")
     implementation("commons-io:commons-io:2.22.0")
@@ -79,10 +79,10 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.21.4")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("ch.qos.logback:logback-core:1.5.32")
-    testImplementation("ch.qos.logback:logback-classic:1.5.32")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.3")
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.3")
+    testImplementation("ch.qos.logback:logback-core:1.5.34")
+    testImplementation("ch.qos.logback:logback-classic:1.5.34")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.22.0")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.0")
 }
 
 tasks.withType<JavaCompile> {
