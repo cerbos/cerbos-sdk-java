@@ -12,7 +12,7 @@ plugins {
     id("com.google.protobuf") version "0.10.0"
     id("com.palantir.git-version") version "5.0.0"
     id("org.jreleaser") version "1.24.0"
-    id("com.gradleup.shadow") version "9.4.2"
+    id("com.gradleup.shadow") version "9.4.3"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -49,7 +49,7 @@ protobuf {
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.82.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.82.1"
         }
     }
 
@@ -65,9 +65,9 @@ protobuf {
 dependencies {
     implementation("com.google.protobuf:protobuf-java:4.35.1")
     implementation("com.google.protobuf:protobuf-java-util:4.35.1")
-    implementation("io.grpc:grpc-protobuf:1.82.0")
-    implementation("io.grpc:grpc-stub:1.82.0")
-    implementation("io.grpc:grpc-netty-shaded:1.82.0")
+    implementation("io.grpc:grpc-protobuf:1.82.1")
+    implementation("io.grpc:grpc-stub:1.82.1")
+    implementation("io.grpc:grpc-netty-shaded:1.82.1")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.79.Final")
     implementation("org.testcontainers:testcontainers:2.0.5")
     implementation("build.buf:protovalidate:1.2.2")
@@ -75,12 +75,12 @@ dependencies {
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.4.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.1")
     testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("ch.qos.logback:logback-core:1.5.34")
-    testImplementation("ch.qos.logback:logback-classic:1.5.34")
+    testImplementation("ch.qos.logback:logback-core:1.5.37")
+    testImplementation("ch.qos.logback:logback-classic:1.5.37")
     testImplementation("com.fasterxml.jackson.core:jackson-core:2.22.0")
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.0")
 }
