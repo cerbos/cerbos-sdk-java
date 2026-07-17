@@ -27,15 +27,61 @@ import java.util.stream.Collectors;
 import static dev.cerbos.sdk.builders.AttributeValue.stringValue;
 
 abstract class CerbosClientTests {
-    static final String JWT =
-            "eyJhbGciOiJFUzM4NCIsImtpZCI6IjE5TGZaYXRFZGc4M1lOYzVyMjNndU1KcXJuND0iLCJ0eXAiOiJKV1QifQ.eyJhdWQiOlsiY2VyYm9zLWp3dC10ZXN0cyJdLCJjdXN0b21BcnJheSI6WyJBIiwiQiIsIkMiXSwiY3VzdG9tSW50Ijo0MiwiY3VzdG9tTWFwIjp7IkEiOiJBQSIsIkIiOiJCQiIsIkMiOiJDQyJ9LCJjdXN0b21TdHJpbmciOiJmb29iYXIiLCJleHAiOjE5NTAyNzc5MjYsImlzcyI6ImNlcmJvcy10ZXN0LXN1aXRlIn0._nCHIsuFI3wczeuUv_xjSwaVnIQUdYA9sGf_jVsrsDWloLs3iPWDaA1bXpuIUJVsi8-G6qqdrPI0cOBxEocg1NCm8fyD9T_3hsZV0fYWon_Je6Kl93a3JIW3S6kbvjsL";
+    static final String JWT = "eyJhbGciOiJFUzM4NCIsImtpZCI6IjE5TGZaYXRFZGc4M1lOYzVyMjNndU1KcXJuND0iLCJ0eXAiOiJKV1QifQ.eyJhdWQiOlsiY2VyYm9zLWp3dC10ZXN0cyJdLCJjdXN0b21BcnJheSI6WyJBIiwiQiIsIkMiXSwiY3VzdG9tSW50Ijo0MiwiY3VzdG9tTWFwIjp7IkEiOiJBQSIsIkIiOiJCQiIsIkMiOiJDQyJ9LCJjdXN0b21TdHJpbmciOiJmb29iYXIiLCJleHAiOjE5NTAyNzc5MjYsImlzcyI6ImNlcmJvcy10ZXN0LXN1aXRlIn0._nCHIsuFI3wczeuUv_xjSwaVnIQUdYA9sGf_jVsrsDWloLs3iPWDaA1bXpuIUJVsi8-G6qqdrPI0cOBxEocg1NCm8fyD9T_3hsZV0fYWon_Je6Kl93a3JIW3S6kbvjsL";
 
     CerbosBlockingClient client;
 
     @Test
     public void checkWithoutJWT() {
-        CheckResult have =
-                this.client.check(
+        CheckResult have = this.client.check(
+                Principal.newInstance("john", "employee")
+                        .withPolicyVersion("20210210")
+                        .withAttribute("team", stringValue("design"))
+                        .withAttribute("department", stringValue("marketing"))
+                        .withAttribute("geography", stringValue("GB")),
+                Resource.newInstance("leave_request", "xx125")
+                        .withPolicyVersion("20210210")
+                        .withAttribute("id", stringValue("xx125"))
+                        .withAttribute("department", stringValue("marketing"))
+                        .withAttribute("geography", stringValue("GB"))
+                        .withAttribute("team", stringValue("design"))
+                        .withAttribute("owner", stringValue("john")),
+                "view:public",
+                "approve");
+
+        Assertions.assertTrue(have.isAllowed("view:public"));
+        Assertions.assertFalse(have.isAllowed("approve"));
+    }
+
+    @Test
+    public void checkWithRequestID() {
+        CheckResult have = this.client.check(
+                "foo",
+                Principal.newInstance("john", "employee")
+                        .withPolicyVersion("20210210")
+                        .withAttribute("team", stringValue("design"))
+                        .withAttribute("department", stringValue("marketing"))
+                        .withAttribute("geography", stringValue("GB")),
+                Resource.newInstance("leave_request", "xx125")
+                        .withPolicyVersion("20210210")
+                        .withAttribute("id", stringValue("xx125"))
+                        .withAttribute("department", stringValue("marketing"))
+                        .withAttribute("geography", stringValue("GB"))
+                        .withAttribute("team", stringValue("design"))
+                        .withAttribute("owner", stringValue("john")),
+                "view:public",
+                "approve");
+
+        Assertions.assertTrue(have.isAllowed("view:public"));
+        Assertions.assertFalse(have.isAllowed("approve"));
+        Assertions.assertEquals("foo", have.getRequestId());
+    }
+
+    @Test
+    public void checkWithJWT() {
+        CheckResult have = this.client
+                .with(AuxData.withJWT(JWT))
+                .check(
                         Principal.newInstance("john", "employee")
                                 .withPolicyVersion("20210210")
                                 .withAttribute("team", stringValue("design"))
@@ -44,99 +90,73 @@ abstract class CerbosClientTests {
                         Resource.newInstance("leave_request", "xx125")
                                 .withPolicyVersion("20210210")
                                 .withAttribute("id", stringValue("xx125"))
+                                .withAttribute("team", stringValue("design"))
                                 .withAttribute("department", stringValue("marketing"))
                                 .withAttribute("geography", stringValue("GB"))
-                                .withAttribute("team", stringValue("design"))
                                 .withAttribute("owner", stringValue("john")),
-                        "view:public",
-                        "approve");
-
-        Assertions.assertTrue(have.isAllowed("view:public"));
-        Assertions.assertFalse(have.isAllowed("approve"));
-    }
-
-    @Test
-    public void checkWithJWT() {
-        CheckResult have =
-                this.client
-                        .with(AuxData.withJWT(JWT))
-                        .check(
-                                Principal.newInstance("john", "employee")
-                                        .withPolicyVersion("20210210")
-                                        .withAttribute("team", stringValue("design"))
-                                        .withAttribute("department", stringValue("marketing"))
-                                        .withAttribute("geography", stringValue("GB")),
-                                Resource.newInstance("leave_request", "xx125")
-                                        .withPolicyVersion("20210210")
-                                        .withAttribute("id", stringValue("xx125"))
-                                        .withAttribute("team", stringValue("design"))
-                                        .withAttribute("department", stringValue("marketing"))
-                                        .withAttribute("geography", stringValue("GB"))
-                                        .withAttribute("owner", stringValue("john")),
-                                "defer");
+                        "defer");
 
         Assertions.assertTrue(have.isAllowed("defer"));
     }
 
     @Test
     public void checkResources() {
-        CheckResourcesResult have =
-                this.client
-                        .with(AuxData.withJWT(JWT))
-                        .batch(
-                                Principal.newInstance("john", "employee")
-                                        .withPolicyVersion("20210210")
-                                        .withAttribute("department", stringValue("marketing"))
-                                        .withAttribute("team", stringValue("design"))
-                                        .withAttribute("geography", stringValue("GB")))
-                        .addResources(
-                                ResourceAction.newInstance("leave_request", "XX125")
-                                        .withPolicyVersion("20210210")
-                                        .withAttributes(
-                                                Map.of(
-                                                        "id",
-                                                        stringValue("XX125"),
-                                                        "department",
-                                                        stringValue("marketing"),
-                                                        "geography",
-                                                        stringValue("GB"),
-                                                        "team",
-                                                        stringValue("design"),
-                                                        "owner",
-                                                        stringValue("john")))
-                                        .withActions("view:public", "approve", "defer"),
-                                ResourceAction.newInstance("leave_request", "XX225")
-                                        .withPolicyVersion("20210210")
-                                        .withAttributes(
-                                                Map.of(
-                                                        "id",
-                                                        stringValue("XX225"),
-                                                        "department",
-                                                        stringValue("marketing"),
-                                                        "geography",
-                                                        stringValue("GB"),
-                                                        "team",
-                                                        stringValue("design"),
-                                                        "owner",
-                                                        stringValue("martha")))
-                                        .withActions("view:public", "approve"),
-                                ResourceAction.newInstance("leave_request", "XX325")
-                                        .withPolicyVersion("20210210")
-                                        .withAttributes(
-                                                Map.of(
-                                                        "id",
-                                                        stringValue("XX325"),
-                                                        "department",
-                                                        stringValue("marketing"),
-                                                        "geography",
-                                                        stringValue("US"),
-                                                        "team",
-                                                        stringValue("design"),
-                                                        "owner",
-                                                        stringValue("peggy")))
-                                        .withActions("view:public", "approve"))
-                        .withIncludeMeta()
-                        .check();
+        CheckResourcesResult have = this.client
+                .with(AuxData.withJWT(JWT))
+                .batch(
+                        Principal.newInstance("john", "employee")
+                                .withPolicyVersion("20210210")
+                                .withAttribute("department", stringValue("marketing"))
+                                .withAttribute("team", stringValue("design"))
+                                .withAttribute("geography", stringValue("GB")))
+                .addResources(
+                        ResourceAction.newInstance("leave_request", "XX125")
+                                .withPolicyVersion("20210210")
+                                .withAttributes(
+                                        Map.of(
+                                                "id",
+                                                stringValue("XX125"),
+                                                "department",
+                                                stringValue("marketing"),
+                                                "geography",
+                                                stringValue("GB"),
+                                                "team",
+                                                stringValue("design"),
+                                                "owner",
+                                                stringValue("john")))
+                                .withActions("view:public", "approve", "defer"),
+                        ResourceAction.newInstance("leave_request", "XX225")
+                                .withPolicyVersion("20210210")
+                                .withAttributes(
+                                        Map.of(
+                                                "id",
+                                                stringValue("XX225"),
+                                                "department",
+                                                stringValue("marketing"),
+                                                "geography",
+                                                stringValue("GB"),
+                                                "team",
+                                                stringValue("design"),
+                                                "owner",
+                                                stringValue("martha")))
+                                .withActions("view:public", "approve"),
+                        ResourceAction.newInstance("leave_request", "XX325")
+                                .withPolicyVersion("20210210")
+                                .withAttributes(
+                                        Map.of(
+                                                "id",
+                                                stringValue("XX325"),
+                                                "department",
+                                                stringValue("marketing"),
+                                                "geography",
+                                                stringValue("US"),
+                                                "team",
+                                                stringValue("design"),
+                                                "owner",
+                                                stringValue("peggy")))
+                                .withActions("view:public", "approve"))
+                .withIncludeMeta()
+                .check();
 
         Optional<CheckResult> res1Opt = have.find("XX125");
         Assertions.assertTrue(res1Opt.isPresent());
@@ -145,8 +165,10 @@ abstract class CerbosClientTests {
         Assertions.assertTrue(res1.isAllowed("defer"));
         Assertions.assertFalse(res1.isAllowed("approve"));
 
-        Assertions.assertIterableEquals(List.of("any_employee", "employee_that_owns_the_record"), res1.getMeta().getEffectiveDerivedRoles().stream().sorted().collect(Collectors.toUnmodifiableList()));
-        Optional<Response.CheckResourcesResponse.ResultEntry.Meta.EffectMeta> res1DeferMetaOpt = res1.getMeta().getInfoForAction("defer");
+        Assertions.assertIterableEquals(List.of("any_employee", "employee_that_owns_the_record"),
+                res1.getMeta().getEffectiveDerivedRoles().stream().sorted().collect(Collectors.toUnmodifiableList()));
+        Optional<Response.CheckResourcesResponse.ResultEntry.Meta.EffectMeta> res1DeferMetaOpt = res1.getMeta()
+                .getInfoForAction("defer");
         Assertions.assertTrue(res1DeferMetaOpt.isPresent());
         Response.CheckResourcesResponse.ResultEntry.Meta.EffectMeta res1DeferMeta = res1DeferMetaOpt.get();
         Assertions.assertEquals("resource.leave_request.v20210210", res1DeferMeta.getMatchedPolicy());
@@ -160,16 +182,18 @@ abstract class CerbosClientTests {
                 .putFields("keys", Values.of("XX125"))
                 .putFields("formatted_string", Values.of("id:john"))
                 .putFields("some_bool", Values.of(true))
-                .putFields("some_list", Values.of(ListValue.newBuilder().addValues(Values.of("foo")).addValues(Values.of("bar")).build()))
+                .putFields("some_list",
+                        Values.of(
+                                ListValue.newBuilder().addValues(Values.of("foo")).addValues(Values.of("bar")).build()))
                 .putFields("something_nested", Values.of(Struct.newBuilder()
                         .putFields("nested_str", Values.of("foo"))
                         .putFields("nested_bool", Values.of(false))
-                        .putFields("nested_list", Values.of(ListValue.newBuilder().addValues(Values.of("nest_foo")).addValues(Values.of(1.01)).build()))
+                        .putFields("nested_list",
+                                Values.of(ListValue.newBuilder().addValues(Values.of("nest_foo"))
+                                        .addValues(Values.of(1.01)).build()))
                         .putFields("nested_formatted_string", Values.of("id:john"))
-                        .build())
-                )
-                .build()
-        ));
+                        .build()))
+                .build()));
 
         Optional<CheckResult> res2Opt = have.find("XX225");
         Assertions.assertTrue(res2Opt.isPresent());
@@ -178,8 +202,10 @@ abstract class CerbosClientTests {
         Assertions.assertFalse(res2.isAllowed("defer"));
         Assertions.assertFalse(res2.isAllowed("approve"));
 
-        Assertions.assertIterableEquals(List.of("any_employee"), res2.getMeta().getEffectiveDerivedRoles().stream().sorted().collect(Collectors.toUnmodifiableList()));
-        Optional<Response.CheckResourcesResponse.ResultEntry.Meta.EffectMeta> res2DeferMetaOpt = res2.getMeta().getInfoForAction("defer");
+        Assertions.assertIterableEquals(List.of("any_employee"),
+                res2.getMeta().getEffectiveDerivedRoles().stream().sorted().collect(Collectors.toUnmodifiableList()));
+        Optional<Response.CheckResourcesResponse.ResultEntry.Meta.EffectMeta> res2DeferMetaOpt = res2.getMeta()
+                .getInfoForAction("defer");
         Assertions.assertFalse(res2DeferMetaOpt.isPresent());
 
         Optional<CheckResult> res3Opt = have.find("XX325");
@@ -195,49 +221,15 @@ abstract class CerbosClientTests {
 
     @Test
     public void planResources() {
-        PlanResourcesResult have =
-                this.client.plan(
-                        Principal.newInstance("maggie", "manager")
-                                .withPolicyVersion("20210210")
-                                .withAttribute("department", stringValue("marketing"))
-                                .withAttribute("geography", stringValue("GB"))
-                                .withAttribute("managed_geographies", stringValue("GB"))
-                                .withAttribute("team", stringValue("design")),
-                        Resource.newInstance("leave_request").withPolicyVersion("20210210"),
-                        "approve");
-
-        Assertions.assertEquals("approve", have.getAction());
-        Assertions.assertEquals("20210210", have.getPolicyVersion());
-        Assertions.assertEquals("leave_request", have.getResourceKind());
-        Assertions.assertFalse(have.hasValidationErrors());
-        Assertions.assertFalse(have.isAlwaysAllowed());
-        Assertions.assertFalse(have.isAlwaysDenied());
-        Assertions.assertTrue(have.isConditional());
-        Assertions.assertTrue(have.getCondition().isPresent());
-
-        Engine.PlanResourcesFilter.Expression.Operand cond = have.getCondition().get();
-
-        Engine.PlanResourcesFilter.Expression expr = cond.getExpression();
-        Assertions.assertNotNull(expr);
-        Assertions.assertEquals("and", expr.getOperator());
-
-        Engine.PlanResourcesFilter.Expression argExpr1 = expr.getOperands(0).getExpression();
-        Assertions.assertNotNull(argExpr1);
-        Assertions.assertEquals("eq", argExpr1.getOperator());
-    }
-
-    @Test
-    public void planResourcesMultipleActions() {
-        PlanResourcesResult have =
-                this.client.plan(
-                        Principal.newInstance("maggie", "manager")
-                                .withPolicyVersion("20210210")
-                                .withAttribute("department", stringValue("marketing"))
-                                .withAttribute("geography", stringValue("GB"))
-                                .withAttribute("managed_geographies", stringValue("GB"))
-                                .withAttribute("team", stringValue("design")),
-                        Resource.newInstance("leave_request").withPolicyVersion("20210210"),
-                        List.of("approve", "view:private"));
+        PlanResourcesResult have = this.client.plan(
+                Principal.newInstance("maggie", "manager")
+                        .withPolicyVersion("20210210")
+                        .withAttribute("department", stringValue("marketing"))
+                        .withAttribute("geography", stringValue("GB"))
+                        .withAttribute("managed_geographies", stringValue("GB"))
+                        .withAttribute("team", stringValue("design")),
+                Resource.newInstance("leave_request").withPolicyVersion("20210210"),
+                List.of("approve", "view:private"));
 
         Assertions.assertIterableEquals(List.of("approve", "view:private"), have.getActions());
         Assertions.assertEquals("20210210", have.getPolicyVersion());
@@ -264,21 +256,58 @@ abstract class CerbosClientTests {
     }
 
     @Test
-    public void planResourcesValidation() {
-        PlanResourcesResult have =
-                this.client.plan(
-                        Principal.newInstance("maggie", "manager")
-                                .withPolicyVersion("20210210")
-                                .withAttribute("department", stringValue("accounting"))
-                                .withAttribute("geography", stringValue("GB"))
-                                .withAttribute("managed_geographies", stringValue("GB"))
-                                .withAttribute("team", stringValue("design")),
-                        Resource.newInstance("leave_request")
-                                .withPolicyVersion("20210210")
-                                .withAttribute("department", stringValue("accounting")),
-                        "approve");
+    public void planResourcesWithRequestID() {
+        PlanResourcesResult have = this.client.plan(
+                "foo",
+                Principal.newInstance("maggie", "manager")
+                        .withPolicyVersion("20210210")
+                        .withAttribute("department", stringValue("marketing"))
+                        .withAttribute("geography", stringValue("GB"))
+                        .withAttribute("managed_geographies", stringValue("GB"))
+                        .withAttribute("team", stringValue("design")),
+                Resource.newInstance("leave_request").withPolicyVersion("20210210"),
+                List.of("approve", "view:private"));
 
-        Assertions.assertEquals("approve", have.getAction());
+        Assertions.assertEquals("foo", have.getRequestId());
+        Assertions.assertIterableEquals(List.of("approve", "view:private"), have.getActions());
+        Assertions.assertEquals("20210210", have.getPolicyVersion());
+        Assertions.assertEquals("leave_request", have.getResourceKind());
+        Assertions.assertFalse(have.hasValidationErrors());
+        Assertions.assertFalse(have.isAlwaysAllowed());
+        Assertions.assertFalse(have.isAlwaysDenied());
+        Assertions.assertTrue(have.isConditional());
+        Assertions.assertTrue(have.getCondition().isPresent());
+
+        Engine.PlanResourcesFilter.Expression.Operand cond = have.getCondition().get();
+
+        Engine.PlanResourcesFilter.Expression expr = cond.getExpression();
+        Assertions.assertNotNull(expr);
+        Assertions.assertEquals("and", expr.getOperator());
+
+        Engine.PlanResourcesFilter.Expression argExpr1 = expr.getOperands(0).getExpression();
+        Assertions.assertNotNull(argExpr1);
+        Assertions.assertEquals("and", argExpr1.getOperator());
+
+        Engine.PlanResourcesFilter.Expression argExpr2 = expr.getOperands(1).getExpression();
+        Assertions.assertNotNull(argExpr2);
+        Assertions.assertEquals("eq", argExpr2.getOperator());
+    }
+
+    @Test
+    public void planResourcesValidation() {
+        PlanResourcesResult have = this.client.plan(
+                Principal.newInstance("maggie", "manager")
+                        .withPolicyVersion("20210210")
+                        .withAttribute("department", stringValue("accounting"))
+                        .withAttribute("geography", stringValue("GB"))
+                        .withAttribute("managed_geographies", stringValue("GB"))
+                        .withAttribute("team", stringValue("design")),
+                Resource.newInstance("leave_request")
+                        .withPolicyVersion("20210210")
+                        .withAttribute("department", stringValue("accounting")),
+                List.of("approve"));
+
+        Assertions.assertIterableEquals(List.of("approve"), have.getActions());
         Assertions.assertEquals("20210210", have.getPolicyVersion());
         Assertions.assertEquals("leave_request", have.getResourceKind());
 
@@ -293,13 +322,13 @@ abstract class CerbosClientTests {
     @Test
     public void partialCheckRequest() {
         CerbosException have = Assertions.assertThrows(CerbosException.class, () -> {
-                    this.client.check(
-                            Principal.newInstance("john")
-                                    .withPolicyVersion("20210210"),
-                            Resource.newInstance("leave_request", "")
-                                    .withPolicyVersion("20210210"),
-                            "view:public",
-                            "approve");
+            this.client.check(
+                    Principal.newInstance("john")
+                            .withPolicyVersion("20210210"),
+                    Resource.newInstance("leave_request", "")
+                            .withPolicyVersion("20210210"),
+                    "view:public",
+                    "approve");
         });
         Assertions.assertEquals(Status.INVALID_ARGUMENT.getCode().value(), have.getStatusCode());
     }
@@ -312,7 +341,7 @@ abstract class CerbosClientTests {
                             .withPolicyVersion("20210210"),
                     Resource.newInstance("leave_request", "")
                             .withPolicyVersion("20210210"),
-                    "view:public");
+                    List.of("view:public"));
         });
         Assertions.assertEquals(Status.INVALID_ARGUMENT.getCode().value(), have.getStatusCode());
     }
