@@ -15,10 +15,9 @@ plugins {
     id("com.gradleup.shadow") version "9.6.1"
 }
 
-val gitVersion: groovy.lang.Closure<String> by extra
-
 val projectVersion: String by lazy {
-    val versionDetails: groovy.lang.Closure<com.palantir.gradle.gitversion.VersionDetails> by extra
+    @Suppress("UNCHECKED_CAST")
+    val versionDetails = project.extra["versionDetails"] as groovy.lang.Closure<com.palantir.gradle.gitversion.VersionDetails>
     with(versionDetails()) {
         val version = lastTag.removePrefix("v")
         if (commitDistance > 0) {
@@ -162,7 +161,6 @@ configure<org.jreleaser.gradle.plugin.JReleaserExtension> {
 
     signing {
         active.set(org.jreleaser.model.Active.ALWAYS)
-        armored.set(true)
     }
 
     deploy {
