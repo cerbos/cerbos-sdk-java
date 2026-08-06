@@ -150,6 +150,8 @@ message RolePolicy {
     },
     deprecated = true
   ];
+  Variables variables = 7;
+  Constants constants = 8;
 }
 
 message RoleRule {
@@ -168,6 +170,8 @@ message RoleRule {
     (buf.validate.field).required = true
   ];
   Condition condition = 3;
+  string name = 4 [(buf.validate.field).string.pattern = "^([a-zA-Z][\\w\\@\\.\\-]*)*$"];
+  Output output = 5;
 }
 
 message PrincipalPolicy {
@@ -682,7 +686,8 @@ message TestResults {
       Success success = 5;
       string skip_reason = 6;
     }
-    repeated cerbos.engine.v1.Trace engine_trace = 4;
+    repeated cerbos.engine.v1.Trace engine_trace = 4 [deprecated = true];
+    cerbos.engine.v1.TraceBatch engine_trace_batch = 7;
   }
 
   message OutputFailure {
@@ -695,10 +700,16 @@ message TestResults {
       google.protobuf.Value expected = 1;
     }
 
+    message EvaluationError {
+      google.protobuf.Value expected = 1;
+      string error = 2;
+    }
+
     string src = 1;
     oneof outcome {
       MismatchedValue mismatched = 2;
       MissingValue missing = 3;
+      EvaluationError errored = 4;
     }
   }
 

@@ -15,6 +15,7 @@ import dev.cerbos.sdk.builders.AuxData;
 import dev.cerbos.sdk.builders.Principal;
 import dev.cerbos.sdk.builders.Resource;
 import dev.cerbos.sdk.builders.ResourceAction;
+import dev.cerbos.sdk.builders.AuxData.JWT;
 import io.grpc.Status;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 import static dev.cerbos.sdk.builders.AttributeValue.stringValue;
 
 abstract class CerbosClientTests {
-    static final String JWT = "eyJhbGciOiJFUzM4NCIsImtpZCI6IjE5TGZaYXRFZGc4M1lOYzVyMjNndU1KcXJuND0iLCJ0eXAiOiJKV1QifQ.eyJhdWQiOlsiY2VyYm9zLWp3dC10ZXN0cyJdLCJjdXN0b21BcnJheSI6WyJBIiwiQiIsIkMiXSwiY3VzdG9tSW50Ijo0MiwiY3VzdG9tTWFwIjp7IkEiOiJBQSIsIkIiOiJCQiIsIkMiOiJDQyJ9LCJjdXN0b21TdHJpbmciOiJmb29iYXIiLCJleHAiOjE5NTAyNzc5MjYsImlzcyI6ImNlcmJvcy10ZXN0LXN1aXRlIn0._nCHIsuFI3wczeuUv_xjSwaVnIQUdYA9sGf_jVsrsDWloLs3iPWDaA1bXpuIUJVsi8-G6qqdrPI0cOBxEocg1NCm8fyD9T_3hsZV0fYWon_Je6Kl93a3JIW3S6kbvjsL";
+    static final String JWT_STRING = "eyJhbGciOiJFUzM4NCIsImtpZCI6IjE5TGZaYXRFZGc4M1lOYzVyMjNndU1KcXJuND0iLCJ0eXAiOiJKV1QifQ.eyJhdWQiOlsiY2VyYm9zLWp3dC10ZXN0cyJdLCJjdXN0b21BcnJheSI6WyJBIiwiQiIsIkMiXSwiY3VzdG9tSW50Ijo0MiwiY3VzdG9tTWFwIjp7IkEiOiJBQSIsIkIiOiJCQiIsIkMiOiJDQyJ9LCJjdXN0b21TdHJpbmciOiJmb29iYXIiLCJleHAiOjE5NTAyNzc5MjYsImlzcyI6ImNlcmJvcy10ZXN0LXN1aXRlIn0._nCHIsuFI3wczeuUv_xjSwaVnIQUdYA9sGf_jVsrsDWloLs3iPWDaA1bXpuIUJVsi8-G6qqdrPI0cOBxEocg1NCm8fyD9T_3hsZV0fYWon_Je6Kl93a3JIW3S6kbvjsL";
 
     CerbosBlockingClient client;
 
@@ -80,7 +81,7 @@ abstract class CerbosClientTests {
     @Test
     public void checkWithJWT() {
         CheckResult have = this.client
-                .with(AuxData.withJWT(JWT))
+                .with(AuxData.withJWT(JWT_STRING))
                 .check(
                         Principal.newInstance("john", "employee")
                                 .withPolicyVersion("20210210")
@@ -100,9 +101,31 @@ abstract class CerbosClientTests {
     }
 
     @Test
+    public void checkWithJWTs() {
+        CheckResult have = this.client
+                .with(AuxData.withJWTs(Map.of("token_a", JWT.from(JWT_STRING), "token_b", JWT.from(JWT_STRING))))
+                .check(
+                        Principal.newInstance("john", "employee")
+                                .withPolicyVersion("20210210")
+                                .withAttribute("team", stringValue("design"))
+                                .withAttribute("department", stringValue("marketing"))
+                                .withAttribute("geography", stringValue("GB")),
+                        Resource.newInstance("leave_request", "xx125")
+                                .withPolicyVersion("20210210")
+                                .withAttribute("id", stringValue("xx125"))
+                                .withAttribute("team", stringValue("design"))
+                                .withAttribute("department", stringValue("marketing"))
+                                .withAttribute("geography", stringValue("GB"))
+                                .withAttribute("owner", stringValue("john")),
+                        "frobnicate");
+
+        Assertions.assertTrue(have.isAllowed("frobnicate"));
+    }
+
+    @Test
     public void checkResources() {
         CheckResourcesResult have = this.client
-                .with(AuxData.withJWT(JWT))
+                .with(AuxData.withJWT(JWT_STRING))
                 .batch(
                         Principal.newInstance("john", "employee")
                                 .withPolicyVersion("20210210")
