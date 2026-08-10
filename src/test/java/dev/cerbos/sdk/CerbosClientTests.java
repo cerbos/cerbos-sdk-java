@@ -11,6 +11,7 @@ import com.google.protobuf.Value;
 import com.google.protobuf.util.Values;
 import dev.cerbos.api.v1.engine.Engine;
 import dev.cerbos.api.v1.response.Response;
+import dev.cerbos.sdk.CheckResult.Outputs.Entry;
 import dev.cerbos.sdk.builders.AuxData;
 import dev.cerbos.sdk.builders.Principal;
 import dev.cerbos.sdk.builders.Resource;
@@ -196,9 +197,13 @@ abstract class CerbosClientTests {
         Response.CheckResourcesResponse.ResultEntry.Meta.EffectMeta res1DeferMeta = res1DeferMetaOpt.get();
         Assertions.assertEquals("resource.leave_request.v20210210", res1DeferMeta.getMatchedPolicy());
 
-        Map<String, Value> res1Outputs = res1.getOutputs().asMap();
+        Map<String, Entry> res1Outputs = res1.getOutputs().entriesAsMap();
         Assertions.assertEquals(1, res1Outputs.size());
-        Value res1ViewOutput = res1Outputs.get("resource.leave_request.v20210210#public-view");
+        Entry res1ViewOutputEntry = res1Outputs.get("resource.leave_request.v20210210#public-view");
+        Assertions.assertNotNull(res1ViewOutputEntry);
+        Assertions.assertEquals("view:public", res1ViewOutputEntry.getAction());
+
+        Value res1ViewOutput = res1ViewOutputEntry.getValue();
         Assertions.assertNotNull(res1ViewOutput);
         Assertions.assertEquals(res1ViewOutput, Values.of(Struct.newBuilder()
                 .putFields("pID", Values.of("john"))
