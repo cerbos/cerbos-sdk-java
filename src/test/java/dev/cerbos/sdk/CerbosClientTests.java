@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static dev.cerbos.sdk.builders.AttributeValue.nullValue;
 import static dev.cerbos.sdk.builders.AttributeValue.stringValue;
 
 abstract class CerbosClientTests {
@@ -40,7 +41,8 @@ abstract class CerbosClientTests {
                         .withPolicyVersion("20210210")
                         .withAttribute("team", stringValue("design"))
                         .withAttribute("department", stringValue("marketing"))
-                        .withAttribute("geography", stringValue("GB")),
+                        .withAttribute("geography", stringValue("GB"))
+                        .withAttribute("country", nullValue()),
                 Resource.newInstance("leave_request", "xx125")
                         .withPolicyVersion("20210210")
                         .withAttribute("id", stringValue("xx125"))
