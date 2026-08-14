@@ -51,6 +51,10 @@ public final class AttributeValue {
         return new AttributeValue(Values.of(builder.build()));
     }
 
+    public static AttributeValue nullValue() {
+        return new AttributeValue(Values.ofNull());
+    }
+
     public Value toValue() {
         return value;
     }
