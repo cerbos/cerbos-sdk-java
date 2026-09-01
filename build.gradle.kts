@@ -10,8 +10,8 @@ plugins {
     idea
     `maven-publish`
     id("com.google.protobuf") version "0.10.0"
-    id("com.palantir.git-version") version "5.0.0"
-    id("org.jreleaser") version "1.25.0"
+    id("com.palantir.git-version") version "5.1.0"
+    id("org.jreleaser") version "1.26.0"
     id("com.gradleup.shadow") version "9.6.1"
 }
 
@@ -43,7 +43,7 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.36.0"
+        artifact = "com.google.protobuf:protoc:4.36.1"
     }
 
     plugins {
@@ -62,14 +62,14 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.36.0")
-    implementation("com.google.protobuf:protobuf-java-util:4.36.0")
+    implementation("com.google.protobuf:protobuf-java:4.36.1")
+    implementation("com.google.protobuf:protobuf-java-util:4.36.1")
     implementation("io.grpc:grpc-protobuf:1.83.1")
     implementation("io.grpc:grpc-stub:1.83.1")
     implementation("io.grpc:grpc-netty-shaded:1.83.1")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.81.Final")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.83.Final")
     implementation("org.testcontainers:testcontainers:2.0.5")
-    implementation("build.buf:protovalidate:1.2.2")
+    implementation("build.buf:protovalidate:1.3.0")
     implementation("commons-io:commons-io:2.22.0")
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.4.0")
