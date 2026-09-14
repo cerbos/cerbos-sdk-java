@@ -67,7 +67,7 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.84.0")
     implementation("io.grpc:grpc-stub:1.84.0")
     implementation("io.grpc:grpc-netty-shaded:1.84.0")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.83.Final")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.84.Final")
     implementation("org.testcontainers:testcontainers:2.0.5")
     implementation("build.buf:protovalidate:1.3.0")
     implementation("commons-io:commons-io:2.22.0")
