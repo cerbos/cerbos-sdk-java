@@ -91,6 +91,9 @@ tasks.withType<JavaCompile> {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+    this.testLogging {
+        this.showStandardStreams = true
+    }
 }
 
 tasks.shadowJar {
