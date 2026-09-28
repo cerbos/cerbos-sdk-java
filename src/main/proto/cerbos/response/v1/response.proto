@@ -73,10 +73,11 @@ message CheckResourceSetResponse {
 
   message ActionEffectMap {
     map<string, cerbos.effect.v1.Effect> actions = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Mapping of each action to an effect."}];
-    repeated cerbos.schema.v1.ValidationError validation_errors = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description:
+    repeated cerbos.schema.v1.ValidationError validation_errors = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description:
         "List of validation errors (if schema validation is "
         "enabled)"
-}];
+    }];
   }
 
   message Meta {
@@ -164,10 +165,11 @@ message CheckResourceBatchResponse {
       description: "Mapping of each action to an effect."
       example: "{\"view\":\"EFFECT_ALLOW\"}"
     }];
-    repeated cerbos.schema.v1.ValidationError validation_errors = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description:
+    repeated cerbos.schema.v1.ValidationError validation_errors = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description:
         "List of validation errors (if schema validation is "
         "enabled)"
-}];
+    }];
   }
 
   string request_id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
@@ -256,10 +258,11 @@ message CheckResourcesResponse {
       description: "Mapping of each action to an effect."
       example: "{\"view\":\"EFFECT_ALLOW\"}"
     }];
-    repeated cerbos.schema.v1.ValidationError validation_errors = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description:
+    repeated cerbos.schema.v1.ValidationError validation_errors = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description:
         "List of validation errors (if schema validation is "
         "enabled)"
-}];
+    }];
     Meta meta = 4 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       description: "Metadata about policy evaluation"
       example:

@@ -47,14 +47,15 @@ public final class CheckResult {
             return false;
         }
 
-        return this.entry.getActionsMap().getOrDefault(action, EffectOuterClass.Effect.EFFECT_DENY)
-                == EffectOuterClass.Effect.EFFECT_ALLOW;
+        return this.entry.getActionsMap().getOrDefault(action,
+                EffectOuterClass.Effect.EFFECT_DENY) == EffectOuterClass.Effect.EFFECT_ALLOW;
     }
 
     /**
      * Return all actions and effects in this instance.
      *
-     * @return Map of action to boolean indicating whether the action is allowed or not
+     * @return Map of action to boolean indicating whether the action is allowed or
+     *         not
      */
     public Map<String, Boolean> getAll() {
         if (this.entry == null) {
@@ -83,7 +84,8 @@ public final class CheckResult {
     /**
      * Returns the list of validation errors if there are any.
      *
-     * @return List of {@link dev.cerbos.api.v1.schema.SchemaOuterClass.ValidationError}
+     * @return List of
+     *         {@link dev.cerbos.api.v1.schema.SchemaOuterClass.ValidationError}
      */
     public List<SchemaOuterClass.ValidationError> getValidationErrors() {
         if (this.entry == null) {
@@ -170,11 +172,54 @@ public final class CheckResult {
          * @return Map of output rule names and {@link Value}
          */
         public Map<String, Value> asMap() {
-            return this.outputs.stream().collect(Collectors.toUnmodifiableMap(Engine.OutputEntry::getSrc, Engine.OutputEntry::getVal));
+            return this.outputs.stream()
+                    .collect(Collectors.toUnmodifiableMap(Engine.OutputEntry::getSrc, Engine.OutputEntry::getVal));
+        }
+
+        /**
+         * Returns the output entries as a map keyed by rule name.
+         *
+         * @return Map of output rule names and {@link Entry}
+         */
+        public Map<String, Entry> entriesAsMap() {
+            return this.outputs.stream()
+                    .collect(Collectors.toUnmodifiableMap(Engine.OutputEntry::getSrc, (entry) -> {
+                        return new Entry(entry.getSrc(), entry.getVal(), entry.getAction(), entry.getError());
+                    }));
         }
 
         public List<Engine.OutputEntry> getRaw() {
             return this.outputs;
+        }
+
+        public static final class Entry {
+            private final String source;
+            private final Value value;
+            private final String action;
+            private final Optional<String> error;
+
+            Entry(String source, Value value, String action, String error) {
+                this.source = source;
+                this.value = value;
+                this.action = action;
+                this.error = Optional.ofNullable(error);
+            }
+
+            public String getSource() {
+                return source;
+            }
+
+            public Value getValue() {
+                return value;
+            }
+
+            public String getAction() {
+                return action;
+            }
+
+            public Optional<String> getError() {
+                return error;
+            }
         }
     }
 }

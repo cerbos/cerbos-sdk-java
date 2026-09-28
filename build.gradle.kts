@@ -16,10 +16,9 @@ plugins {
     jacoco
 }
 
-val gitVersion: groovy.lang.Closure<String> by extra
-
 val projectVersion: String by lazy {
-    val versionDetails: groovy.lang.Closure<com.palantir.gradle.gitversion.VersionDetails> by extra
+    @Suppress("UNCHECKED_CAST")
+    val versionDetails = project.extra["versionDetails"] as groovy.lang.Closure<com.palantir.gradle.gitversion.VersionDetails>
     with(versionDetails()) {
         val version = lastTag.removePrefix("v")
         if (commitDistance > 0) {
@@ -45,12 +44,12 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.34.1"
+        artifact = "com.google.protobuf:protoc:4.36.2"
     }
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.81.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.84.0"
         }
     }
 
@@ -64,26 +63,26 @@ protobuf {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.34.1")
-    implementation("com.google.protobuf:protobuf-java-util:4.34.1")
-    implementation("io.grpc:grpc-protobuf:1.81.0")
-    implementation("io.grpc:grpc-stub:1.81.0")
-    implementation("io.grpc:grpc-netty-shaded:1.81.0")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.77.Final")
+    implementation("com.google.protobuf:protobuf-java:4.36.2")
+    implementation("com.google.protobuf:protobuf-java-util:4.36.2")
+    implementation("io.grpc:grpc-protobuf:1.84.0")
+    implementation("io.grpc:grpc-stub:1.84.0")
+    implementation("io.grpc:grpc-netty-shaded:1.84.0")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.84.Final")
     implementation("org.testcontainers:testcontainers:2.0.5")
-    implementation("build.buf:protovalidate:1.2.2")
+    implementation("build.buf:protovalidate:1.3.0")
     implementation("commons-io:commons-io:2.22.0")
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.4.0")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.3")
     testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.3")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("ch.qos.logback:logback-core:1.5.32")
-    testImplementation("ch.qos.logback:logback-classic:1.5.32")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.3")
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.3")
+    testImplementation("ch.qos.logback:logback-core:1.6.3")
+    testImplementation("ch.qos.logback:logback-classic:1.6.3")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.22.2")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.2")
 }
 
 tasks.withType<JavaCompile> {
@@ -176,7 +175,6 @@ configure<org.jreleaser.gradle.plugin.JReleaserExtension> {
 
     signing {
         active.set(org.jreleaser.model.Active.ALWAYS)
-        armored.set(true)
     }
 
     deploy {

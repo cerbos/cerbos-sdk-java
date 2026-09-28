@@ -26,7 +26,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * CerbosBlockingClient provides a client implementation that blocks waiting for a response from the
+ * CerbosBlockingClient provides a client implementation that blocks waiting for
+ * a response from the
  * PDP.
  */
 public class CerbosBlockingClient {
@@ -35,7 +36,6 @@ public class CerbosBlockingClient {
     private final Optional<AuxData> auxData;
     private final Optional<Metadata> headerMetadata;
     private final Optional<Map<String, Value>> requestAnnotations;
-
 
     CerbosBlockingClient(
             Channel channel, long timeoutMillis, PlaygroundInstanceCredentials playgroundCredentials) {
@@ -52,7 +52,8 @@ public class CerbosBlockingClient {
     }
 
     CerbosBlockingClient(
-            CerbosServiceGrpc.CerbosServiceBlockingStub cerbosStub, long timeoutMillis, Optional<AuxData> auxData, Optional<Metadata> headerMetadata, Optional<Map<String, Value>> requestAnnotations) {
+            CerbosServiceGrpc.CerbosServiceBlockingStub cerbosStub, long timeoutMillis, Optional<AuxData> auxData,
+            Optional<Metadata> headerMetadata, Optional<Map<String, Value>> requestAnnotations) {
         this.cerbosStub = cerbosStub;
         this.timeoutMillis = timeoutMillis;
         this.auxData = auxData;
@@ -61,7 +62,9 @@ public class CerbosBlockingClient {
     }
 
     private CerbosServiceGrpc.CerbosServiceBlockingStub withClient() {
-        CerbosServiceGrpc.CerbosServiceBlockingStub stub = this.headerMetadata.map(md -> cerbosStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(md))).orElse(cerbosStub);
+        CerbosServiceGrpc.CerbosServiceBlockingStub stub = this.headerMetadata
+                .map(md -> cerbosStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(md)))
+                .orElse(cerbosStub);
         return stub.withDeadlineAfter(timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
@@ -69,27 +72,32 @@ public class CerbosBlockingClient {
      * Automatically attach the provided auxiliary data to requests.
      *
      * @param auxData {@link AuxData} instance
-     * @return new CerbosBlockingClient configured to attach the auxiliary data to requests.
+     * @return new CerbosBlockingClient configured to attach the auxiliary data to
+     *         requests.
      */
     public CerbosBlockingClient with(AuxData auxData) {
-        return new CerbosBlockingClient(cerbosStub, timeoutMillis, Optional.ofNullable(auxData), headerMetadata, requestAnnotations);
+        return new CerbosBlockingClient(cerbosStub, timeoutMillis, Optional.ofNullable(auxData), headerMetadata,
+                requestAnnotations);
     }
 
     /**
      * Attach the given header metadata to the Cerbos request
      *
      * @param md {@link Metadata}
-     * @return new CerbosBlockingClient configured to attach given headers to the requests.
+     * @return new CerbosBlockingClient configured to attach given headers to the
+     *         requests.
      */
     public CerbosBlockingClient withHeaders(Metadata md) {
-        return new CerbosBlockingClient(cerbosStub, timeoutMillis, auxData, Optional.ofNullable(md), requestAnnotations);
+        return new CerbosBlockingClient(cerbosStub, timeoutMillis, auxData, Optional.ofNullable(md),
+                requestAnnotations);
     }
 
     /**
      * Attach the given headers to the Cerbos request.
      *
      * @param headers Map of key-value pairs
-     * @return new CerbosBlockingClient configured to attach the given headers to the requests.
+     * @return new CerbosBlockingClient configured to attach the given headers to
+     *         the requests.
      */
     public CerbosBlockingClient withHeaders(Map<String, String> headers) {
         Metadata md = new Metadata();
@@ -98,50 +106,57 @@ public class CerbosBlockingClient {
     }
 
     /**
-     * Attach the given key-value pairs to the request context of the Cerbos requests.
-     * These values are captured by the audit logs and can be used to provide additional context for log analysis.
+     * Attach the given key-value pairs to the request context of the Cerbos
+     * requests.
+     * These values are captured by the audit logs and can be used to provide
+     * additional context for log analysis.
      * Passing null clears the annotations.
      *
      * @param annotations key-value pairs of annotations to add to the context.
-     * @return new CerbosBlockingClient configured to attach the given annotations to requests.
+     * @return new CerbosBlockingClient configured to attach the given annotations
+     *         to requests.
      */
     public CerbosBlockingClient withRequestAnnotations(Map<String, AttributeValue> annotations) {
         if (annotations == null) {
             return new CerbosBlockingClient(cerbosStub, timeoutMillis, auxData, headerMetadata, Optional.empty());
         }
 
-        Map<String, Value> valueMap = annotations.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().toValue()));
+        Map<String, Value> valueMap = annotations.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().toValue()));
         return new CerbosBlockingClient(cerbosStub, timeoutMillis, auxData, headerMetadata, Optional.of(valueMap));
     }
 
     /**
-     * Check whether the principal is allowed to perform the actions on the given resource.
+     * Check whether the principal is allowed to perform the actions on the given
+     * resource.
      *
+     * @param requestId Request ID
      * @param principal Principal performing the action
      * @param resource  Resource being accessed
      * @param actions   List of actions being performed on the resource
-     * @return Map keyed by action and a corresponding boolean to indicate whether it is allowed or
-     * not.
+     * @return Map keyed by action and a corresponding boolean to indicate whether
+     *         it is allowed or
+     *         not.
      * @throws CerbosException if an RPC error occurs
      */
-    public CheckResult check(Principal principal, Resource resource, String... actions) {
-        Request.AuxData ad =
-                this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance);
-        Audit.RequestContext reqCtx = this.requestAnnotations.map(a -> Audit.RequestContext.newBuilder().putAllAnnotations(a).build()).orElse(Audit.RequestContext.getDefaultInstance());
-        Request.CheckResourcesRequest request =
-                Request.CheckResourcesRequest.newBuilder()
-                        .setRequestId(RequestId.generate())
-                        .setPrincipal(principal.toPrincipal())
-                        .setAuxData(ad)
-                        .addResources(
-                                Request.CheckResourcesRequest.ResourceEntry.newBuilder()
-                                        .setResource(resource.toResource())
-                                        .addAllActions(Arrays.asList(actions))
-                                        .build())
-                        .build();
+    public CheckResult check(String requestId, Principal principal, Resource resource, String... actions) {
+        Request.AuxData ad = this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance);
+        Request.CheckResourcesRequest request = Request.CheckResourcesRequest.newBuilder()
+                .setRequestId(requestId)
+                .setPrincipal(principal.toPrincipal())
+                .setAuxData(ad)
+                .addResources(
+                        Request.CheckResourcesRequest.ResourceEntry.newBuilder()
+                                .setResource(resource.toResource())
+                                .addAllActions(Arrays.asList(actions))
+                                .build())
+                .build();
 
         if (requestAnnotations.isPresent()) {
-            request = request.toBuilder().setRequestContext(Audit.RequestContext.newBuilder().putAllAnnotations(requestAnnotations.get()).build()).build();
+            request = request.toBuilder()
+                    .setRequestContext(
+                            Audit.RequestContext.newBuilder().putAllAnnotations(requestAnnotations.get()).build())
+                    .build();
         }
 
         try {
@@ -156,6 +171,22 @@ public class CerbosBlockingClient {
     }
 
     /**
+     * Check whether the principal is allowed to perform the actions on the given
+     * resource.
+     *
+     * @param principal Principal performing the action
+     * @param resource  Resource being accessed
+     * @param actions   List of actions being performed on the resource
+     * @return Map keyed by action and a corresponding boolean to indicate whether
+     *         it is allowed or
+     *         not.
+     * @throws CerbosException if an RPC error occurs
+     */
+    public CheckResult check(Principal principal, Resource resource, String... actions) {
+        return check(RequestId.generate(), principal, resource, actions);
+    }
+
+    /**
      * Build a new batch request using the given principal.
      *
      * @param principal Principal performing the actions on resources.
@@ -164,6 +195,23 @@ public class CerbosBlockingClient {
     public CheckResourcesRequestBuilder batch(Principal principal) {
         return new CheckResourcesRequestBuilder(
                 this::withClient,
+                RequestId.generate(),
+                this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance),
+                this.requestAnnotations,
+                principal.toPrincipal());
+    }
+
+    /**
+     * Build a new batch request using the given request ID and principal.
+     *
+     * @param requestId Request ID
+     * @param principal Principal performing the actions on resources.
+     * @return Instance of {@link CheckResourcesRequestBuilder}
+     */
+    public CheckResourcesRequestBuilder batch(String requestId, Principal principal) {
+        return new CheckResourcesRequestBuilder(
+                this::withClient,
+                requestId,
                 this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance),
                 this.requestAnnotations,
                 principal.toPrincipal());
@@ -178,34 +226,38 @@ public class CerbosBlockingClient {
      */
     public CheckResourcesRequestBuilder batch(Principal principal, AuxData auxData) {
         return new CheckResourcesRequestBuilder(
-                this::withClient, auxData.toAuxData(), this.requestAnnotations, principal.toPrincipal());
+                this::withClient, RequestId.generate(), auxData.toAuxData(), this.requestAnnotations,
+                principal.toPrincipal());
     }
 
     /**
-     * Obtain a query plan for performing the given action on the given resource kind.
+     * Obtain a query plan for performing the given action on the given resource
+     * kind.
      *
      * @param principal Principal performing the action on the resource kind.
      * @param resource  Resource kind.
      * @param action    Action to generate the plan for.
      * @return Instance of {@link PlanResourcesResult}
      * @throws CerbosException if the RPC fails.
+     * @deprecated Use {@link #plan(Principal, Resource, Iterable)} instead.
      */
-    @SuppressWarnings("deprecation")
+    @Deprecated
     public PlanResourcesResult plan(Principal principal, Resource resource, String action) {
-        Request.AuxData ad =
-                this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance);
+        Request.AuxData ad = this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance);
 
-        Request.PlanResourcesRequest request =
-                Request.PlanResourcesRequest.newBuilder()
-                        .setRequestId(RequestId.generate())
-                        .setPrincipal(principal.toPrincipal())
-                        .setResource(resource.toPlanResource())
-                        .setAuxData(ad)
-                        .setAction(action)
-                        .build();
+        Request.PlanResourcesRequest request = Request.PlanResourcesRequest.newBuilder()
+                .setRequestId(RequestId.generate())
+                .setPrincipal(principal.toPrincipal())
+                .setResource(resource.toPlanResource())
+                .setAuxData(ad)
+                .setAction(action)
+                .build();
 
         if (requestAnnotations.isPresent()) {
-            request = request.toBuilder().setRequestContext(Audit.RequestContext.newBuilder().putAllAnnotations(requestAnnotations.get()).build()).build();
+            request = request.toBuilder()
+                    .setRequestContext(
+                            Audit.RequestContext.newBuilder().putAllAnnotations(requestAnnotations.get()).build())
+                    .build();
         }
 
         try {
@@ -217,7 +269,8 @@ public class CerbosBlockingClient {
     }
 
     /**
-     * Obtain a query plan for performing the given actions on the given resource kind.
+     * Obtain a query plan for performing the given actions on the given resource
+     * kind.
      * Requires Cerbos 0.44.0 and above.
      *
      * @param principal Principal performing the action on the resource kind.
@@ -227,20 +280,38 @@ public class CerbosBlockingClient {
      * @throws CerbosException if the RPC fails.
      */
     public PlanResourcesResult plan(Principal principal, Resource resource, Iterable<String> actions) {
-        Request.AuxData ad =
-                this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance);
+        return plan(RequestId.generate(), principal, resource, actions);
+    }
 
-        Request.PlanResourcesRequest request =
-                Request.PlanResourcesRequest.newBuilder()
-                        .setRequestId(RequestId.generate())
-                        .setPrincipal(principal.toPrincipal())
-                        .setResource(resource.toPlanResource())
-                        .setAuxData(ad)
-                        .addAllActions(actions)
-                        .build();
+    /**
+     * Obtain a query plan for performing the given actions on the given resource
+     * kind.
+     * Requires Cerbos 0.44.0 and above.
+     *
+     * @param requestId Request ID
+     * @param principal Principal performing the action on the resource kind.
+     * @param resource  Resource kind.
+     * @param actions   Actions to generate the plan for.
+     * @return Instance of {@link PlanResourcesResult}
+     * @throws CerbosException if the RPC fails.
+     */
+    public PlanResourcesResult plan(String requestId, Principal principal, Resource resource,
+            Iterable<String> actions) {
+        Request.AuxData ad = this.auxData.map(AuxData::toAuxData).orElseGet(Request.AuxData::getDefaultInstance);
+
+        Request.PlanResourcesRequest request = Request.PlanResourcesRequest.newBuilder()
+                .setRequestId(requestId)
+                .setPrincipal(principal.toPrincipal())
+                .setResource(resource.toPlanResource())
+                .setAuxData(ad)
+                .addAllActions(actions)
+                .build();
 
         if (requestAnnotations.isPresent()) {
-            request = request.toBuilder().setRequestContext(Audit.RequestContext.newBuilder().putAllAnnotations(requestAnnotations.get()).build()).build();
+            request = request.toBuilder()
+                    .setRequestContext(
+                            Audit.RequestContext.newBuilder().putAllAnnotations(requestAnnotations.get()).build())
+                    .build();
         }
 
         try {

@@ -11,6 +11,7 @@ import dev.cerbos.api.v1.engine.Engine;
 import dev.cerbos.api.v1.request.Request;
 import dev.cerbos.api.v1.response.Response;
 import dev.cerbos.api.v1.svc.CerbosServiceGrpc;
+import dev.cerbos.sdk.builders.AuxData;
 import dev.cerbos.sdk.builders.Resource;
 import dev.cerbos.sdk.builders.ResourceAction;
 import io.grpc.StatusRuntimeException;
@@ -27,17 +28,39 @@ public class CheckResourcesRequestBuilder {
 
     CheckResourcesRequestBuilder(
             Supplier<CerbosServiceGrpc.CerbosServiceBlockingStub> clientStub,
+            String requestId,
             Request.AuxData auxData,
             Optional<Map<String, Value>> requestAnnotations,
             Engine.Principal principal) {
         this.clientStub = clientStub;
-        this.requestBuilder =
-                Request.CheckResourcesRequest.newBuilder()
-                        .setRequestId(RequestId.generate())
-                        .setPrincipal(principal)
-                        .setAuxData(auxData);
-       requestAnnotations.map(a -> this.requestBuilder.setRequestContext(Audit.RequestContext.newBuilder().putAllAnnotations(a).build()));
+        this.requestBuilder = Request.CheckResourcesRequest.newBuilder()
+                .setRequestId(requestId)
+                .setPrincipal(principal)
+                .setAuxData(auxData);
+        requestAnnotations.map(a -> this.requestBuilder
+                .setRequestContext(Audit.RequestContext.newBuilder().putAllAnnotations(a).build()));
 
+    }
+
+    /**
+     * Set the request ID for this batch.
+     *
+     * @param requestId Request ID
+     * @return {@link CheckResourcesRequestBuilder}
+     */
+    public CheckResourcesRequestBuilder withRequestId(String requestId) {
+        this.requestBuilder.setRequestId(requestId);
+        return this;
+    }
+
+    /**
+     * Set auxData for this batch
+     *
+     * @param auxData {@link AuxData} instance
+     */
+    public CheckResourcesRequestBuilder withAuxData(AuxData auxData) {
+        this.requestBuilder.setAuxData(auxData.toAuxData());
+        return this;
     }
 
     /**
@@ -86,8 +109,7 @@ public class CheckResourcesRequestBuilder {
      */
     public CheckResourcesResult check() {
         try {
-            Response.CheckResourcesResponse resp =
-                    clientStub.get().checkResources(requestBuilder.build());
+            Response.CheckResourcesResponse resp = clientStub.get().checkResources(requestBuilder.build());
             return new CheckResourcesResult(resp);
         } catch (StatusRuntimeException sre) {
             throw new CerbosException(sre.getStatus(), sre.getCause());
