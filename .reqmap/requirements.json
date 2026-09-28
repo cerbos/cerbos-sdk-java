@@ -1,0 +1,2903 @@
+{
+  "schema": 1,
+  "kind": "requirements",
+  "git_sha": "6ba1f6844beb2a18d69e71daafc18013f1eb62c9",
+  "generated_at": "2026-09-28",
+  "scope": {
+    "name": "cerbos-sdk-java",
+    "include": [
+      "src/main/java/dev/cerbos/sdk/**"
+    ],
+    "excluded": [
+      "src/main/proto/**",
+      "generated dev/cerbos/api/** code",
+      ".github/**",
+      "src/test/java/dev/cerbos/sdk/PlaygroundIT.java",
+      "src/main/java/dev/cerbos/sdk/hub/** (Cerbos Hub store client)",
+      "src/main/resources/service_config.json (Hub gRPC service config)",
+      "src/test/java/dev/cerbos/sdk/hub/**"
+    ]
+  },
+  "features": [
+    {
+      "id": "CLIENT-CONFIG",
+      "name": "PDP and admin client configuration",
+      "summary": "Building PDP and admin clients: transport security, timeouts, credentials, headers, audit annotations and RPC error reporting."
+    },
+    {
+      "id": "CHECK",
+      "name": "Authorisation checks",
+      "summary": "Single and batch permission checks, the request builders for principals and resources, and reading decisions, metadata and outputs."
+    },
+    {
+      "id": "PLAN",
+      "name": "Query planning",
+      "summary": "PlanResources calls that tell the caller which resources a principal may act on, and how to read the plan."
+    },
+    {
+      "id": "ADMIN",
+      "name": "Admin API",
+      "summary": "Managing policies and schemas in a mutable Cerbos policy store: bulk add or update, list, get, enable, disable, delete, purge and reload."
+    },
+    {
+      "id": "TEST-SUPPORT",
+      "name": "Testcontainers support",
+      "summary": "The CerbosContainer helper for running a Cerbos PDP in integration tests."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-CLIENT-CONFIG-001",
+      "feature": "CLIENT-CONFIG",
+      "title": "Reject a missing server target",
+      "statement": "When the target address is null or blank, building a PDP or admin client fails with InvalidClientConfigurationException (\"Invalid target [...]\") and no connection is opened.",
+      "kind": "validation",
+      "risk": "low",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            31,
+            33
+          ],
+          "symbol": "isEmptyString"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            80,
+            83
+          ],
+          "symbol": "CerbosClientBuilder.buildChannel"
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "target",
+          "values": [
+            "null",
+            "blank",
+            "non-blank"
+          ],
+          "evidence": {
+            "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+            "lines": [
+              81,
+              83
+            ]
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "target": "null"
+          },
+          "expect": "InvalidClientConfigurationException",
+          "tests": []
+        },
+        {
+          "given": {
+            "target": "blank"
+          },
+          "expect": "InvalidClientConfigurationException",
+          "tests": []
+        },
+        {
+          "given": {
+            "target": "non-blank"
+          },
+          "expect": "client built",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-002",
+      "feature": "CLIENT-CONFIG",
+      "title": "TLS by default, plaintext on request",
+      "statement": "The client connects over TLS and verifies the server against the JVM's default trust store, unless the caller asks for plaintext, in which case it connects with no transport security.",
+      "kind": "configuration",
+      "risk": "high",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            35,
+            38
+          ],
+          "symbol": "withPlaintext"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            85,
+            111
+          ],
+          "symbol": "CerbosClientBuilder.buildChannel"
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "plaintext",
+          "values": [
+            "on",
+            "off"
+          ],
+          "evidence": {
+            "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+            "lines": [
+              86,
+              111
+            ]
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "plaintext": "on"
+          },
+          "expect": "unencrypted gRPC channel",
+          "tests": []
+        },
+        {
+          "given": {
+            "plaintext": "off"
+          },
+          "expect": "TLS channel with default trust",
+          "tests": []
+        }
+      ],
+      "notes": "Every integration test builds its client withPlaintext(), so the TLS branch never runs in the suite. The fixture certificates in src/test/resources/certificates are not used by any test.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-003",
+      "feature": "CLIENT-CONFIG",
+      "title": "Insecure mode trusts any server certificate",
+      "statement": "When the caller enables insecure mode on a TLS connection, the client accepts any server certificate without verifying it. Insecure mode has no effect when plaintext is also enabled.",
+      "kind": "configuration",
+      "risk": "high",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            40,
+            43
+          ],
+          "symbol": "withInsecure"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            89,
+            92
+          ]
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "plaintext",
+          "values": [
+            "on",
+            "off"
+          ]
+        },
+        {
+          "name": "insecure",
+          "values": [
+            "on",
+            "off"
+          ]
+        },
+        {
+          "name": "ca_certificate",
+          "values": [
+            "set",
+            "unset"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "plaintext": "off",
+            "insecure": "on",
+            "ca_certificate": "unset"
+          },
+          "expect": "any server certificate accepted",
+          "tests": []
+        },
+        {
+          "given": {
+            "plaintext": "on",
+            "insecure": "on",
+            "ca_certificate": "unset"
+          },
+          "expect": "plaintext; insecure ignored",
+          "tests": []
+        },
+        {
+          "given": {
+            "plaintext": "off",
+            "insecure": "on",
+            "ca_certificate": "set"
+          },
+          "expect": "CA trust manager is set after the insecure one, so the CA certificate is what gets used",
+          "tests": []
+        }
+      ],
+      "notes": "With both insecure mode and a CA certificate, the code calls trustManager() twice, and the CA certificate call comes second. On gRPC's TlsChannelCredentials.Builder the later call replaces the earlier one.",
+      "questions": [
+        "When both withInsecure() and withCaCertificate() are set, should insecure mode win? The code currently gives the CA certificate precedence."
+      ],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-004",
+      "feature": "CLIENT-CONFIG",
+      "title": "Custom CA certificate",
+      "statement": "When the caller supplies a CA certificate, the client trusts servers signed by that CA. If the certificate cannot be loaded, building the client fails with InvalidClientConfigurationException (\"Failed to set CA trust root\").",
+      "kind": "configuration",
+      "risk": "high",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            50,
+            53
+          ],
+          "symbol": "withCaCertificate"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            94,
+            100
+          ]
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "ca_certificate",
+          "values": [
+            "unset",
+            "valid",
+            "unreadable"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "ca_certificate": "valid"
+          },
+          "expect": "server verified against the supplied CA",
+          "tests": []
+        },
+        {
+          "given": {
+            "ca_certificate": "unreadable"
+          },
+          "expect": "InvalidClientConfigurationException: Failed to set CA trust root",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-005",
+      "feature": "CLIENT-CONFIG",
+      "title": "Mutual TLS client certificate",
+      "statement": "When the caller supplies both a client certificate and a private key, the client presents them to the server. If only one of the two is supplied, both are silently ignored. If loading fails, building fails with InvalidClientConfigurationException (\"Failed to set TLS credentials\").",
+      "kind": "configuration",
+      "risk": "high",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            55,
+            63
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            102,
+            108
+          ]
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "tls_certificate",
+          "values": [
+            "set",
+            "unset"
+          ]
+        },
+        {
+          "name": "tls_key",
+          "values": [
+            "set",
+            "unset"
+          ]
+        },
+        {
+          "name": "load_result",
+          "values": [
+            "ok",
+            "error"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "tls_certificate": "set",
+            "tls_key": "set",
+            "load_result": "ok"
+          },
+          "expect": "client certificate presented",
+          "tests": []
+        },
+        {
+          "given": {
+            "tls_certificate": "set",
+            "tls_key": "unset"
+          },
+          "expect": "no client certificate, no error",
+          "tests": []
+        },
+        {
+          "given": {
+            "tls_certificate": "unset",
+            "tls_key": "set"
+          },
+          "expect": "no client certificate, no error",
+          "tests": []
+        },
+        {
+          "given": {
+            "tls_certificate": "set",
+            "tls_key": "set",
+            "load_result": "error"
+          },
+          "expect": "InvalidClientConfigurationException: Failed to set TLS credentials",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [
+        "Should supplying a certificate without a key (or the reverse) be a configuration error instead of being silently ignored?"
+      ],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-006",
+      "feature": "CLIENT-CONFIG",
+      "title": "Authority override",
+      "statement": "When the caller sets a non-blank authority, the client uses it as the TLS/HTTP2 authority instead of the target host name.",
+      "kind": "configuration",
+      "risk": "low",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            45,
+            48
+          ],
+          "symbol": "withAuthority"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            113,
+            115
+          ]
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "authority",
+          "values": [
+            "null",
+            "blank",
+            "non-blank"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "authority": "non-blank"
+          },
+          "expect": "authority overridden",
+          "tests": []
+        },
+        {
+          "given": {
+            "authority": "blank"
+          },
+          "expect": "target host used",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-007",
+      "feature": "CLIENT-CONFIG",
+      "title": "Caller-supplied gRPC interceptors",
+      "statement": "The client runs any gRPC client interceptors the caller registers on every call it makes.",
+      "kind": "integration",
+      "risk": "low",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            75,
+            78
+          ],
+          "symbol": "withClientInterceptors"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            117,
+            119
+          ]
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-008",
+      "feature": "CLIENT-CONFIG",
+      "title": "Per-call deadline",
+      "statement": "Every PDP and admin call must complete within the configured timeout, 1 second by default, or it fails with DEADLINE_EXCEEDED. The caller can change the timeout when building the client.",
+      "kind": "non-functional",
+      "risk": "medium",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            24,
+            24
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            65,
+            68
+          ],
+          "symbol": "withTimeout"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            63,
+            66
+          ],
+          "symbol": "withClient"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            42,
+            45
+          ],
+          "symbol": "withClient"
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "timeout",
+          "values": [
+            "default (1000 ms)",
+            "custom"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "timeout": "default (1000 ms)"
+          },
+          "expect": "deadline 1000 ms per call",
+          "tests": []
+        },
+        {
+          "given": {
+            "timeout": "custom"
+          },
+          "expect": "deadline as configured",
+          "tests": []
+        }
+      ],
+      "notes": "Integration tests run with the default timeout but never check it.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-009",
+      "feature": "CLIENT-CONFIG",
+      "title": "Playground instance header",
+      "statement": "When the caller sets a non-blank playground instance id, every PDP call carries it in a playground-instance header. Admin clients never send this header.",
+      "kind": "integration",
+      "risk": "low",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            70,
+            73
+          ],
+          "symbol": "withPlaygroundInstance"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            124,
+            130
+          ],
+          "symbol": "buildBlockingClient"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/PlaygroundInstanceCredentials.java",
+          "lines": [
+            13,
+            31
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            40,
+            52
+          ]
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "playground_instance",
+          "values": [
+            "null",
+            "blank",
+            "non-blank"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "playground_instance": "non-blank"
+          },
+          "expect": "header playground-instance sent",
+          "tests": []
+        },
+        {
+          "given": {
+            "playground_instance": "blank"
+          },
+          "expect": "no header",
+          "tests": []
+        }
+      ],
+      "notes": "PlaygroundIT exercises this, but it is a manual main() with no assertions, so it doesn't count as a test.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-010",
+      "feature": "CLIENT-CONFIG",
+      "title": "Admin client uses Basic credentials",
+      "statement": "An admin client sends the given username and password as an HTTP Basic authorization header on every admin call. If either value is null, building the admin client fails with InvalidClientConfigurationException (\"username and password must not be null\"). Empty strings are accepted.",
+      "kind": "authorisation",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            138,
+            145
+          ],
+          "symbol": "buildBlockingAdminClient"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/AdminApiCredentials.java",
+          "lines": [
+            15,
+            34
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            29,
+            34
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithoutFilter",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::getPolicy",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listSchemas"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "username",
+          "values": [
+            "null",
+            "empty",
+            "non-empty"
+          ]
+        },
+        {
+          "name": "password",
+          "values": [
+            "null",
+            "empty",
+            "non-empty"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "username": "non-empty",
+            "password": "non-empty"
+          },
+          "expect": "admin calls authenticated",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithoutFilter"
+          ]
+        },
+        {
+          "given": {
+            "username": "null",
+            "password": "non-empty"
+          },
+          "expect": "InvalidClientConfigurationException",
+          "tests": []
+        },
+        {
+          "given": {
+            "username": "non-empty",
+            "password": "null"
+          },
+          "expect": "InvalidClientConfigurationException",
+          "tests": []
+        },
+        {
+          "given": {
+            "username": "empty",
+            "password": "empty"
+          },
+          "expect": "client built; server decides",
+          "tests": []
+        }
+      ],
+      "notes": "The admin tests authenticate as cerbos/cerbosAdmin. Their passing shows the header is accepted, but no test covers rejection.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-011",
+      "feature": "CLIENT-CONFIG",
+      "title": "Admin credentials from environment",
+      "statement": "When no credentials are passed, the admin client reads CERBOS_USERNAME and CERBOS_PASSWORD from the environment. If either variable is missing, building fails with InvalidClientConfigurationException.",
+      "kind": "configuration",
+      "risk": "medium",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosClientBuilder.java",
+          "lines": [
+            132,
+            136
+          ],
+          "symbol": "buildBlockingAdminClient()"
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "CERBOS_USERNAME",
+          "values": [
+            "set",
+            "unset"
+          ]
+        },
+        {
+          "name": "CERBOS_PASSWORD",
+          "values": [
+            "set",
+            "unset"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "CERBOS_USERNAME": "set",
+            "CERBOS_PASSWORD": "set"
+          },
+          "expect": "client built",
+          "tests": []
+        },
+        {
+          "given": {
+            "CERBOS_USERNAME": "unset",
+            "CERBOS_PASSWORD": "set"
+          },
+          "expect": "InvalidClientConfigurationException",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-012",
+      "feature": "CLIENT-CONFIG",
+      "title": "Custom request headers",
+      "statement": "The caller can derive a PDP or admin client that sends extra headers, given as a map or as gRPC Metadata, on every call. The original client is left unchanged. Passing null Metadata removes the extra headers.",
+      "kind": "integration",
+      "risk": "low",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            84,
+            98
+          ],
+          "symbol": "withHeaders"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            53,
+            67
+          ],
+          "symbol": "withHeaders"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            63,
+            66
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            42,
+            45
+          ]
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "Both test fixtures configure a wibble: wobble header, but no test checks that it arrives. Header names must be valid ASCII metadata keys, otherwise gRPC throws IllegalArgumentException.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-013",
+      "feature": "CLIENT-CONFIG",
+      "title": "Audit annotations on requests",
+      "statement": "The caller can derive a PDP client that attaches annotations to the request context of every check, batch check and plan request, where they show up in the Cerbos audit log. Passing null removes them.",
+      "kind": "integration",
+      "risk": "medium",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            108,
+            115
+          ],
+          "symbol": "withRequestAnnotations"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            130,
+            145
+          ],
+          "symbol": "check"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            207,
+            209
+          ],
+          "symbol": "plan"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            242,
+            244
+          ],
+          "symbol": "plan"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResourcesRequestBuilder.java",
+          "lines": [
+            28,
+            41
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CheckResourcesRequestBuilderTest.java::CheckResourcesRequestBuilderTest::testBuild"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "CerbosBlockingClientTest sets foo=bar annotations but never asserts them. testBuild only builds a batch builder with no annotations and makes no assertions. check() sets the request context twice with the same value, which is redundant but harmless.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CLIENT-CONFIG-014",
+      "feature": "CLIENT-CONFIG",
+      "title": "RPC failures raised as CerbosException",
+      "statement": "When the Cerbos server rejects or fails any PDP or admin call, the client throws an unchecked CerbosException. It carries the numeric gRPC status code and the status description, and its message has the form \"RPC exception [<status>]\".",
+      "kind": "error-handling",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosException.java",
+          "lines": [
+            10,
+            26
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            153,
+            155
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResourcesRequestBuilder.java",
+          "lines": [
+            92,
+            94
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            116,
+            118
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::partialCheckRequest",
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::partialPlanRequest",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::deletePolicyWithDependents"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "operation",
+          "values": [
+            "check",
+            "batch check",
+            "plan",
+            "admin call"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "operation": "check"
+          },
+          "expect": "CerbosException with INVALID_ARGUMENT for a principal without roles and a resource without id",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::partialCheckRequest"
+          ]
+        },
+        {
+          "given": {
+            "operation": "plan"
+          },
+          "expect": "CerbosException with INVALID_ARGUMENT",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::partialPlanRequest"
+          ]
+        },
+        {
+          "given": {
+            "operation": "admin call"
+          },
+          "expect": "CerbosException",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::deletePolicyWithDependents"
+          ]
+        },
+        {
+          "given": {
+            "operation": "batch check"
+          },
+          "expect": "CerbosException",
+          "tests": []
+        }
+      ],
+      "notes": "The exception's cause is the cause of the gRPC StatusRuntimeException, not the StatusRuntimeException itself, and that cause is usually null. Callers therefore lose the original exception and its trailers.",
+      "questions": [
+        "Should CerbosException keep the StatusRuntimeException as its cause, so callers can read trailers and error details?"
+      ],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-001",
+      "feature": "CHECK",
+      "title": "Check one resource for several actions",
+      "statement": "A caller can ask whether a principal may perform one or more actions on a single resource. The SDK sends one CheckResources request with a fresh request id and returns a decision for each requested action.",
+      "kind": "behaviour",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            127,
+            156
+          ],
+          "symbol": "CerbosBlockingClient.check"
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithoutJWT",
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithJWT"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-002",
+      "feature": "CHECK",
+      "title": "Allowed only on an explicit ALLOW",
+      "statement": "isAllowed(action) returns true only when the server's effect for that action is ALLOW. It returns false for DENY, for an action that is not in the response, and when the result has no entry at all.",
+      "kind": "authorisation",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+          "lines": [
+            45,
+            52
+          ],
+          "symbol": "CheckResult.isAllowed"
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithoutJWT",
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "effect",
+          "values": [
+            "ALLOW",
+            "DENY",
+            "action absent",
+            "no result entry"
+          ],
+          "evidence": {
+            "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+            "lines": [
+              46,
+              51
+            ]
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "effect": "ALLOW"
+          },
+          "expect": "true",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithoutJWT",
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+          ]
+        },
+        {
+          "given": {
+            "effect": "DENY"
+          },
+          "expect": "false",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithoutJWT",
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+          ]
+        },
+        {
+          "given": {
+            "effect": "action absent"
+          },
+          "expect": "false (fail closed)",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+          ]
+        },
+        {
+          "given": {
+            "effect": "no result entry"
+          },
+          "expect": "false",
+          "tests": []
+        }
+      ],
+      "notes": "checkResources asks for defer on XX225 even though that resource did not request the action, and asserts false. That covers the absent-action case.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-003",
+      "feature": "CHECK",
+      "title": "Single check with an unexpected result count",
+      "statement": "When the server's response to a single check does not contain exactly one result, the SDK returns a result with no entry. isAllowed is false for every action, getAll is empty and there are no validation errors, but getMeta() and getOutputs() throw NullPointerException.",
+      "kind": "error-handling",
+      "risk": "medium",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            149,
+            152
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+          "lines": [
+            46,
+            48
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+          "lines": [
+            59,
+            62
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+          "lines": [
+            75,
+            94
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+          "lines": [
+            101,
+            107
+          ],
+          "symbol": "getMeta/getOutputs"
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "result_count",
+          "values": [
+            "0",
+            "1",
+            ">1"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "result_count": "1"
+          },
+          "expect": "normal result",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithoutJWT"
+          ]
+        },
+        {
+          "given": {
+            "result_count": "0"
+          },
+          "expect": "all actions denied; getMeta/getOutputs throw NullPointerException",
+          "tests": []
+        },
+        {
+          "given": {
+            "result_count": ">1"
+          },
+          "expect": "all actions denied; getMeta/getOutputs throw NullPointerException",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [
+        "Should getMeta() and getOutputs() return empty values when there is no result entry, as the other accessors do?"
+      ],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-004",
+      "feature": "CHECK",
+      "title": "All decisions as a map",
+      "statement": "getAll() returns an unmodifiable map from each action in the result to true when the action is allowed and false otherwise. It returns an empty map when there is no result entry.",
+      "kind": "behaviour",
+      "risk": "medium",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+          "lines": [
+            59,
+            68
+          ],
+          "symbol": "CheckResult.getAll"
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-005",
+      "feature": "CHECK",
+      "title": "Pass a JWT as auxiliary data",
+      "statement": "A caller can attach a JWT, with an optional key set id, as auxiliary data. The SDK sends it with every check, batch check and plan request so policies can use its claims. A client without auxiliary data sends an empty AuxData.",
+      "kind": "integration",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/builders/AuxData.java",
+          "lines": [
+            17,
+            37
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            74,
+            76
+          ],
+          "symbol": "with(AuxData)"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            128,
+            129
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            164,
+            170
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            195,
+            196
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithJWT",
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "aux_data",
+          "values": [
+            "none",
+            "jwt",
+            "jwt with key set id"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "aux_data": "jwt"
+          },
+          "expect": "JWT claims available to policy; defer allowed",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithJWT",
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+          ]
+        },
+        {
+          "given": {
+            "aux_data": "none"
+          },
+          "expect": "empty AuxData sent",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithoutJWT"
+          ]
+        },
+        {
+          "given": {
+            "aux_data": "jwt with key set id"
+          },
+          "expect": "JWT and key set id sent",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-006",
+      "feature": "CHECK",
+      "title": "Batch check many resources in one request",
+      "statement": "A caller can check several resources, each with its own actions, for one principal in a single request. Resources are added either as a resource plus actions or as ResourceAction objects. The batch uses the client's auxiliary data unless the caller passes auxiliary data for that batch, which then replaces it.",
+      "kind": "behaviour",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            164,
+            182
+          ],
+          "symbol": "batch"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResourcesRequestBuilder.java",
+          "lines": [
+            28,
+            95
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/builders/ResourceAction.java",
+          "lines": [
+            16,
+            62
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources",
+        "src/test/java/dev/cerbos/sdk/CheckResourcesRequestBuilderTest.java::CheckResourcesRequestBuilderTest::testBuild"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "add_method",
+          "values": [
+            "addResources(ResourceAction)",
+            "addResourceAndActions"
+          ]
+        },
+        {
+          "name": "aux_data_source",
+          "values": [
+            "client",
+            "batch argument"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "add_method": "addResources(ResourceAction)",
+            "aux_data_source": "client"
+          },
+          "expect": "one request, per-resource results",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+          ]
+        },
+        {
+          "given": {
+            "add_method": "addResourceAndActions",
+            "aux_data_source": "client"
+          },
+          "expect": "one request, per-resource results",
+          "tests": []
+        },
+        {
+          "given": {
+            "add_method": "addResources(ResourceAction)",
+            "aux_data_source": "batch argument"
+          },
+          "expect": "batch aux data used instead of client aux data",
+          "tests": []
+        }
+      ],
+      "notes": "testBuild (in the uncommitted CheckResourcesRequestBuilderTest) only constructs the builder and asserts nothing. The request id is generated when the builder is created, so calling check() twice on one builder sends the same request id both times.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-007",
+      "feature": "CHECK",
+      "title": "Find a batch result by resource id",
+      "statement": "find(resourceId) returns the first result whose resource id matches, or empty when there is none. An optional predicate on the resource (for example its kind) can narrow the match.",
+      "kind": "behaviour",
+      "risk": "medium",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResourcesResult.java",
+          "lines": [
+            25,
+            46
+          ],
+          "symbol": "CheckResourcesResult.find"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResourcesResult.java",
+          "lines": [
+            21,
+            23
+          ],
+          "symbol": "results"
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "id_match",
+          "values": [
+            "match",
+            "no match"
+          ]
+        },
+        {
+          "name": "predicate",
+          "values": [
+            "none",
+            "passes",
+            "fails"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "id_match": "match",
+            "predicate": "none"
+          },
+          "expect": "result returned",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+          ]
+        },
+        {
+          "given": {
+            "id_match": "no match",
+            "predicate": "none"
+          },
+          "expect": "empty",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+          ]
+        },
+        {
+          "given": {
+            "id_match": "match",
+            "predicate": "passes"
+          },
+          "expect": "result returned",
+          "tests": []
+        },
+        {
+          "given": {
+            "id_match": "match",
+            "predicate": "fails"
+          },
+          "expect": "empty",
+          "tests": []
+        }
+      ],
+      "notes": "With two resources of different kinds that share an id, find(id) with no predicate returns whichever comes first.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-008",
+      "feature": "CHECK",
+      "title": "Decision metadata on request",
+      "statement": "When the caller asks for metadata, each result exposes the effective derived roles and, for each action, the policy that matched. getInfoForAction returns empty for an action with no metadata.",
+      "kind": "behaviour",
+      "risk": "medium",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResourcesRequestBuilder.java",
+          "lines": [
+            76,
+            79
+          ],
+          "symbol": "withIncludeMeta"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+          "lines": [
+            113,
+            149
+          ],
+          "symbol": "CheckResult.Meta"
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "include_meta",
+          "values": [
+            "on",
+            "off"
+          ]
+        },
+        {
+          "name": "action_in_meta",
+          "values": [
+            "yes",
+            "no"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "include_meta": "on",
+            "action_in_meta": "yes"
+          },
+          "expect": "derived roles and matched policy returned",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+          ]
+        },
+        {
+          "given": {
+            "include_meta": "on",
+            "action_in_meta": "no"
+          },
+          "expect": "getInfoForAction empty",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+          ]
+        },
+        {
+          "given": {
+            "include_meta": "off"
+          },
+          "expect": "metadata empty",
+          "tests": []
+        }
+      ],
+      "notes": "The single-resource check() cannot request metadata. Only the batch builder has withIncludeMeta().",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-009",
+      "feature": "CHECK",
+      "title": "Policy outputs per result",
+      "statement": "Each result exposes the outputs produced by policy rules as a map keyed by the rule's source identifier, along with a count.",
+      "kind": "behaviour",
+      "risk": "medium",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+          "lines": [
+            105,
+            107
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+          "lines": [
+            151,
+            179
+          ],
+          "symbol": "CheckResult.Outputs"
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "asMap() collects into an unmodifiable map, so two outputs with the same source would throw IllegalStateException.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-010",
+      "feature": "CHECK",
+      "title": "Schema validation errors on check results",
+      "statement": "A single result reports whether the server found schema validation errors and lists them. A batch result reports whether any of its results has validation errors.",
+      "kind": "validation",
+      "risk": "medium",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+          "lines": [
+            75,
+            94
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResourcesResult.java",
+          "lines": [
+            48,
+            50
+          ]
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "validation_errors",
+          "values": [
+            "none",
+            "some"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "validation_errors": "none"
+          },
+          "expect": "hasValidationErrors false",
+          "tests": []
+        },
+        {
+          "given": {
+            "validation_errors": "some"
+          },
+          "expect": "hasValidationErrors true, errors listed",
+          "tests": []
+        }
+      ],
+      "notes": "Only the plan path has a validation-error test (planResourcesValidation).",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-011",
+      "feature": "CHECK",
+      "title": "New resources default to id _NEW_",
+      "statement": "A resource created with a kind but no id is sent with the id \"_NEW_\".",
+      "kind": "data",
+      "risk": "low",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/builders/Resource.java",
+          "lines": [
+            19,
+            21
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/builders/ResourceAction.java",
+          "lines": [
+            24,
+            26
+          ]
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-012",
+      "feature": "CHECK",
+      "title": "Principal and resource attributes",
+      "statement": "Principals and resources carry an id, roles (principals only, and additive across calls), policy version, scope and attributes. Attribute values can be strings, numbers (sent as doubles), booleans, lists or maps, nested to any depth.",
+      "kind": "data",
+      "risk": "medium",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/builders/AttributeValue.java",
+          "lines": [
+            16,
+            56
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/builders/Principal.java",
+          "lines": [
+            13,
+            51
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/builders/Resource.java",
+          "lines": [
+            12,
+            49
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithoutJWT",
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkResources"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "attribute_type",
+          "values": [
+            "string",
+            "double",
+            "bool",
+            "list",
+            "map"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "attribute_type": "string"
+          },
+          "expect": "sent as string value",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithoutJWT"
+          ]
+        },
+        {
+          "given": {
+            "attribute_type": "double"
+          },
+          "expect": "sent as number",
+          "tests": []
+        },
+        {
+          "given": {
+            "attribute_type": "bool"
+          },
+          "expect": "sent as bool",
+          "tests": []
+        },
+        {
+          "given": {
+            "attribute_type": "list"
+          },
+          "expect": "sent as list",
+          "tests": []
+        },
+        {
+          "given": {
+            "attribute_type": "map"
+          },
+          "expect": "sent as struct",
+          "tests": []
+        }
+      ],
+      "notes": "Tests only use string attributes and a single role. Scope is never set in the check tests.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-CHECK-013",
+      "feature": "CHECK",
+      "title": "Request ids and call ids",
+      "statement": "Each check, batch and plan request gets a random UUID request id. Results expose the request id and the Cerbos call id that the server returned.",
+      "kind": "data",
+      "risk": "low",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/RequestId.java",
+          "lines": [
+            10,
+            15
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            133,
+            133
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResult.java",
+          "lines": [
+            31,
+            37
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CheckResourcesResult.java",
+          "lines": [
+            56,
+            62
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/PlanResourcesResult.java",
+          "lines": [
+            67,
+            73
+          ]
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-PLAN-001",
+      "feature": "PLAN",
+      "title": "Plan a query filter for one action",
+      "statement": "A caller can ask which resources of a kind a principal may perform one action on. The SDK sends a PlanResources request with the resource kind, policy version, scope and attributes (any resource id is dropped) and returns the plan for that action.",
+      "kind": "behaviour",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            194,
+            217
+          ],
+          "symbol": "plan(String)"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/builders/Resource.java",
+          "lines": [
+            51,
+            59
+          ],
+          "symbol": "toPlanResource"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/PlanResourcesResult.java",
+          "lines": [
+            22,
+            25
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResources"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "Uses the deprecated single action field of the request.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-PLAN-002",
+      "feature": "PLAN",
+      "title": "Plan a query filter for several actions",
+      "statement": "A caller can plan for several actions at once. The SDK sends them as the request's action list, and the result lists the same actions.",
+      "kind": "behaviour",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingClient.java",
+          "lines": [
+            229,
+            252
+          ],
+          "symbol": "plan(Iterable)"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/PlanResourcesResult.java",
+          "lines": [
+            27,
+            29
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResourcesMultipleActions"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-PLAN-003",
+      "feature": "PLAN",
+      "title": "Plan outcome kinds",
+      "statement": "A plan result is exactly one of always allowed, always denied or conditional, as reported by the server's filter kind.",
+      "kind": "authorisation",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/PlanResourcesResult.java",
+          "lines": [
+            39,
+            49
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResources",
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResourcesMultipleActions",
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResourcesValidation"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "filter_kind",
+          "values": [
+            "ALWAYS_ALLOWED",
+            "ALWAYS_DENIED",
+            "CONDITIONAL"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "filter_kind": "CONDITIONAL"
+          },
+          "expect": "isConditional true, others false",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResources",
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResourcesMultipleActions"
+          ]
+        },
+        {
+          "given": {
+            "filter_kind": "ALWAYS_DENIED"
+          },
+          "expect": "isAlwaysDenied true, others false",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResourcesValidation"
+          ]
+        },
+        {
+          "given": {
+            "filter_kind": "ALWAYS_ALLOWED"
+          },
+          "expect": "isAlwaysAllowed true, others false",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-PLAN-004",
+      "feature": "PLAN",
+      "title": "Plan condition is always present",
+      "statement": "getCondition() always returns a present value. For a conditional plan it is the filter expression tree. For always-allowed and always-denied plans it is an empty operand, not an empty Optional.",
+      "kind": "behaviour",
+      "risk": "medium",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/PlanResourcesResult.java",
+          "lines": [
+            51,
+            53
+          ],
+          "symbol": "getCondition"
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResources",
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResourcesMultipleActions"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "filter_kind",
+          "values": [
+            "CONDITIONAL",
+            "ALWAYS_ALLOWED",
+            "ALWAYS_DENIED"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "filter_kind": "CONDITIONAL"
+          },
+          "expect": "present, expression tree",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResources",
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResourcesMultipleActions"
+          ]
+        },
+        {
+          "given": {
+            "filter_kind": "ALWAYS_DENIED"
+          },
+          "expect": "present, empty operand",
+          "tests": []
+        },
+        {
+          "given": {
+            "filter_kind": "ALWAYS_ALLOWED"
+          },
+          "expect": "present, empty operand",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [
+        "Should getCondition() return Optional.empty() when the plan is not conditional? Using Optional suggests that was the intent."
+      ],
+      "retired": false
+    },
+    {
+      "id": "REQ-PLAN-005",
+      "feature": "PLAN",
+      "title": "Schema validation errors on plans",
+      "statement": "A plan result reports whether the server found schema validation errors and lists them. In the tested case, a request that fails validation is planned as always denied.",
+      "kind": "validation",
+      "risk": "medium",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/PlanResourcesResult.java",
+          "lines": [
+            55,
+            61
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResourcesValidation",
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResources"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "validation_errors",
+          "values": [
+            "none",
+            "some"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "validation_errors": "none"
+          },
+          "expect": "hasValidationErrors false",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResources"
+          ]
+        },
+        {
+          "given": {
+            "validation_errors": "some"
+          },
+          "expect": "hasValidationErrors true, 2 errors, always denied",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResourcesValidation"
+          ]
+        }
+      ],
+      "notes": "Whether invalid input produces always-denied depends on the server's schema enforcement setting (reject in the test config), not on the SDK.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-PLAN-006",
+      "feature": "PLAN",
+      "title": "Plan result identifies the plan",
+      "statement": "A plan result reports the resource kind, policy version, request id and Cerbos call id that the server returned.",
+      "kind": "data",
+      "risk": "low",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/PlanResourcesResult.java",
+          "lines": [
+            31,
+            37
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/PlanResourcesResult.java",
+          "lines": [
+            67,
+            73
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResources",
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResourcesMultipleActions",
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::planResourcesValidation"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-001",
+      "feature": "ADMIN",
+      "title": "Add or update policies from JSON or objects",
+      "statement": "An admin can queue policies as JSON text, a JSON reader or policy objects, then send them all to the policy store with one addOrUpdate call. Nothing is sent until addOrUpdate is called.",
+      "kind": "behaviour",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            75,
+            77
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/AddOrUpdatePolicyRequestBuilder.java",
+          "lines": [
+            40,
+            79
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithoutFilter",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithFilter",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::getPolicy"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "The admin test loads 17 policies (YAML converted to JSON) through this builder in its @BeforeAll setup. listPoliciesWithoutFilter then asserts that all 17 are present.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-002",
+      "feature": "ADMIN",
+      "title": "Validate policies and schemas before queuing",
+      "statement": "Each policy or schema is validated against the Cerbos proto rules as it is queued. An invalid one is rejected with a checked ValidationException that lists the violations, and it is not queued.",
+      "kind": "validation",
+      "risk": "medium",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/AddOrUpdatePolicyRequestBuilder.java",
+          "lines": [
+            59,
+            63
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/AddOrUpdatePolicyRequestBuilder.java",
+          "lines": [
+            72,
+            79
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/AddOrUpdateSchemaRequestBuilder.java",
+          "lines": [
+            42,
+            48
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/AddOrUpdateSchemaRequestBuilder.java",
+          "lines": [
+            71,
+            78
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/validation/Validator.java",
+          "lines": [
+            15,
+            25
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/validation/ValidationException.java",
+          "lines": [
+            13,
+            28
+          ]
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "input",
+          "values": [
+            "valid",
+            "violates rules",
+            "validator error"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "input": "valid"
+          },
+          "expect": "queued",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithoutFilter"
+          ]
+        },
+        {
+          "given": {
+            "input": "violates rules"
+          },
+          "expect": "ValidationException with violations; not queued",
+          "tests": []
+        },
+        {
+          "given": {
+            "input": "validator error"
+          },
+          "expect": "ValidationException with cause and no violations",
+          "tests": []
+        }
+      ],
+      "notes": "When a list of policies or schemas is passed, the ones before the first invalid item are already queued when the exception is thrown.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-003",
+      "feature": "ADMIN",
+      "title": "Send policies and schemas in batches",
+      "statement": "addOrUpdate sends queued policies (and, separately, schemas) in several requests. The first request holds 9 items and each later one holds up to 10. With nothing queued, no request is sent. If a request fails, the earlier batches stay applied and the rest are not sent.",
+      "kind": "non-functional",
+      "risk": "medium",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/AddOrUpdatePolicyRequestBuilder.java",
+          "lines": [
+            86,
+            112
+          ],
+          "symbol": "addOrUpdate"
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/AddOrUpdateSchemaRequestBuilder.java",
+          "lines": [
+            85,
+            111
+          ],
+          "symbol": "addOrUpdate"
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithoutFilter"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "queued_count",
+          "values": [
+            "0",
+            "1-9",
+            "10",
+            ">10"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "queued_count": "0"
+          },
+          "expect": "no request",
+          "tests": []
+        },
+        {
+          "given": {
+            "queued_count": "1-9"
+          },
+          "expect": "one request",
+          "tests": []
+        },
+        {
+          "given": {
+            "queued_count": "10"
+          },
+          "expect": "two requests (9 + 1)",
+          "tests": []
+        },
+        {
+          "given": {
+            "queued_count": ">10"
+          },
+          "expect": "17 policies sent as 9 + 8",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithoutFilter"
+          ]
+        }
+      ],
+      "notes": "The loop flushes when i % 10 == 0, before adding item i, which gives batches of 9, 10, 10, ... The requests are not atomic across batches.",
+      "questions": [
+        "Was the intended batch size 10 for every batch? The first batch holds 9 because of an off-by-one in the flush check."
+      ],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-004",
+      "feature": "ADMIN",
+      "title": "Add or update JSON schemas",
+      "statement": "An admin can queue schemas as an id plus JSON definition (text or reader) or as schema objects, then send them with addOrUpdate.",
+      "kind": "behaviour",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            225,
+            227
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/AddOrUpdateSchemaRequestBuilder.java",
+          "lines": [
+            42,
+            78
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listSchemas",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::getSchema"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-005",
+      "feature": "ADMIN",
+      "title": "List policy ids with filters",
+      "statement": "An admin can list policy ids, either active only or including disabled ones, optionally filtered by regular expressions on name, version and scope.",
+      "kind": "behaviour",
+      "risk": "medium",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            89,
+            119
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithoutFilter",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithFilter"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "include_disabled",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        {
+          "name": "name_regex",
+          "values": [
+            "set",
+            "unset"
+          ]
+        },
+        {
+          "name": "version_regex",
+          "values": [
+            "set",
+            "unset"
+          ]
+        },
+        {
+          "name": "scope_regex",
+          "values": [
+            "set",
+            "unset"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "include_disabled": "true",
+            "name_regex": "unset",
+            "version_regex": "unset",
+            "scope_regex": "unset"
+          },
+          "expect": "all 17 ids",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithoutFilter"
+          ]
+        },
+        {
+          "given": {
+            "include_disabled": "true",
+            "name_regex": "set",
+            "version_regex": "unset",
+            "scope_regex": "set"
+          },
+          "expect": "3 matching ids in order",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithFilter"
+          ]
+        },
+        {
+          "given": {
+            "include_disabled": "false",
+            "name_regex": "unset",
+            "version_regex": "unset",
+            "scope_regex": "unset"
+          },
+          "expect": "disabled policies excluded",
+          "tests": []
+        },
+        {
+          "given": {
+            "include_disabled": "true",
+            "name_regex": "unset",
+            "version_regex": "set",
+            "scope_regex": "unset"
+          },
+          "expect": "filtered by version",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-006",
+      "feature": "ADMIN",
+      "title": "Get policies by id",
+      "statement": "An admin can fetch policies by id. Only policies that exist are returned, so an unknown id produces an empty list rather than an error.",
+      "kind": "behaviour",
+      "risk": "medium",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            128,
+            138
+          ],
+          "symbol": "getPolicy"
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::getPolicy",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::getPolicyNonExistent"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "policy_exists",
+          "values": [
+            "yes",
+            "no"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "policy_exists": "yes"
+          },
+          "expect": "one policy returned",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::getPolicy"
+          ]
+        },
+        {
+          "given": {
+            "policy_exists": "no"
+          },
+          "expect": "empty list",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::getPolicyNonExistent"
+          ]
+        }
+      ],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-007",
+      "feature": "ADMIN",
+      "title": "Enable and disable policies",
+      "statement": "An admin can disable or re-enable policies by id. Each call returns the number of policies it changed.",
+      "kind": "behaviour",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            147,
+            176
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::enableAndDisablePolicy"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-008",
+      "feature": "ADMIN",
+      "title": "Delete policies",
+      "statement": "An admin can delete policies by id and gets back the number deleted. Deleting a policy that other policies depend on fails with CerbosException.",
+      "kind": "behaviour",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            185,
+            195
+          ],
+          "symbol": "deletePolicy"
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::deletePolicyWithoutDependents",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::deletePolicyWithDependents"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "has_dependents",
+          "values": [
+            "yes",
+            "no"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "has_dependents": "no"
+          },
+          "expect": "returns 1",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::deletePolicyWithoutDependents"
+          ]
+        },
+        {
+          "given": {
+            "has_dependents": "yes"
+          },
+          "expect": "CerbosException",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::deletePolicyWithDependents"
+          ]
+        }
+      ],
+      "notes": "The SDK does not enforce the dependents rule. The server does.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-009",
+      "feature": "ADMIN",
+      "title": "Purge old store revisions",
+      "statement": "An admin can purge policy store revisions and gets back the number of rows removed. A positive keepLast keeps that many recent revisions. Zero or a negative value sends no keepLast, so the server purges every revision.",
+      "kind": "data",
+      "risk": "high",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            206,
+            218
+          ],
+          "symbol": "purgeStoreRevisions"
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::purgeStoreRevisions"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "keep_last",
+          "values": [
+            "negative",
+            "0",
+            "positive"
+          ],
+          "evidence": {
+            "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+            "lines": [
+              208,
+              210
+            ]
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "keep_last": "0"
+          },
+          "expect": "all revisions purged, count > 1",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::purgeStoreRevisions"
+          ]
+        },
+        {
+          "given": {
+            "keep_last": "negative"
+          },
+          "expect": "treated as 0",
+          "tests": []
+        },
+        {
+          "given": {
+            "keep_last": "positive"
+          },
+          "expect": "that many revisions kept",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-010",
+      "feature": "ADMIN",
+      "title": "List and get schemas",
+      "statement": "An admin can list all schema ids and fetch schemas by id.",
+      "kind": "behaviour",
+      "risk": "medium",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            235,
+            261
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listSchemas",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::getSchema"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-011",
+      "feature": "ADMIN",
+      "title": "Delete schemas",
+      "statement": "An admin can delete schemas by id and gets back the number deleted.",
+      "kind": "behaviour",
+      "risk": "medium",
+      "confidence": "high",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            270,
+            280
+          ],
+          "symbol": "deleteSchema"
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::deleteSchema"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-ADMIN-012",
+      "feature": "ADMIN",
+      "title": "Reload the policy store",
+      "statement": "An admin can ask the server to reload its policy store, and can choose to wait until the reload finishes.",
+      "kind": "behaviour",
+      "risk": "medium",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosBlockingAdminClient.java",
+          "lines": [
+            288,
+            294
+          ],
+          "symbol": "storeReload"
+        }
+      ],
+      "tested_by": [],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "wait",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "wait": "true"
+          },
+          "expect": "returns after reload completes",
+          "tests": []
+        },
+        {
+          "given": {
+            "wait": "false"
+          },
+          "expect": "returns immediately",
+          "tests": []
+        }
+      ],
+      "notes": "",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-TEST-SUPPORT-001",
+      "feature": "TEST-SUPPORT",
+      "title": "Cerbos test container image",
+      "statement": "CerbosContainer starts the ghcr.io/cerbos/cerbos image, tagged latest by default or with a caller-supplied tag. A custom image must declare compatibility with ghcr.io/cerbos/cerbos, otherwise construction fails.",
+      "kind": "configuration",
+      "risk": "low",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosContainer.java",
+          "lines": [
+            13,
+            32
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithoutJWT",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithoutFilter"
+      ],
+      "documented_in": [],
+      "conditions": [
+        {
+          "name": "image",
+          "values": [
+            "default",
+            "custom tag",
+            "compatible custom image",
+            "incompatible image"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "given": {
+            "image": "custom tag"
+          },
+          "expect": "ghcr.io/cerbos/cerbos:<tag> started",
+          "tests": [
+            "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithoutJWT"
+          ]
+        },
+        {
+          "given": {
+            "image": "default"
+          },
+          "expect": "ghcr.io/cerbos/cerbos:latest",
+          "tests": []
+        },
+        {
+          "given": {
+            "image": "incompatible image"
+          },
+          "expect": "IllegalStateException from assertCompatibleWith",
+          "tests": []
+        }
+      ],
+      "notes": "Both integration fixtures use the \"dev\" tag. Their tests exercise the container without asserting anything about it.",
+      "questions": [],
+      "retired": false
+    },
+    {
+      "id": "REQ-TEST-SUPPORT-002",
+      "feature": "TEST-SUPPORT",
+      "title": "Container readiness and gRPC target",
+      "statement": "The container exposes HTTP port 3592 and gRPC port 3593, counts as ready once the log shows \"Starting gRPC server\", and gives a target of 127.0.0.1:<mapped gRPC port> for building clients.",
+      "kind": "integration",
+      "risk": "low",
+      "confidence": "medium",
+      "implemented_by": [
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosContainer.java",
+          "lines": [
+            16,
+            17
+          ]
+        },
+        {
+          "file": "src/main/java/dev/cerbos/sdk/CerbosContainer.java",
+          "lines": [
+            30,
+            44
+          ]
+        }
+      ],
+      "tested_by": [
+        "src/test/java/dev/cerbos/sdk/CerbosClientTests.java::CerbosClientTests::checkWithoutJWT",
+        "src/test/java/dev/cerbos/sdk/CerbosBlockingAdminClientTest.java::CerbosBlockingAdminClientTest::listPoliciesWithoutFilter"
+      ],
+      "documented_in": [],
+      "conditions": [],
+      "scenarios": [],
+      "notes": "Evidence comes from fixture use only.",
+      "questions": [],
+      "retired": false
+    }
+  ]
+}

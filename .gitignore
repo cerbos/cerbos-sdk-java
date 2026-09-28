@@ -7,3 +7,12 @@ build/
 .project
 .settings/
 kls_database.db
+
+# Requirements map: generated evidence (see .reqmap/raw/per_test.sh)
+.reqmap/raw/*
+!.reqmap/raw/per_test.sh
+.reqmap/coverage.json
+.reqmap/tests.json
+.reqmap/stack.json
+.reqmap/gaps.json
+.reqmap/viewer.html

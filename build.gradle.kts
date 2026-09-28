@@ -13,6 +13,7 @@ plugins {
     id("com.palantir.git-version") version "5.0.0"
     id("org.jreleaser") version "1.24.0"
     id("com.gradleup.shadow") version "9.4.1"
+    jacoco
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -92,6 +93,19 @@ tasks.withType<JavaCompile> {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    // Measure the SDK only, not the classes protoc generates from the vendored protos.
+    classDirectories.setFrom(
+        files(classDirectories.files.map { fileTree(it) { include("dev/cerbos/sdk/**") } })
+    )
 }
 
 tasks.shadowJar {
