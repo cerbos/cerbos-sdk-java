@@ -12,6 +12,14 @@ auxData:
         local:
           file: /config/verify_key.jwk
 
+audit:
+  enabled: true
+  accessLogsEnabled: false
+  decisionLogsEnabled: true
+  backend: file
+  file:
+    path: stdout
+
 engine:
   defaultPolicyVersion: "default"
 
