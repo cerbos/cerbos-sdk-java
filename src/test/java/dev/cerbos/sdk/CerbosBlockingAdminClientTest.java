@@ -36,20 +36,21 @@ class CerbosBlockingAdminClientTest extends CerbosClientTests {
     private static final ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory());
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     @Container
-    private static final CerbosContainer cerbosContainer =
-            new CerbosContainer("dev")
-                    .withClasspathResourceMapping("config", "/config", BindMode.READ_ONLY)
-                    .withCommand("server", "--config=/config/admin-config.yaml")
-                    .withLogConsumer(new Slf4jLogConsumer(LOG));
+    private static final CerbosContainer cerbosContainer = new CerbosContainer("dev")
+            .withClasspathResourceMapping("config", "/config", BindMode.READ_ONLY)
+            .withCommand("server", "--config=/config/admin-config.yaml")
+            .withLogConsumer(new Slf4jLogConsumer(LOG));
     CerbosBlockingAdminClient adminClient;
 
     @BeforeAll
     public void initClient() throws CerbosClientBuilder.InvalidClientConfigurationException, URISyntaxException {
         String target = cerbosContainer.getTarget();
-        this.adminClient = new CerbosClientBuilder(target).withPlaintext().buildBlockingAdminClient("cerbos", "cerbosAdmin").withHeaders(Map.of("wibble", "wobble"));
+        this.adminClient = new CerbosClientBuilder(target).withPlaintext()
+                .buildBlockingAdminClient("cerbos", "cerbosAdmin").withHeaders(Map.of("wibble", "wobble"));
         this.client = new CerbosClientBuilder(target).withPlaintext().buildBlockingClient();
         loadSchemas();
         loadPolicies();
+        this.adminClient.storeReload(true);
     }
 
     void loadSchemas() throws URISyntaxException {
@@ -114,7 +115,8 @@ class CerbosBlockingAdminClientTest extends CerbosClientTests {
 
             requestBuilder.with(new FileReader(file));
         } catch (ValidationException ve) {
-            ve.getViolations().stream().forEach(e -> System.out.printf("%s - %s\n", e.toProto().getField(), e.toProto().getMessage()));
+            ve.getViolations().stream()
+                    .forEach(e -> System.out.printf("%s - %s\n", e.toProto().getField(), e.toProto().getMessage()));
             throw new RuntimeException(ve);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -130,10 +132,12 @@ class CerbosBlockingAdminClientTest extends CerbosClientTests {
 
     @Test
     void listPoliciesWithFilter() {
-        List<String> have = this.adminClient.listAllPolicies(Optional.of("leave"), Optional.empty(), Optional.of("acme"));
+        List<String> have = this.adminClient.listAllPolicies(Optional.of("leave"), Optional.empty(),
+                Optional.of("acme"));
         Assertions.assertNotNull(have);
         Assertions.assertEquals(3, have.size());
-        Assertions.assertIterableEquals(List.of("resource.leave_request.vdefault/acme", "resource.leave_request.vdefault/acme.hr", "resource.leave_request.vdefault/acme.hr.uk"), have);
+        Assertions.assertIterableEquals(List.of("resource.leave_request.vdefault/acme",
+                "resource.leave_request.vdefault/acme.hr", "resource.leave_request.vdefault/acme.hr.uk"), have);
     }
 
     @Test
