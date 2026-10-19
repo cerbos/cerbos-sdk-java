@@ -48,7 +48,7 @@ protobuf {
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.84.2"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.85.0"
         }
     }
 
@@ -64,9 +64,9 @@ protobuf {
 dependencies {
     implementation("com.google.protobuf:protobuf-java:4.36.2")
     implementation("com.google.protobuf:protobuf-java-util:4.36.2")
-    implementation("io.grpc:grpc-protobuf:1.84.2")
-    implementation("io.grpc:grpc-stub:1.84.2")
-    implementation("io.grpc:grpc-netty-shaded:1.84.2")
+    implementation("io.grpc:grpc-protobuf:1.85.0")
+    implementation("io.grpc:grpc-stub:1.85.0")
+    implementation("io.grpc:grpc-netty-shaded:1.85.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.84.Final")
     implementation("org.testcontainers:testcontainers:2.0.5")
     implementation("build.buf:protovalidate:1.3.0")
@@ -80,8 +80,8 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("ch.qos.logback:logback-core:1.6.5")
     testImplementation("ch.qos.logback:logback-classic:1.6.5")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.22.3")
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.3")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.22.4")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.4")
 }
 
 tasks.withType<JavaCompile> {
