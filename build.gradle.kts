@@ -11,7 +11,7 @@ plugins {
     `maven-publish`
     id("com.google.protobuf") version "0.10.0"
     id("com.palantir.git-version") version "5.1.0"
-    id("org.jreleaser") version "1.26.0"
+    id("org.jreleaser") version "1.27.0"
     id("com.gradleup.shadow") version "9.6.1"
 }
 
