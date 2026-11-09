@@ -9,7 +9,7 @@ plugins {
     java
     idea
     `maven-publish`
-    id("com.google.protobuf") version "0.10.0"
+    id("com.google.protobuf") version "0.10.1"
     id("com.palantir.git-version") version "5.1.0"
     id("org.jreleaser") version "1.27.0"
     id("com.gradleup.shadow") version "9.6.1"
@@ -67,7 +67,7 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.85.1")
     implementation("io.grpc:grpc-stub:1.85.1")
     implementation("io.grpc:grpc-netty-shaded:1.85.1")
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.84.Final")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.85.Final")
     implementation("org.testcontainers:testcontainers:2.0.5")
     implementation("build.buf:protovalidate:1.3.0")
     implementation("commons-io:commons-io:2.22.0")
@@ -80,8 +80,8 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("ch.qos.logback:logback-core:1.6.6")
     testImplementation("ch.qos.logback:logback-classic:1.6.6")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.22.4")
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.4")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.23.0")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.23.0")
 }
 
 tasks.withType<JavaCompile> {
