@@ -10,7 +10,7 @@ plugins {
     idea
     `maven-publish`
     id("com.google.protobuf") version "0.10.1"
-    id("com.palantir.git-version") version "5.1.0"
+    id("com.palantir.git-version") version "5.2.0"
     id("org.jreleaser") version "1.27.0"
     id("com.gradleup.shadow") version "9.6.1"
 }
@@ -78,8 +78,8 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.21.4")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("ch.qos.logback:logback-core:1.6.6")
-    testImplementation("ch.qos.logback:logback-classic:1.6.6")
+    testImplementation("ch.qos.logback:logback-core:1.6.7")
+    testImplementation("ch.qos.logback:logback-classic:1.6.7")
     testImplementation("com.fasterxml.jackson.core:jackson-core:2.23.0")
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.23.0")
 }
